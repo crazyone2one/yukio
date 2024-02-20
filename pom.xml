@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.2</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <packaging>pom</packaging>
+    <groupId>cn.master</groupId>
+    <artifactId>yukio</artifactId>
+    <version>${revision}</version>
+    <name>yukio</name>
+    <description>yukio</description>
+    <properties>
+        <java.version>17</java.version>
+        <main.basedir>${project.basedir}</main.basedir>
+        <jacoco.version>0.8.10</jacoco.version>
+        <revision>1.x</revision>
+        <!-- frontend -->
+        <frontend-maven-plugin.version>1.15.0</frontend-maven-plugin.version>
+        <node.version>v21.6.1</node.version>
+        <npm.version>10.4.0</npm.version>
+        <pnpm.version>8.9.2</pnpm.version>
+        <!--        -->
+        <skipAntRunForJenkins>false</skipAntRunForJenkins>
+        <jacoco.version>0.8.10</jacoco.version>
+        <pf4j.version>3.10.0</pf4j.version>
+    </properties>
+    <modules>
+        <module>backend</module>
+        <module>frontend</module>
+    </modules>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                    <include>**/*.json</include>
+                    <include>**/*.tpl</include>
+                    <include>**/*.js</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <release>${java.version}</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <id>pre-unit-test</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>post-unit-test</id>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
