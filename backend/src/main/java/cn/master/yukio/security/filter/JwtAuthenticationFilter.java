@@ -66,7 +66,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Claims claims = jwtProvider.parseTokenToClaims(token);
             String tokenType = claims.getAudience();
             User user = userService.queryChain().where(USER.NAME.eq(claims.getSubject())).one();
-            if (!Objects.equals("/refresh", requestUri)) {
+            if (!Objects.equals("/api/auth/refresh", requestUri)) {
                 switch (tokenType) {
                     case "refresh-token":
                         username = null;
@@ -74,7 +74,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         break;
                     case "access-token":
                         username = claims.getSubject();
-                        if (!Objects.equals("/logout", requestUri) && (claims.getExpiration().getTime() - new Date(System.currentTimeMillis()).getTime()) <= autoRefreshTtl) {
+                        if (!Objects.equals("/api/auth/logout", requestUri) && (claims.getExpiration().getTime() - new Date(System.currentTimeMillis()).getTime()) <= autoRefreshTtl) {
                             UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
                             String accessToken = jwtProvider.createAccessToken(userDetails);
                             response.setHeader("Authorization", "Bearer " + accessToken);
@@ -103,12 +103,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } else {
-            if (Objects.equals("/logout", requestUri)) {
+            if (Objects.equals("/api/auth/logout", requestUri)) {
                 User user = userService.queryChain().where(USER.NAME.eq(jwtProvider.getExpiredTokenClaims(token).getSubject())).one();
                 log.info("用户 '{}' 已退出登录", user.getName());
                 render(200, "已退出登录", response);
                 return;
-            } else if (Objects.equals("/refresh", requestUri)) {
+            } else if (Objects.equals("/api/auth/refresh", requestUri)) {
                 render(419, "请重新登录", response);
                 return;
             } else {
