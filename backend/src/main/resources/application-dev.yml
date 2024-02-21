@@ -19,7 +19,7 @@ spring:
       port: 6379
       database: 2
 jwt:
-  secret: a5136eef5fdc49913af603a6a10e1cba
-  access-token-ttl: 3600000 #accessToken过期时间，单位毫秒，3600000毫秒为两小时
+  secret: U2FsdGVkX18epMj+KK0TtMyZJzvr45zahWHKpl4+kSg=
+  access-token-ttl: 3600000 #accessToken过期时间，单位毫秒，3600000毫秒为1小时
   refresh-token-ttl: 604800000 #refreshToken过期时间，单位毫秒，604800000毫秒为7天
   auto-refresh-ttl: 120000 #凭证剩余时间小于该值时自动刷新，单位毫秒，1200000为二十分钟

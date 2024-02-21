@@ -85,7 +85,7 @@ public class JwtProvider {
                 .setIssuedAt(date)
                 .setExpiration(new Date(date.getTime() + expiration))
                 .signWith(secretKey(), SignatureAlgorithm.HS256)
-                .compressWith(CompressionCodecs.GZIP)
+                //.compressWith(CompressionCodecs.GZIP)
                 .compact();
     }
 
