@@ -33,6 +33,7 @@
         <guava.version>33.0.0-jre</guava.version>
         <commons-compress.version>1.25.0</commons-compress.version>
         <mybatis-flex.version>1.7.9</mybatis-flex.version>
+        <jjwt.version>0.11.5</jjwt.version>
     </properties>
     <modules>
         <module>backend</module>
