@@ -6,7 +6,9 @@ module.exports = {
         node: true,
     },
     extends: [
-        'standard-with-typescript',
+        // 'standard-with-typescript',
+        'eslint:recommended',
+        'plugin:@typescript-eslint/recommended',
         'plugin:vue/vue3-recommended',
         'prettier',
     ],
@@ -26,8 +28,16 @@ module.exports = {
         parser: '@typescript-eslint/parser',
         ecmaVersion: 'latest',
         sourceType: 'module',
+        // project: ['./tsconfig.json', './tsconfig.node.json'],
     },
-    plugins: ['vue'],
-    ignorePatterns: ['.eslintrc.cjs', 'vite.config.ts'],
-    rules: {},
+    plugins: ['@typescript-eslint', 'vue'],
+    rules: {
+        'vue/multi-word-component-names': [
+            'error',
+            {
+                ignores: ['index'],
+            },
+        ],
+    },
+    ignorePatterns: ['.eslintrc.cjs', 'uno.config.ts', './types/global.d.ts'],
 }
