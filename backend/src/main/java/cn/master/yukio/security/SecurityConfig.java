@@ -53,7 +53,7 @@ public class SecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         httpSecurity.authenticationProvider(authenticationProvider());
         // 权限问题
-        //httpSecurity.exceptionHandling(e -> e.accessDeniedHandler(noPermissionHandler).authenticationEntryPoint(noLoginHandler));
+        httpSecurity.exceptionHandling(e -> e.accessDeniedHandler(noPermissionHandler).authenticationEntryPoint(noLoginHandler));
         // 自定义退出登录操作和成功退出登录操作
         httpSecurity.logout(l -> l
                 .logoutUrl("/logout")

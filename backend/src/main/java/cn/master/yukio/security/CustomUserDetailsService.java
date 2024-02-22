@@ -1,6 +1,7 @@
 package cn.master.yukio.security;
 
 import cn.master.yukio.entity.User;
+import cn.master.yukio.util.Translator;
 import com.mybatisflex.core.query.QueryChain;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AccountStatusException;
@@ -25,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = QueryChain.of(User.class).where(USER.NAME.eq(username)).oneOpt().orElseThrow(
-                () -> new UsernameNotFoundException("用户名不存在")
+                () -> new UsernameNotFoundException(Translator.get("user.not.exist"))
         );
         List<GrantedAuthority> authorities = new ArrayList<>();
         CustomUserDetails customUserDetails = new CustomUserDetails(user, authorities);

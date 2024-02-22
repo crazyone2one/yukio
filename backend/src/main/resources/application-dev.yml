@@ -1,6 +1,8 @@
 server:
   port: 2024
 spring:
+  messages:
+    basename: i18n/api,i18n/bug,i18n/system,i18n/case,i18n/commons,i18n/plan,i18n/project,i18n/load,i18n/ui,i18n/workstation
   datasource:
     hikari:
       connection-test-query: SELECT 1
