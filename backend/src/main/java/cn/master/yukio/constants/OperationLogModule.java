@@ -1,0 +1,132 @@
+package cn.master.yukio.constants;
+
+/**
+ * @author Created by 11's papa on 02/22/2024
+ **/
+public class OperationLogModule {
+    public static final String UNKNOWN_MODULE = "UNKNOWN_MODULE";
+    public static final String SYSTEM_PARAMETER_SETTING = "SYSTEM_PARAMETER_SETTING";
+    public static final String SYSTEM_TEST_RESOURCE = "SYSTEM_TEST_RESOURCE";
+    public static final String SYSTEM_TEST_RESOURCE_POOL = "SYSTEM_TEST_RESOURCE_POOL";
+    public static final String SYSTEM_USER = "SYSTEM_USER";
+    public static final String SYSTEM_ORGANIZATION = "SYSTEM_ORGANIZATION";
+    public static final String ORGANIZATION_USER_ROLE = "ORGANIZATION_USER_ROLE";
+    public static final String ORGANIZATION_TEMPLATE_SETTINGS = "ORGANIZATION_TEMPLATE_SETTINGS";
+    public static final String ORGANIZATION_MESSAGE_SETTINGS = "ORGANIZATION_MESSAGE_SETTINGS";
+    public static final String ORGANIZATION_TEMPLATE_SETTINGS_FIELD = "ORGANIZATION_TEMPLATE_SETTINGS_FIELD";
+    public static final String ORGANIZATION_TEMPLATE_SETTINGS_ISSUE = "ORGANIZATION_TEMPLATE_SETTINGS_ISSUE";
+    public static final String ORGANIZATION_TEMPLATE_SETTINGS_CASE = "ORGANIZATION_TEMPLATE_SETTINGS_CASE";
+    public static final String ORGANIZATION_TEMPLATE_SETTINGS_API = "ORGANIZATION_TEMPLATE_SETTINGS_API";
+    public static final String ORGANIZATION_MEMBER = "ORGANIZATION_MEMBER";
+    public static final String API_AUTOMATION = "API_AUTOMATION";
+    public static final String API_AUTOMATION_SCHEDULE = "API_AUTOMATION_SCHEDULE";
+    public static final String API_AUTOMATION_REPORT = "API_AUTOMATION_REPORT";
+    public static final String API_DEFINITION = "API_DEFINITION";
+    public static final String API_DEFINITION_MOCK = "API_DEFINITION_MOCK";
+    public static final String API_DEFINITION_CASE = "API_DEFINITION_CASE";
+    public static final String API_SCENARIO = "API_SCENARIO";
+    public static final String API_REPORT = "API_REPORT";
+    public static final String AUTH_TITLE = "AUTH_TITLE";
+    public static final String PROJECT_ENVIRONMENT_SETTING = "PROJECT_ENVIRONMENT_SETTING";
+    public static final String PROJECT_PROJECT_MANAGER = "PROJECT_PROJECT_MANAGER";
+    public static final String PROJECT_FILE_MANAGEMENT = "PROJECT_MANAGEMENT_FILE_MANAGEMENT";
+    public static final String PROJECT_TEMPLATE_MANAGEMENT = "PROJECT_TEMPLATE_MANAGEMENT";
+    public static final String PERSONAL_INFORMATION_PERSONAL_SETTINGS = "PERSONAL_INFORMATION_PERSONAL_SETTINGS";
+    public static final String PERSONAL_INFORMATION_APIKEYS = "PERSONAL_INFORMATION_APIKEYS";
+    public static final String PERSONAL_INFORMATION_LOCAL_CONFIG = "PERSONAL_INFORMATION_LOCAL_CONFIG";
+    public static final String GROUP_PERMISSION = "GROUP_PERMISSION";
+    public static final String PERFORMANCE_TEST_REPORT = "PERFORMANCE_TEST_REPORT";
+    public static final String SYSTEM_QUOTA_MANAGEMENT = "SYSTEM_QUOTA_MANAGEMENT";
+    public static final String ENTERPRISE_TEST_REPORT = "ENTERPRISE_TEST_REPORT";
+    public static final String SYSTEM_AUTHORIZATION_MANAGEMENT = "SYSTEM_AUTHORIZATION_MANAGEMENT";
+    public static final String SYSTEM_PROJECT = "SYSTEM_PROJECT";
+    public static final String SYSTEM_PROJECT_MEMBER = "SYSTEM_PROJECT_MEMBER";
+    public static final String ORGANIZATION_PROJECT = "ORGANIZATION_PROJECT";
+
+
+    public static final String SETTING = "SETTING";
+    public static final String SETTING_SYSTEM = "SETTING_SYSTEM";
+    public static final String SETTING_SYSTEM_USER_SINGLE = "SETTING_SYSTEM_USER_SINGLE";
+    public static final String SETTING_SYSTEM_USER_GROUP = "SETTING_SYSTEM_USER_GROUP";
+    public static final String SETTING_SYSTEM_ORGANIZATION = "SETTING_SYSTEM_ORGANIZATION";
+    public static final String SETTING_SYSTEM_PARAMETER = "SETTING_SYSTEM_PARAMETER";
+    public static final String SETTING_SYSTEM_PARAMETER_BASE_CONFIG = "SETTING_SYSTEM_PARAMETER_BASE_CONFIG";
+    public static final String SETTING_SYSTEM_PARAMETER_PAGE_CONFIG = "SETTING_SYSTEM_PARAMETER_PAGE_CONFIG";
+    public static final String SETTING_SYSTEM_PARAMETER_AUTH_CONFIG = "SETTING_SYSTEM_PARAMETER_AUTH_CONFIG";
+    //系统设置-系统-资源池
+    public static final String SETTING_SYSTEM_RESOURCE_POOL = "SETTING_SYSTEM_RESOURCE_POOL";
+    public static final String SETTING_SYSTEM_AUTHORIZED_MANAGEMENT = "SETTING_SYSTEM_AUTHORIZED_MANAGEMENT";
+    public static final String SETTING_SYSTEM_LOG = "SETTING_SYSTEM_LOG";
+    public static final String SETTING_SYSTEM_PLUGIN_MANAGEMENT = "SETTING_SYSTEM_PLUGIN_MANAGEMENT";
+    public static final String SETTING_ORGANIZATION = "SETTING_ORGANIZATION";
+    public static final String SETTING_ORGANIZATION_MEMBER = "SETTING_ORGANIZATION_MEMBER";
+    public static final String SETTING_ORGANIZATION_SERVICE = "SETTING_ORGANIZATION_SERVICE";
+    public static final String SETTING_ORGANIZATION_USER_ROLE = "SETTING_ORGANIZATION_USER_ROLE";
+
+    //系统设置-组织-项目
+    public static final String SETTING_ORGANIZATION_PROJECT = "SETTING_ORGANIZATION_PROJECT";
+    // 模板管理
+    public static final String SETTING_SYSTEM_ORGANIZATION_CUSTOM_FIELD = "SETTING_SYSTEM_ORGANIZATION_CUSTOM_FIELD";
+    public static final String SETTING_SYSTEM_ORGANIZATION_TEMPLATE = "SETTING_SYSTEM_ORGANIZATION_TEMPLATE";
+    public static final String SETTING_SYSTEM_ORGANIZATION_STATUS_FLOW_SETTING = "SETTING_SYSTEM_ORGANIZATION_STATUS_FLOW_SETTING";
+
+    // 项目管理
+    public static final String PROJECT_MANAGEMENT = "PROJECT_MANAGEMENT";
+    // 项目管理-项目与权限
+    public static final String PROJECT_MANAGEMENT_PERMISSION = "PROJECT_MANAGEMENT_PERMISSION";
+    // 项目管理-项目与权限-成员
+    public static final String PROJECT_MANAGEMENT_PERMISSION_MEMBER = "PROJECT_MANAGEMENT_PERMISSION_MEMBER";
+    // 项目管理-项目与权限-用户组
+    public static final String PROJECT_MANAGEMENT_PERMISSION_USER_ROLE = "PROJECT_MANAGEMENT_PERMISSION_USER_GROUP";
+    // 项目管理-环境
+    public static final String PROJECT_MANAGEMENT_ENVIRONMENT = "PROJECT_MANAGEMENT_ENVIRONMENT";
+    // 项目管理-环境组
+    public static final String PROJECT_MANAGEMENT_ENVIRONMENT_GROUP = "PROJECT_MANAGEMENT_ENVIRONMENT_GROUP";
+    // 项目管理-版本管理
+    public static final String PROJECT_MANAGEMENT_PERMISSION_VERSION = "PROJECT_MANAGEMENT_PERMISSION_VERSION";
+    //项目管理-消息设置
+    public static final String PROJECT_MANAGEMENT_MESSAGE_MANAGEMENT_CONFIG = "PROJECT_MANAGEMENT_MESSAGE_MANAGEMENT_CONFIG";
+    public static final String PROJECT_MANAGEMENT_MESSAGE_MANAGEMENT_ROBOT = "PROJECT_MANAGEMENT_MESSAGE_MANAGEMENT_ROBOT";
+    //项目管理-应用管理
+    public static final String PROJECT_MANAGEMENT_PERMISSION_MENU_MANAGEMENT = "PROJECT_MANAGEMENT_PERMISSION_MENU_MANAGEMENT";
+    public static final String PROJECT_TEMPLATE = "PROJECT_TEMPLATE";// 项目模板
+    public static final String PROJECT_CUSTOM_FIELD = "PROJECT_CUSTOM_FIELD";// 项目字段
+    public static final String PROJECT_CUSTOM_FUNCTION = "PROJECT_CUSTOM_FUNCTION";// 项目公共脚本
+
+    //用例
+    public static final String FUNCTIONAL_CASE = "CASE_MANAGEMENT_CASE";
+    public static final String CASE_MANAGEMENT_CASE_CREATE = "CASE_MANAGEMENT_CASE_CREATE";
+    public static final String CASE_MANAGEMENT_CASE_UPDATE = "CASE_MANAGEMENT_CASE_UPDATE";
+    public static final String CASE_MANAGEMENT_CASE_RECYCLE = "CASE_MANAGEMENT_CASE_RECYCLE";
+
+    public static final String CASE_REVIEW = "CASE_MANAGEMENT_REVIEW";
+
+    public static final String CASE_REVIEW_CREATE = "CASE_MANAGEMENT_REVIEW_CREATE";
+    public static final String CASE_REVIEW_UPDATE = "CASE_MANAGEMENT_REVIEW_UPDATE";
+    public static final String CASE_REVIEW_DETAIL = "CASE_MANAGEMENT_REVIEW_DETAIL";
+
+    //接口调试
+    public static final String API_DEBUG = "API_DEBUG";
+    //接口管理-环境
+    public static final String API_DEFINITION_ENVIRONMENT = "API_DEFINITION_ENVIRONMENT";
+    // 缺陷管理
+    public static final String BUG_MANAGEMENT = "BUG_MANAGEMENT";
+    //测试计划
+    public static final String TEST_PLAN = "TEST_PLAN";
+    public static final String TEST_PLAN_MODULE = "TEST_PLAN_MODULE";
+
+    // 个人信息-基本信息
+    public static final String PERSONAL_INFORMATION_BASE_INFO = "PERSONAL_INFORMATION_BASE_INFO";
+    // 个人信息-密码设置
+    public static final String PERSONAL_INFORMATION_PSW = "PERSONAL_INFORMATION_PSW";
+    // 个人信息-本地执行
+    public static final String PERSONAL_INFORMATION_LOCAL_EXECUTE = "PERSONAL_INFORMATION_LOCAL_EXECUTE";
+    // 个人信息-三方平台账号
+    public static final String PERSONAL_INFORMATION_TRIPARTITE = "PERSONAL_INFORMATION_TRIPARTITE";
+    //系统任务中心：SETTING_SYSTEM_TASK_CENTER
+    public static final String SETTING_SYSTEM_TASK_CENTER = "SETTING_SYSTEM_TASK_CENTER";
+    //组织任务中心：SETTING_ORGANIZATION_TASK_CENTER
+    public static final String SETTING_ORGANIZATION_TASK_CENTER = "SETTING_ORGANIZATION_TASK_CENTER";
+    //项目任务中心：PROJECT_MANAGEMENT_TASK_CENTER
+    public static final String PROJECT_MANAGEMENT_TASK_CENTER = "PROJECT_MANAGEMENT_TASK_CENTER";
+}

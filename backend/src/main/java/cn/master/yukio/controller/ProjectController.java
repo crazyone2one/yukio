@@ -1,8 +1,7 @@
 package cn.master.yukio.controller;
 
-import cn.master.yukio.constants.UserSource;
-import cn.master.yukio.dto.user.UserBatchCreateRequest;
-import cn.master.yukio.dto.user.response.UserBatchCreateResponse;
+import cn.master.yukio.dto.project.AddProjectRequest;
+import cn.master.yukio.dto.project.ProjectDTO;
 import cn.master.yukio.util.SessionUtils;
 import cn.master.yukio.validation.groups.Created;
 import com.mybatisflex.core.paginate.Page;
@@ -15,89 +14,88 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
-import cn.master.yukio.entity.User;
-import cn.master.yukio.service.IUserService;
+import cn.master.yukio.entity.Project;
+import cn.master.yukio.service.IProjectService;
 import org.springframework.web.bind.annotation.RestController;
 import java.io.Serializable;
 import java.util.List;
 
 /**
- * 用户 控制层。
+ * 系统设置-系统-组织与项目-项目
  *
  * @author 11's papa
  * @since 1.0.0
  */
 @RestController
-@RequestMapping("/system/user")
+@RequestMapping("/system/project")
 @RequiredArgsConstructor
-public class UserController {
+public class ProjectController {
 
-    private final IUserService iUserService;
+    private final IProjectService iProjectService;
 
     /**
-     * 添加用户。
+     * 添加项目。
      *
-     * @param userCreateDTO 用户
+     * @param request 项目
      * @return {@code true} 添加成功，{@code false} 添加失败
      */
     @PostMapping("save")
-    public UserBatchCreateResponse save(@Validated({Created.class}) @RequestBody UserBatchCreateRequest userCreateDTO) {
-        return iUserService.addUser(userCreateDTO, UserSource.LOCAL.name(), SessionUtils.getUserId());
+    public ProjectDTO save(@RequestBody @Validated({Created.class}) AddProjectRequest request) {
+        return iProjectService.add(request, SessionUtils.getUserId());
     }
 
     /**
-     * 根据主键删除用户。
+     * 根据主键删除项目。
      *
      * @param id 主键
      * @return {@code true} 删除成功，{@code false} 删除失败
      */
     @DeleteMapping("remove/{id}")
     public boolean remove(@PathVariable Serializable id) {
-        return iUserService.removeById(id);
+        return iProjectService.removeById(id);
     }
 
     /**
-     * 根据主键更新用户。
+     * 根据主键更新项目。
      *
-     * @param user 用户
+     * @param project 项目
      * @return {@code true} 更新成功，{@code false} 更新失败
      */
     @PutMapping("update")
-    public boolean update(@RequestBody User user) {
-        return iUserService.updateById(user);
+    public boolean update(@RequestBody Project project) {
+        return iProjectService.updateById(project);
     }
 
     /**
-     * 查询所有用户。
+     * 查询所有项目。
      *
      * @return 所有数据
      */
     @GetMapping("list")
-    public List<User> list() {
-        return iUserService.list();
+    public List<Project> list() {
+        return iProjectService.list();
     }
 
     /**
-     * 根据用户主键获取详细信息。
+     * 根据项目主键获取详细信息。
      *
-     * @param id 用户主键
-     * @return 用户详情
+     * @param id 项目主键
+     * @return 项目详情
      */
     @GetMapping("getInfo/{id}")
-    public User getInfo(@PathVariable Serializable id) {
-        return iUserService.getById(id);
+    public Project getInfo(@PathVariable Serializable id) {
+        return iProjectService.getById(id);
     }
 
     /**
-     * 分页查询用户。
+     * 分页查询项目。
      *
      * @param page 分页对象
      * @return 分页对象
      */
     @GetMapping("page")
-    public Page<User> page(Page<User> page) {
-        return iUserService.page(page);
+    public Page<Project> page(Page<Project> page) {
+        return iProjectService.page(page);
     }
 
 }
