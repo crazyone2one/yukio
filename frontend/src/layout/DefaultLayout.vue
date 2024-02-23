@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import PageLayout from './PageLayout.vue'
+import YMenu from '/@/components/y-menu/index.vue'
 import { useAppStore } from '/@/store'
+
 const appStore = useAppStore()
 </script>
 <template>
@@ -9,24 +11,7 @@ const appStore = useAppStore()
             颐和园路
         </n-layout-header>
         <n-layout position="absolute" style="top: 64px; bottom: 64px" has-sider>
-            <n-layout-sider
-                content-style="padding: 24px;"
-                :native-scrollbar="false"
-                bordered
-            >
-                <n-h2>海淀桥</n-h2>
-                <n-h2>海淀桥</n-h2>
-                <n-h2>海淀桥</n-h2>
-                <n-h2>海淀桥</n-h2>
-                <n-h2>海淀桥</n-h2>
-                <n-h2>海淀桥</n-h2>
-                <n-h2>海淀桥</n-h2>
-                <n-h2>海淀桥</n-h2>
-                <n-h2>海淀桥</n-h2>
-                <n-h2>海淀桥</n-h2>
-                <n-h2>海淀桥</n-h2>
-                <n-h2>海淀桥</n-h2>
-            </n-layout-sider>
+            <y-menu />
             <n-layout content-style="padding: 24px;" :native-scrollbar="false">
                 <page-layout></page-layout>
             </n-layout>

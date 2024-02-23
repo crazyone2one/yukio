@@ -1,19 +1,22 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import appRoutes from './routers'
+
 const router = createRouter({
     history: createWebHashHistory(),
     routes: [
         {
             path: '/',
-            redirect: '/hello',
+            redirect: '/workbench',
             component: () => import('/@/layout/DefaultLayout.vue'),
             children: [
                 {
-                    path: '/hello',
-                    name: 'hello',
-                    component: () => import('/@/components/HelloWorld.vue'),
+                    path: '/workbench',
+                    name: 'workbench',
+                    component: () => import(`/@/views/workbench/index.vue`),
                 },
             ],
         },
+        ...appRoutes,
     ],
     scrollBehavior() {
         return { top: 0 }
