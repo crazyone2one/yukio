@@ -9,6 +9,7 @@ const Setting: RouteRecordRaw = {
     meta: {
         locale: 'menu.settings',
         order: 8,
+        icon: 'i-tabler:settings-cog',
     },
     children: [
         {
