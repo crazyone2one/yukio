@@ -3,8 +3,8 @@ package cn.master.yukio.security.filter;
 import cn.master.yukio.entity.User;
 import cn.master.yukio.security.CustomUserDetailsService;
 import cn.master.yukio.security.JwtProvider;
-import cn.master.yukio.service.IUserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mybatisflex.core.query.QueryChain;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -39,7 +39,6 @@ import static cn.master.yukio.entity.table.UserTableDef.USER;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final RedisTemplate<String, Object> redisTemplate;
     private final JwtProvider jwtProvider;
-    private final IUserService userService;
     private final CustomUserDetailsService customUserDetailsService;
 
     @Value("${jwt.auto-refresh-ttl}")
@@ -65,7 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (isTokenValid) {
             Claims claims = jwtProvider.parseTokenToClaims(token);
             String tokenType = claims.getAudience();
-            User user = userService.queryChain().where(USER.NAME.eq(claims.getSubject())).one();
+            User user = QueryChain.of(User.class).where(USER.NAME.eq(claims.getSubject())).one();
             if (!Objects.equals("/api/auth/refresh", requestUri)) {
                 switch (tokenType) {
                     case "refresh-token":
@@ -104,7 +103,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         } else {
             if (Objects.equals("/api/auth/logout", requestUri)) {
-                User user = userService.queryChain().where(USER.NAME.eq(jwtProvider.getExpiredTokenClaims(token).getSubject())).one();
+                User user = QueryChain.of(User.class).where(USER.NAME.eq(jwtProvider.getExpiredTokenClaims(token).getSubject())).one();
                 log.info("用户 '{}' 已退出登录", user.getName());
                 render(200, "已退出登录", response);
                 return;
