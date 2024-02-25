@@ -15,6 +15,7 @@ import {
     zhCN,
 } from 'naive-ui'
 import { computed, onMounted } from 'vue'
+import PageLayout from './layout/PageLayout.vue'
 import useLocale from './locale/use-locale'
 import { useAppStore } from './store'
 
@@ -54,17 +55,13 @@ useEventListener(window, 'resize', () => {
 </script>
 
 <template>
-    <n-config-provider
-        :theme="theme"
-        :locale="locale"
-        :date-locale="dateLocale"
-    >
+    <n-config-provider :theme="theme" :locale="locale" :date-locale="dateLocale">
         <n-global-style />
         <n-loading-bar-provider>
             <n-dialog-provider>
                 <n-notification-provider>
                     <n-message-provider>
-                        <router-view />
+                        <page-layout />
                         <slot />
                     </n-message-provider>
                 </n-notification-provider>
