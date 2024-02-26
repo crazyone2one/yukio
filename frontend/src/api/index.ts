@@ -4,6 +4,7 @@ import GlobalFetch from 'alova/GlobalFetch'
 import VueHook from 'alova/vue'
 import useLocale from '../locale/use-locale'
 import { useAppStore } from '../store'
+import checkStatus from './check-status'
 import { refreshToken } from '/@/api/modules/user'
 
 const { onAuthRequired, onResponseRefreshToken } = createServerTokenAuthentication({
@@ -85,7 +86,9 @@ const instance = createAlova({
             const json = await response.json()
             if (json.code !== 100200) {
                 // 抛出错误或返回reject状态的Promise实例时，此请求将抛出错误
-                throw new Error(json.message)
+                checkStatus(json.code, json.message ?? '')
+                // throw new Error(json.message)
+                throw Promise.reject(json.message)
             }
 
             // 解析的响应数据将传给method实例的transformData钩子函数，这些函数将在后续讲解

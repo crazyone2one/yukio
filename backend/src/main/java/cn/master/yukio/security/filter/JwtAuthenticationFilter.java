@@ -87,11 +87,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             } else {
                 switch (tokenType) {
-                    case "access":
+                    case "access-token":
                         username = null;
                         log.warn("用户 '{}' 携带的凭证与请求类型不匹配", user.getName());
                         break;
-                    case "refresh":
+                    case "refresh-token":
                         username = claims.getSubject();
                         break;
                     default: {
@@ -135,6 +135,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         map.put("code", code);
         map.put("message", msg);
         response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(code);
         String result = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(map);
         try {
             response.getWriter().println(result);
