@@ -9,7 +9,9 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@alova/scene-vue": "^1.4.3",
         "@vueuse/core": "^10.8.0",
+        "alova": "^2.17.0",
         "echarts": "^5.5.0",
         "lodash-es": "^4.17.21",
         "mitt": "^3.0.1",
