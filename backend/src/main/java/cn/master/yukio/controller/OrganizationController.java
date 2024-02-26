@@ -130,12 +130,12 @@ public class OrganizationController {
     /**
      * 分页查询组织。
      *
-     * @param page 分页对象
+     * @param request 分页对象
      * @return 分页对象
      */
-    @GetMapping("page")
-    public Page<Organization> page(Page<Organization> page) {
-        return iOrganizationService.page(page);
+    @PostMapping("page")
+    public Page<OrganizationDTO> page(@Validated @RequestBody OrganizationRequest request) {
+        return iOrganizationService.findPagesByRequest(request);
     }
 
     /**

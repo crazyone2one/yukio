@@ -35,4 +35,6 @@ public interface IOrganizationService extends IService<Organization> {
     void removeMember(String organizationId, String userId, String currentUser);
 
     OrganizationDTO getDefault();
+
+    Page<OrganizationDTO> findPagesByRequest(OrganizationRequest request);
 }

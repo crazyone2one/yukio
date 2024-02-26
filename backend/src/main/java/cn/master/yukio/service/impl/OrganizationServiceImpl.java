@@ -14,19 +14,24 @@ import cn.master.yukio.mapper.UserMapper;
 import cn.master.yukio.mapper.UserRoleRelationMapper;
 import cn.master.yukio.service.IOperationLogService;
 import cn.master.yukio.service.IOrganizationService;
+import cn.master.yukio.service.IUserService;
 import cn.master.yukio.util.JsonUtils;
 import cn.master.yukio.util.Translator;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
+import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.core.util.UpdateEntity;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +42,7 @@ import static cn.master.yukio.entity.table.OrganizationTableDef.ORGANIZATION;
 import static cn.master.yukio.entity.table.ProjectTableDef.PROJECT;
 import static cn.master.yukio.entity.table.UserRoleRelationTableDef.USER_ROLE_RELATION;
 import static cn.master.yukio.entity.table.UserTableDef.USER;
+import static com.mybatisflex.core.query.QueryMethods.raw;
 
 /**
  * 组织 服务层实现。
@@ -50,6 +56,7 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
     private final UserMapper userMapper;
     private final UserRoleRelationMapper userRoleRelationMapper;
     private final IOperationLogService operationLogService;
+    private final IUserService userService;
 
     private static final String ADD_MEMBER_PATH = "/system/organization/add-member";
     private static final String REMOVE_MEMBER_PATH = "/system/organization/remove-member";
@@ -233,6 +240,88 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
         Organization organization = organizations.get(0);
         BeanUtils.copyProperties(organization, organizationDTO);
         return organizationDTO;
+    }
+
+    @Override
+    public Page<OrganizationDTO> findPagesByRequest(OrganizationRequest request) {
+        QueryChain<Organization> queryChain = QueryChain.of(Organization.class).select(ORGANIZATION.ALL_COLUMNS)
+                .where(ORGANIZATION.NAME.like(request.getKeyword()).or(ORGANIZATION.ID.like(request.getKeyword())))
+                .orderBy(ORGANIZATION.CREATE_TIME.desc());
+        Page<OrganizationDTO> organizationDtoPage = mapper.paginateAs(Page.of(request.getCurrent(), request.getPageSize()), queryChain, OrganizationDTO.class);
+        List<OrganizationDTO> records = organizationDtoPage.getRecords();
+        if (CollectionUtils.isEmpty(records)) {
+            return new Page<>();
+        }
+        List<OrganizationDTO> organizations = buildOrgAdminInfo(records);
+        buildExtraInfo(organizations);
+        return organizationDtoPage;
+    }
+
+    private void buildExtraInfo(List<OrganizationDTO> organizationDTOS) {
+        List<String> userIds = new ArrayList<>();
+        userIds.addAll(organizationDTOS.stream().map(OrganizationDTO::getCreateUser).toList());
+        userIds.addAll(organizationDTOS.stream().map(OrganizationDTO::getUpdateUser).toList());
+        userIds.addAll(organizationDTOS.stream().map(OrganizationDTO::getDeleteUser).toList());
+        Map<String, String> userMap = userService.getUserNameMap(userIds.stream().filter(StringUtils::isNotBlank).distinct().toList());
+        List<String> ids = organizationDTOS.stream().map(OrganizationDTO::getId).toList();
+        List<OrganizationCountDTO> orgCountList = getCountByIds(ids);
+        assert orgCountList != null;
+        Map<String, OrganizationCountDTO> orgCountMap = orgCountList.stream().collect(Collectors.toMap(OrganizationCountDTO::getId, count -> count));
+        organizationDTOS.forEach(organizationDTO -> {
+            organizationDTO.setCreateUser(userMap.get(organizationDTO.getCreateUser()));
+            organizationDTO.setDeleteUser(userMap.get(organizationDTO.getDeleteUser()));
+            organizationDTO.setUpdateUser(userMap.get(organizationDTO.getUpdateUser()));
+            organizationDTO.setProjectCount(orgCountMap.get(organizationDTO.getId()).getProjectCount());
+            organizationDTO.setMemberCount(orgCountMap.get(organizationDTO.getId()).getMemberCount());
+            if (BooleanUtils.isTrue(organizationDTO.getDeleted())) {
+                organizationDTO.setRemainDayCount(getDeleteRemainDays(organizationDTO.getDeleteTime()));
+            }
+        });
+    }
+
+    private Integer getDeleteRemainDays(LocalDateTime deleteTime) {
+        long remainDays = Duration.between(LocalDateTime.now(), deleteTime).toDays();
+        int remainDayCount = DEFAULT_REMAIN_DAY_COUNT - (int) remainDays;
+        return remainDayCount > 0 ? remainDayCount : 1;
+    }
+
+    private List<OrganizationCountDTO> getCountByIds(List<String> ids) {
+        QueryChain<Organization> queryChain = QueryChain.of(Organization.class).select("o.id", "coalesce(membercount, 0) as memberCount", "coalesce(projectcount, 0) as projectCount")
+                .from(ORGANIZATION).as("o")
+                .leftJoin(
+                        QueryChain.of(UserRoleRelation.class).select(USER_ROLE_RELATION.SOURCE_ID,
+                                        QueryMethods.count(QueryMethods.distinct(USER.ID)).as("membercount"))
+                                .from(USER_ROLE_RELATION).join(USER).on(USER.ID.eq(USER_ROLE_RELATION.USER_ID))
+                                .where(USER_ROLE_RELATION.SOURCE_ID.in(ids))
+                                .groupBy(USER_ROLE_RELATION.SOURCE_ID)
+                ).as("members_group").on("o.id = members_group.source_id")
+                .leftJoin(
+                        QueryChain.of(Project.class).select(PROJECT.ORGANIZATION_ID,
+                                        QueryMethods.count(PROJECT.ID).as("projectcount"))
+                                .from(PROJECT)
+                                .where(PROJECT.ORGANIZATION_ID.in(ids)).groupBy(PROJECT.ORGANIZATION_ID)
+                ).as("projects_group").on(ORGANIZATION.ID.eq(raw("projects_group.organization_id")));
+        return mapper.selectListByQueryAs(queryChain, OrganizationCountDTO.class);
+    }
+
+    private List<OrganizationDTO> buildOrgAdminInfo(List<OrganizationDTO> records) {
+        records.forEach(organizationDTO -> {
+            List<User> orgAdminList = getOrgAdminList(organizationDTO.getId());
+            organizationDTO.setOrgAdmins(orgAdminList);
+            List<String> userIds = orgAdminList.stream().map(User::getId).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(userIds) && userIds.contains(organizationDTO.getCreateUser())) {
+                organizationDTO.setOrgCreateUserIsAdmin(true);
+            }
+        });
+        return records;
+    }
+
+    private List<User> getOrgAdminList(String id) {
+        return QueryChain.of(User.class).select(USER.ALL_COLUMNS)
+                .from(USER_ROLE_RELATION).join(USER).on(USER.ID.eq(USER_ROLE_RELATION.USER_ID))
+                .where(USER_ROLE_RELATION.ROLE_ID.eq("org_admin").and(USER_ROLE_RELATION.SOURCE_ID.eq(id)))
+                .list();
+
     }
 
     private List<String> getProjectIds(String organizationId) {
