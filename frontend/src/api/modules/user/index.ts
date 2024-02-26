@@ -11,10 +11,7 @@ export const login = (data: LoginData) => {
 }
 
 export const refreshToken = (refreshToken: string) => {
-    const data = {
-        refreshToken: refreshToken,
-    }
-    const method = instance.Post<LoginRes>(refreshTokenUrl, data)
+    const method = instance.Post<LoginRes>(`${refreshTokenUrl}?refreshToken=${refreshToken}`)
     method.meta = {
         authRole: 'refreshToken',
     }
