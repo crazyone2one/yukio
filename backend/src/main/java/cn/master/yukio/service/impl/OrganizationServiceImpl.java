@@ -10,6 +10,7 @@ import cn.master.yukio.entity.User;
 import cn.master.yukio.entity.UserRoleRelation;
 import cn.master.yukio.exception.MSException;
 import cn.master.yukio.mapper.OrganizationMapper;
+import cn.master.yukio.mapper.ProjectMapper;
 import cn.master.yukio.mapper.UserMapper;
 import cn.master.yukio.mapper.UserRoleRelationMapper;
 import cn.master.yukio.service.IOperationLogService;
@@ -32,10 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.master.yukio.entity.table.OrganizationTableDef.ORGANIZATION;
@@ -57,6 +55,7 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
     private final UserRoleRelationMapper userRoleRelationMapper;
     private final IOperationLogService operationLogService;
     private final IUserService userService;
+    private final ProjectMapper projectMapper;
 
     private static final String ADD_MEMBER_PATH = "/system/organization/add-member";
     private static final String REMOVE_MEMBER_PATH = "/system/organization/remove-member";
@@ -255,6 +254,21 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
         List<OrganizationDTO> organizations = buildOrgAdminInfo(records);
         buildExtraInfo(organizations);
         return organizationDtoPage;
+    }
+
+    @Override
+    public Map<String, Long> getTotal(String organizationId) {
+        Map<String, Long> total = new HashMap<>();
+        if (StringUtils.isBlank(organizationId)) {
+            // 统计所有项目
+            total.put("projectTotal", projectMapper.selectCountByQuery(QueryChain.of(Project.class)));
+            total.put("organizationTotal", super.count());
+        } else {
+            // 统计组织下的项目
+            total.put("projectTotal", projectMapper.selectCountByQuery(QueryChain.of(Project.class).where(PROJECT.ORGANIZATION_ID.eq(organizationId))));
+            total.put("organizationTotal", 1L);
+        }
+        return total;
     }
 
     private void buildExtraInfo(List<OrganizationDTO> organizationDTOS) {

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 组织 控制层。
@@ -180,5 +181,16 @@ public class OrganizationController {
         ProjectRequest projectRequest = new ProjectRequest();
         BeanUtils.copyProperties(request, projectRequest);
         return projectService.getProjectPageList(projectRequest);
+    }
+
+    /**
+     * 系统设置-系统-组织与项目-组织-获取组织和项目总数
+     *
+     * @param organizationId organizationId
+     * @return java.util.Map<java.lang.String, java.lang.Long>
+     */
+    @GetMapping("/total")
+    public Map<String, Long> getTotal(@RequestParam(value = "organizationId", required = false) String organizationId) {
+        return iOrganizationService.getTotal(organizationId);
     }
 }

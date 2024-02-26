@@ -6,6 +6,8 @@ import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
 import cn.master.yukio.entity.Organization;
 
+import java.util.Map;
+
 /**
  * 组织 服务层。
  *
@@ -37,4 +39,6 @@ public interface IOrganizationService extends IService<Organization> {
     OrganizationDTO getDefault();
 
     Page<OrganizationDTO> findPagesByRequest(OrganizationRequest request);
+
+    Map<String, Long> getTotal(String organizationId);
 }

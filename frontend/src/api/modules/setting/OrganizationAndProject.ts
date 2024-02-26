@@ -21,3 +21,11 @@ export const postOrgTable = (page: number, pageSize: number, keyword?: string) =
     }
     return method
 }
+/**
+ * 获取项目和组织的总数
+ * @returns
+ */
+export const getOrgAndProjectCount = () =>
+    instance.Get<{ organizationTotal: number; projectTotal: number }>(
+        orgUrl.getOrgAndProjectCountUrl,
+    )

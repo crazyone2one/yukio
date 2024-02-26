@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { usePagination } from '@alova/scene-vue'
 import { DataTableColumns, NButton, NSpace } from 'naive-ui'
-import { h, onMounted, ref, toRef } from 'vue'
+import { h, ref, toRef } from 'vue'
 import AddOrganizationModal from './AddOrganizationModal.vue'
 import { postOrgTable } from '/@/api/modules/setting/OrganizationAndProject'
 import { useI18n } from '/@/hooks/use-i18n'
@@ -208,9 +208,9 @@ const handleAddOrgModalCancel = (shouldSearch: boolean) => {
         window.$message.info(`加载列表数据`)
     }
 }
-onMounted(() => {
-    fetchData()
-})
+// onMounted(() => {
+//     fetchData()
+// })
 defineExpose({ fetchData })
 </script>
 <template>

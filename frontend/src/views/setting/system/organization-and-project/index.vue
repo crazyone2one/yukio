@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { nextTick, ref, watch } from 'vue'
+import { useRequest } from 'alova'
+import { nextTick, onBeforeMount, ref, watch } from 'vue'
 import SysOrganization from './components/SystemOrganization.vue'
+import { getOrgAndProjectCount } from '/@/api/modules/setting/OrganizationAndProject'
 import { useI18n } from '/@/hooks/use-i18n'
 
 const currentTable = ref('organization')
@@ -10,7 +12,10 @@ const projectCount = ref(0)
 const currentKeyword = ref('')
 const keyword = ref('')
 const orgTableRef = ref<InstanceType<typeof SysOrganization> | null>(null)
-
+const { send: initOrgAndProjectCount } = useRequest(() => getOrgAndProjectCount(), {
+    // 当immediate为false时，默认不发出
+    immediate: false,
+})
 const tableSearch = () => {
     if (currentTable.value === 'organization') {
         if (orgTableRef.value) {
@@ -21,10 +26,13 @@ const tableSearch = () => {
             })
         }
     }
+    initOrgAndProjectCount().then((res) => {
+        organizationCount.value = res.organizationTotal
+        projectCount.value = res.projectTotal
+    })
 }
 const handleSearch = () => {
     currentKeyword.value = keyword.value || ''
-    console.log(`output->keyword.value`, currentKeyword.value)
     tableSearch()
 }
 watch(
@@ -36,6 +44,9 @@ watch(
         }
     },
 )
+onBeforeMount(() => {
+    tableSearch()
+})
 </script>
 <template>
     <n-card>
