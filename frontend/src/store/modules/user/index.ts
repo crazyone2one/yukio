@@ -35,7 +35,7 @@ const useUserStore = defineStore('user', {
             setToken(res.token, res.refresh_token)
             appStore.setCurrentOrgId(res.lastOrganizationId || '')
             appStore.setCurrentProjectId(res.lastProjectId || '')
-            this.setInfo(res)
+            this.setInfo(res.user)
         },
     },
 })

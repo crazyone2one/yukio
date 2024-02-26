@@ -11,7 +11,7 @@ export interface LoginData {
 export interface LoginRes extends UserState {
     token: string
     refresh_token: string
-    user: string
+    user: UserState
 }
 // 更新本地执行配置
 export interface UpdateLocalConfigParams {
