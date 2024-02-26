@@ -103,8 +103,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         } else {
             if (Objects.equals("/api/auth/logout", requestUri)) {
-                User user = QueryChain.of(User.class).where(USER.NAME.eq(jwtProvider.getExpiredTokenClaims(token).getSubject())).one();
-                log.info("用户 '{}' 已退出登录", user.getName());
+                //User user = QueryChain.of(User.class).where(USER.NAME.eq(jwtProvider.getExpiredTokenClaims(token).getSubject())).one();
+                //log.info("用户 '{}' 已退出登录", user.getName());
                 render(200, "已退出登录", response);
                 return;
             } else if (Objects.equals("/api/auth/refresh", requestUri)) {
