@@ -16,6 +16,7 @@ import {
     NRadio,
     NRadioButton,
     NRadioGroup,
+    NSelect,
     NTooltip,
     // create naive ui
     create,
@@ -40,6 +41,7 @@ const naive = create({
         NTooltip,
         NForm,
         NFormItem,
+        NSelect,
     ],
 })
 
