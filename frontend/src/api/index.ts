@@ -21,22 +21,29 @@ const { onAuthRequired, onResponseRefreshToken } = createServerTokenAuthenticati
     //     localStorage.setItem('refresh_token', response.refresh_token)
     // },
     logout(response, method) {
+        console.log(`-----refreshTokenOnSuccess----`)
+        console.log(`output->method`, method)
+        console.log(`output->response`, response)
+        console.log(`-----refreshTokenOnSuccess----`)
         localStorage.removeItem('token')
         localStorage.removeItem('refreshToken')
     },
     refreshTokenOnSuccess: {
-        metaMatches: {
-            refreshToken: true,
-        },
+        // metaMatches: {
+        //     refreshToken: true,
+        // },
         // 响应时触发，可获取到response和method，并返回boolean表示token是否过期
         // 当服务端返回401时，表示token过期
-        isExpired: (response, method) => {
+        isExpired: (response) => {
             return response.status === 401
         },
 
         // 当token过期时触发，在此函数中触发刷新token
         handler: async (response, method) => {
+            console.log(`-----refreshTokenOnSuccess----`)
+            console.log(`output->method`, method)
             console.log(`output->response`, response)
+            console.log(`-----refreshTokenOnSuccess----`)
             const { token, refresh_token } = await refreshToken(
                 localStorage.getItem('refreshToken') || '',
             )
@@ -45,17 +52,21 @@ const { onAuthRequired, onResponseRefreshToken } = createServerTokenAuthenticati
         },
     },
     refreshTokenOnError: {
-        metaMatches: {
-            refreshToken: true,
-        },
+        // metaMatches: {
+        //     refreshToken: true,
+        // },
         // 响应时触发，可获取到error和method，并返回boolean表示token是否过期
         // 当服务端返回401时，表示token过期
-        isExpired: (error, method) => {
+        isExpired: (error) => {
             return error.response.status === 401
         },
 
         // 当token过期时触发，在此函数中触发刷新token
         handler: async (error, method) => {
+            console.log(`-----refreshTokenOnError----`)
+            console.log(`output->method`, method)
+            console.log(`output->error`, error)
+            console.log(`-----refreshTokenOnError----`)
             const { token, refresh_token } = await refreshToken(
                 localStorage.getItem('refreshToken') || '',
             )
@@ -69,6 +80,10 @@ const instance = createAlova({
     // 请求超时时间，单位为毫秒，默认为0，表示永不超时
     timeout: 120 * 1000,
     statesHook: VueHook,
+    // errorLogger: process.env.NODE_ENV === 'development',
+    errorLogger(error, method) {
+        reportError(`${method.url}: ${error.message}`)
+    },
     requestAdapter: GlobalFetch(),
     beforeRequest: onAuthRequired((method) => {
         const appStore = useAppStore()
@@ -81,6 +96,10 @@ const instance = createAlova({
     responded: onResponseRefreshToken({
         onSuccess: async (response, method) => {
             if (response.status >= 400) {
+                checkStatus(response.status, '')
+                if (response.status === 412) {
+                    window.$message.error(response.statusText)
+                }
                 throw new Error(response.statusText)
             }
             const json = await response.json()
@@ -94,15 +113,15 @@ const instance = createAlova({
             // 解析的响应数据将传给method实例的transformData钩子函数，这些函数将在后续讲解
             return method.meta?.isDownload ? response.blob() : json.data
         },
-        onError: (error, method) => {
-            const { response, code, message, config } = error || {}
-            console.log(`output->response`, response)
-            console.log(`output->code`, code)
-            console.log(`output->code`, code)
-            console.log(`output->message`, message)
-            console.log(`output->config`, JSON.stringify(config))
-            return Promise.reject(error?.response?.data?.message || error)
-        },
+        // onError: (error, method) => {
+        //     const { response, code, message, config } = error || {}
+        //     console.log(`output->response`, response)
+        //     console.log(`output->code`, code)
+        //     console.log(`output->code`, code)
+        //     console.log(`output->message`, message)
+        //     console.log(`output->config`, JSON.stringify(config))
+        //     return Promise.reject(error?.response?.data?.message || error)
+        // },
         // onComplete: method => {
         //   //...原响应完成拦截器
         // }
