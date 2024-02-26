@@ -23,4 +23,6 @@ public interface IUserService extends IService<User> {
     List<User> selectUserIdByEmailList(Collection<String> emailList);
 
     Map<String, String> getUserNameMap(List<String> userIds);
+
+    List<User> getUserList(String keyword);
 }

@@ -8,6 +8,9 @@ import cn.master.yukio.entity.User;
 import cn.master.yukio.mapper.UserMapper;
 import cn.master.yukio.service.*;
 import cn.master.yukio.util.Translator;
+import com.mybatisflex.core.query.DistinctQueryColumn;
+import com.mybatisflex.core.query.QueryChain;
+import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -82,6 +85,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             return Collections.emptyMap();
         }
         return getSelectOptionByIdsWithDeleted(userIds).stream().collect(Collectors.toMap(OptionDTO::getId, OptionDTO::getName));
+    }
+
+    @Override
+    public List<User> getUserList(String keyword) {
+        return QueryChain.of(User.class).select(new DistinctQueryColumn(USER.ID, USER.EMAIL, USER.NAME))
+                .where(USER.NAME.like(keyword).or(USER.EMAIL.like(keyword))).orderBy(USER.CREATE_TIME.desc()).limit(100).list();
     }
 
     private List<OptionDTO> getSelectOptionByIdsWithDeleted(List<String> ids) {

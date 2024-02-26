@@ -2,21 +2,17 @@ package cn.master.yukio.controller;
 
 import cn.master.yukio.dto.project.AddProjectRequest;
 import cn.master.yukio.dto.project.ProjectDTO;
+import cn.master.yukio.entity.User;
+import cn.master.yukio.service.IUserService;
 import cn.master.yukio.util.SessionUtils;
 import cn.master.yukio.validation.groups.Created;
 import com.mybatisflex.core.paginate.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import cn.master.yukio.entity.Project;
 import cn.master.yukio.service.IProjectService;
-import org.springframework.web.bind.annotation.RestController;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -32,6 +28,7 @@ import java.util.List;
 public class ProjectController {
 
     private final IProjectService iProjectService;
+    private final IUserService userService;
 
     /**
      * 添加项目。
@@ -98,4 +95,14 @@ public class ProjectController {
         return iProjectService.page(page);
     }
 
+    /**
+     * 系统设置-系统-组织与项目-项目-系统-组织及项目, 获取管理员下拉选项
+     *
+     * @param keyword
+     * @return java.util.List<cn.master.yukio.entity.User>
+     */
+    @GetMapping("/user-list")
+    public List<User> getUserList(@RequestParam(value = "keyword", required = false) String keyword) {
+        return userService.getUserList(keyword);
+    }
 }
