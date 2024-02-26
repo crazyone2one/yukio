@@ -2,9 +2,9 @@ package cn.master.yukio.service;
 
 import cn.master.yukio.dto.organization.*;
 import cn.master.yukio.dto.user.UserExtendDTO;
+import cn.master.yukio.entity.Organization;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
-import cn.master.yukio.entity.Organization;
 
 import java.util.Map;
 
@@ -15,6 +15,7 @@ import java.util.Map;
  * @since 1.0.0
  */
 public interface IOrganizationService extends IService<Organization> {
+    void addOrg(OrganizationDTO organizationDTO);
 
     void updateOrg(OrganizationDTO organizationDTO);
 
@@ -41,4 +42,6 @@ public interface IOrganizationService extends IService<Organization> {
     Page<OrganizationDTO> findPagesByRequest(OrganizationRequest request);
 
     Map<String, Long> getTotal(String organizationId);
+
+
 }

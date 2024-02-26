@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRequest } from 'alova'
 import { nextTick, onBeforeMount, ref, watch } from 'vue'
+import AddOrganizationModal from './components/AddOrganizationModal.vue'
 import SysOrganization from './components/SystemOrganization.vue'
 import { getOrgAndProjectCount } from '/@/api/modules/setting/OrganizationAndProject'
 import { useI18n } from '/@/hooks/use-i18n'
@@ -11,7 +12,9 @@ const organizationCount = ref(0)
 const projectCount = ref(0)
 const currentKeyword = ref('')
 const keyword = ref('')
+const organizationVisible = ref(false)
 const orgTableRef = ref<InstanceType<typeof SysOrganization> | null>(null)
+const addOrganizationModal = ref<InstanceType<typeof AddOrganizationModal> | null>(null)
 const { send: initOrgAndProjectCount } = useRequest(() => getOrgAndProjectCount(), {
     // 当immediate为false时，默认不发出
     immediate: false,
@@ -35,6 +38,19 @@ const handleSearch = () => {
     currentKeyword.value = keyword.value || ''
     tableSearch()
 }
+const handleAddOrganization = () => {
+    if (currentTable.value === 'organization') {
+        organizationVisible.value = true
+    } else {
+        //   projectVisible.value = true;
+    }
+}
+const handleAddOrganizationCancel = (shouldSearch: boolean) => {
+    organizationVisible.value = false
+    if (shouldSearch) {
+        tableSearch()
+    }
+}
 watch(
     () => currentTable.value,
     (newVal) => {
@@ -52,7 +68,7 @@ onBeforeMount(() => {
     <n-card>
         <div class="mb-4 flex items-center justify-between">
             <div>
-                <n-button>
+                <n-button @click="handleAddOrganization">
                     {{
                         currentTable === 'organization'
                             ? t('system.organization.createOrganization')
@@ -91,6 +107,11 @@ onBeforeMount(() => {
             />
         </div>
     </n-card>
+    <add-organization-modal
+        ref="addOrganizationModal"
+        :visible="organizationVisible"
+        @cancel="handleAddOrganizationCancel"
+    />
 </template>
 
 <style scoped></style>

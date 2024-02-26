@@ -64,6 +64,24 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public void addOrg(OrganizationDTO organizationDTO) {
+        checkOrganizationExist(organizationDTO);
+        organizationDTO.setEnable(true);
+        mapper.insert(organizationDTO);
+        // 新增的组织管理员ID
+        List<String> addOrgAdmins = organizationDTO.getUserIds();
+        List<String> addIds = addOrgAdmins.stream().toList();
+        // 新增组织管理员
+        if (!addIds.isEmpty()) {
+            addIds.forEach(addId -> {
+                // 添加组织管理员
+                createAdmin(addId, organizationDTO.getId(), organizationDTO.getUpdateUser());
+            });
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateOrg(OrganizationDTO organizationDTO) {
         checkOrganizationNotExist(organizationDTO.getId());
         checkOrganizationExist(organizationDTO);

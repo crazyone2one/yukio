@@ -35,6 +35,15 @@ public class OrganizationController {
     private final IOrganizationService iOrganizationService;
     private final IProjectService projectService;
 
+    @PostMapping("/add")
+    public void add(@Validated({Updated.class}) @RequestBody OrganizationEditRequest organizationEditRequest) {
+        OrganizationDTO organizationDTO = new OrganizationDTO();
+        BeanUtils.copyProperties(organizationEditRequest, organizationDTO);
+        organizationDTO.setCreateUser(SessionUtils.getUserId());
+        organizationDTO.setUpdateUser(SessionUtils.getUserId());
+        iOrganizationService.addOrg(organizationDTO);
+    }
+
     @PostMapping("/update")
     public void update(@Validated({Updated.class}) @RequestBody OrganizationEditRequest organizationEditRequest) {
         OrganizationDTO organizationDTO = new OrganizationDTO();

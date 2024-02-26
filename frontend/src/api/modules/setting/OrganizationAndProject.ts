@@ -1,7 +1,12 @@
 import instance from '/@/api'
 import * as orgUrl from '/@/api/requrls/setting/organizationAndProject'
+import { UserSelectorOption } from '/@/components/user-selector/index.vue'
 import { CommonList, TableQueryParams } from '/@/models/common'
-import { OrgProjectTableItem } from '/@/models/setting/system/orgAndProject'
+import {
+    CreateOrUpdateSystemOrgParams,
+    CreateOrUpdateSystemProjectParams,
+    OrgProjectTableItem,
+} from '/@/models/setting/system/orgAndProject'
 
 /**
  * 获取组织列表
@@ -29,3 +34,17 @@ export const getOrgAndProjectCount = () =>
     instance.Get<{ organizationTotal: number; projectTotal: number }>(
         orgUrl.getOrgAndProjectCountUrl,
     )
+
+export const getAdminByOrganizationOrProject = (keyword?: string) =>
+    instance.Get<Array<UserSelectorOption>>(`${orgUrl.getAdminByOrgOrProjectUrl}`, {
+        params: { keyword },
+    })
+
+/**
+ * 创建或修改组织
+ * @param data
+ * @returns
+ */
+export const createOrUpdateOrg = (
+    data: CreateOrUpdateSystemOrgParams | CreateOrUpdateSystemProjectParams,
+) => instance.Post(data.id ? orgUrl.postModifyOrgUrl : orgUrl.postAddOrgUrl, data)
