@@ -68,7 +68,7 @@ onBeforeMount(() => {
     <n-card>
         <div class="mb-4 flex items-center justify-between">
             <div>
-                <n-button @click="handleAddOrganization">
+                <n-button type="primary" @click="handleAddOrganization">
                     {{
                         currentTable === 'organization'
                             ? t('system.organization.createOrganization')

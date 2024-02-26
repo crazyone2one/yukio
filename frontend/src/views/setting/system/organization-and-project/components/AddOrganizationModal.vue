@@ -28,13 +28,7 @@ const rules: FormRules = {
     },
 }
 const isEdit = computed(() => !!props.currentOrganization?.id)
-watchEffect(() => {
-    if (props.currentOrganization) {
-        model.name = props.currentOrganization.name
-        model.userIds = props.currentOrganization.userIds
-        model.description = props.currentOrganization.description
-    }
-})
+
 const handleCancel = (shouldSearch = false) => {
     emit('cancel', shouldSearch)
     formRef.value?.restoreValidation()
@@ -88,6 +82,14 @@ onSuccess(() => {
 })
 onError((e) => {
     console.log(`output->e`, e)
+})
+watchEffect(() => {
+    if (props.currentOrganization) {
+        model.value.id = props.currentOrganization.id
+        model.value.name = props.currentOrganization.name
+        model.value.userIds = props.currentOrganization.userIds
+        model.value.description = props.currentOrganization.description
+    }
 })
 </script>
 <template>

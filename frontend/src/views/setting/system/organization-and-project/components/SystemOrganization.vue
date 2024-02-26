@@ -117,6 +117,7 @@ const columns: DataTableColumns<OrganizationListItem> = [
                                     {
                                         text: true,
                                         type: 'primary',
+                                        onClick: () => showOrganizationModal(row),
                                     },
                                     { default: () => t('common.edit') },
                                 ),
@@ -205,7 +206,7 @@ const showOrganizationModal = (record: any) => {
 const handleAddOrgModalCancel = (shouldSearch: boolean) => {
     orgVisible.value = false
     if (shouldSearch) {
-        window.$message.info(`加载列表数据`)
+        fetchData()
     }
 }
 // onMounted(() => {

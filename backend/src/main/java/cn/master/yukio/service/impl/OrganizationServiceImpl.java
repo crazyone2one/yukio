@@ -343,6 +343,7 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
             List<String> userIds = orgAdminList.stream().map(User::getId).collect(Collectors.toList());
             if (CollectionUtils.isNotEmpty(userIds) && userIds.contains(organizationDTO.getCreateUser())) {
                 organizationDTO.setOrgCreateUserIsAdmin(true);
+                organizationDTO.setUserIds(userIds);
             }
         });
         return records;
