@@ -1,4 +1,4 @@
-import { LoginUrl, refreshTokenUrl } from '../../requrls/user'
+import { LoginUrl, LogoutUrl, refreshTokenUrl } from '../../requrls/user'
 import instance from '/@/api'
 import { LoginData, LoginRes } from '/@/models/user'
 
@@ -19,7 +19,7 @@ export const refreshToken = (refreshToken: string) => {
 }
 
 export const logout = () => {
-    const method = instance.Get('/logout')
+    const method = instance.Get(LogoutUrl)
     method.meta = {
         authRole: 'logout',
     }

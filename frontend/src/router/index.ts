@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import createRouteGuard from './guard'
 import appRoutes from './routers'
 
 const router = createRouter({
@@ -17,9 +18,9 @@ const router = createRouter({
             ],
         },
         {
-            path:'/login',
-            name:'login',
-            component:()=>import('/@/views/login/index.vue')
+            path: '/login',
+            name: 'login',
+            component: () => import('/@/views/login/index.vue'),
         },
         ...appRoutes,
     ],
@@ -27,4 +28,5 @@ const router = createRouter({
         return { top: 0 }
     },
 })
+createRouteGuard(router)
 export default router

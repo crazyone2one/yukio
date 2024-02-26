@@ -1,10 +1,12 @@
 package cn.master.yukio.controller;
 
 import cn.master.yukio.dto.LoginRequest;
+import cn.master.yukio.handler.ResultHolder;
 import cn.master.yukio.security.CustomUserDetails;
 import cn.master.yukio.security.CustomUserDetailsService;
 import cn.master.yukio.security.JwtProvider;
 import cn.master.yukio.util.RedisKeyUtils;
+import cn.master.yukio.util.SessionUtils;
 import io.jsonwebtoken.Claims;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -75,6 +77,15 @@ public class AuthController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("请重新登录");
         }
+    }
+
+    @GetMapping(value = "/signout")
+    public ResultHolder logout() {
+        if (SessionUtils.getCurrentUser() == null) {
+            return ResultHolder.success("logout success");
+        }
+        SecurityContextHolder.clearContext();
+        return ResultHolder.success("logout success");
     }
 
     @GetMapping("/demo")

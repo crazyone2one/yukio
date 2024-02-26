@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { useAppStore } from '../..'
 import { UserState } from './types'
+import { logout as userLogout } from '/@/api/modules/user'
 import { LoginRes } from '/@/models/user'
 import { setToken } from '/@/utils/auth'
 const useUserStore = defineStore('user', {
@@ -23,7 +24,7 @@ const useUserStore = defineStore('user', {
         certification: undefined,
         role: '',
         userRolePermissions: [],
-        loginType: [],
+        // loginType: [],
     }),
     actions: {
         // 设置用户信息
@@ -36,6 +37,13 @@ const useUserStore = defineStore('user', {
             appStore.setCurrentOrgId(res.lastOrganizationId || '')
             appStore.setCurrentProjectId(res.lastProjectId || '')
             this.setInfo(res.user)
+        },
+        // 重置用户信息
+        resetInfo() {
+            this.$reset()
+        },
+        async logout() {
+            await userLogout()
         },
     },
 })

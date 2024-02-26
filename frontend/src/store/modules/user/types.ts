@@ -40,5 +40,5 @@ export interface UserState {
     lastOrganizationId?: string
     lastProjectId?: string
     userRolePermissions?: UserRolePermissions[]
-    loginType: string[]
+    loginType?: string[]
 }

@@ -3,6 +3,8 @@ import {
     NButton,
     NCard,
     NDataTable,
+    NDropdown,
+    NFlex,
     NForm,
     NFormItem,
     NH2,
@@ -17,6 +19,7 @@ import {
     NRadioButton,
     NRadioGroup,
     NSelect,
+    NSpace,
     NTooltip,
     // create naive ui
     create,
@@ -42,6 +45,9 @@ const naive = create({
         NForm,
         NFormItem,
         NSelect,
+        NDropdown,
+        NSpace,
+        NFlex,
     ],
 })
 

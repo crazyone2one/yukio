@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import PersonalMenus from '/@/components/personal-menus/index.vue'
 import YMenu from '/@/components/y-menu/index.vue'
 import { useAppStore } from '/@/store'
 
@@ -6,7 +7,12 @@ const appStore = useAppStore()
 </script>
 <template>
     <n-layout :style="{ height: appStore.innerHeight + 'px' }">
-        <n-layout-header style="height: 64px; padding: 24px" bordered> 颐和园路 </n-layout-header>
+        <n-layout-header style="height: 64px; padding: 24px" bordered>
+            <n-flex justify="space-between" class="items-center">
+                <div>颐和园路</div>
+                <personal-menus />
+            </n-flex>
+        </n-layout-header>
         <n-layout position="absolute" style="top: 64px; bottom: 64px" has-sider>
             <y-menu />
             <n-layout content-style="padding: 24px;" :native-scrollbar="false">
@@ -20,4 +26,8 @@ const appStore = useAppStore()
     </n-layout>
 </template>
 
-<style scoped></style>
+<style scoped>
+.nav {
+    align-items: center;
+}
+</style>
