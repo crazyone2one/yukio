@@ -50,7 +50,8 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Map<String, Object> map = new HashMap<>();
         map.put("token", accessToken);
-        map.put("refreshToken", refreshToken);
+        map.put("refresh_token", refreshToken);
+        map.put("user", customUserDetails.getUser());
 
         log.info("{} logged in", customUserDetails.getUser().getName());
         return ResponseEntity.ok(map);
@@ -64,7 +65,7 @@ public class AuthController {
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(claims.getSubject());
             if ((claims.getExpiration().getTime() - new Date(System.currentTimeMillis()).getTime()) <= autoRefreshTtl) {
                 String newRefreshToken = jwtProvider.createRefreshToken(userDetails);
-                map.put("refreshToken", newRefreshToken);
+                map.put("refresh_token", newRefreshToken);
                 log.info("{}'s refreshToken recreated.", claims.getSubject());
             }
             String accessToken = jwtProvider.createAccessToken(userDetails);
