@@ -2,6 +2,7 @@ package cn.master.yukio.controller;
 
 import cn.master.yukio.dto.project.AddProjectRequest;
 import cn.master.yukio.dto.project.ProjectDTO;
+import cn.master.yukio.dto.project.ProjectRequest;
 import cn.master.yukio.entity.User;
 import cn.master.yukio.service.IUserService;
 import cn.master.yukio.util.SessionUtils;
@@ -85,14 +86,14 @@ public class ProjectController {
     }
 
     /**
-     * 分页查询项目。
+     * 系统设置-系统-组织与项目-项目-获取项目列表。
      *
-     * @param page 分页对象
+     * @param request 分页对象
      * @return 分页对象
      */
-    @GetMapping("page")
-    public Page<Project> page(Page<Project> page) {
-        return iProjectService.page(page);
+    @PostMapping("page")
+    public Page<ProjectDTO> page(@Validated @RequestBody ProjectRequest request) {
+        return iProjectService.getProjectPageList(request);
     }
 
     /**

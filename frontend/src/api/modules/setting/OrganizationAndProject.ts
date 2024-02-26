@@ -48,3 +48,23 @@ export const getAdminByOrganizationOrProject = (keyword?: string) =>
 export const createOrUpdateOrg = (
     data: CreateOrUpdateSystemOrgParams | CreateOrUpdateSystemProjectParams,
 ) => instance.Post(data.id ? orgUrl.postModifyOrgUrl : orgUrl.postAddOrgUrl, data)
+
+/**
+ * 系统-获取项目列表
+ * @param page
+ * @param pageSize
+ * @param data
+ * @returns
+ */
+export const postProjectTable = (page: number, pageSize: number, data: TableQueryParams) => {
+    data.current = page
+    data.pageSize = pageSize
+    const method = instance.Post<CommonList<CreateOrUpdateSystemProjectParams>>(
+        orgUrl.postProjectTableUrl,
+        data,
+    )
+    method.meta = {
+        authRole: 'token',
+    }
+    return method
+}

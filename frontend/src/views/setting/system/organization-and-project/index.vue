@@ -3,6 +3,7 @@ import { useRequest } from 'alova'
 import { nextTick, onBeforeMount, ref, watch } from 'vue'
 import AddOrganizationModal from './components/AddOrganizationModal.vue'
 import SysOrganization from './components/SystemOrganization.vue'
+import SystemProject from './components/SystemProject.vue'
 import { getOrgAndProjectCount } from '/@/api/modules/setting/OrganizationAndProject'
 import { useI18n } from '/@/hooks/use-i18n'
 
@@ -14,6 +15,7 @@ const currentKeyword = ref('')
 const keyword = ref('')
 const organizationVisible = ref(false)
 const orgTableRef = ref<InstanceType<typeof SysOrganization> | null>(null)
+const projectTableRef = ref<InstanceType<typeof SystemProject> | null>(null)
 const addOrganizationModal = ref<InstanceType<typeof AddOrganizationModal> | null>(null)
 const { send: initOrgAndProjectCount } = useRequest(() => getOrgAndProjectCount(), {
     // 当immediate为false时，默认不发出
@@ -57,6 +59,7 @@ watch(
         if (newVal) {
             currentKeyword.value = ''
             keyword.value = ''
+            tableSearch()
         }
     },
 )
@@ -85,7 +88,7 @@ onBeforeMount(() => {
                     @clear="handleSearch"
                     @keyup="handleSearch"
                 />
-                <n-radio-group v-model="currentTable" class="ml-[14px]">
+                <n-radio-group v-model:value="currentTable" class="ml-[14px]">
                     <n-radio-button value="organization">{{
                         t('system.organization.organizationCount', {
                             count: organizationCount,
@@ -103,6 +106,11 @@ onBeforeMount(() => {
             <sys-organization
                 v-if="currentTable === 'organization'"
                 ref="orgTableRef"
+                :keyword="currentKeyword"
+            />
+            <system-project
+                v-if="currentTable === 'project'"
+                ref="projectTableRef"
                 :keyword="currentKeyword"
             />
         </div>
