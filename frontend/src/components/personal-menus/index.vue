@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { DropdownOption, NAvatar, NIcon, NText } from 'naive-ui'
-import { h } from 'vue'
+import { computed, h } from 'vue'
 import { useI18n } from '/@/hooks/use-i18n'
 import router from '/@/router'
 import { useUserStore } from '/@/store'
+import { getCurrentWeek } from '/@/utils'
 
 const { t } = useI18n()
 // const personalDrawerVisible = ref(false)
@@ -75,11 +76,17 @@ const handleSelect = async (key: string) => {
         )
     }
 }
+
+const dat = computed(() => {
+    const year = new Date().getFullYear()
+    const currentWeek = getCurrentWeek()
+    return `${year}年 第${currentWeek}周`
+})
 </script>
 <template>
     <div class="nav-end">
         <n-dropdown trigger="hover" :options="options" @select="handleSelect">
-            <n-button>2021年 第36周</n-button>
+            <n-button>{{ dat }}</n-button>
         </n-dropdown>
     </div>
 </template>

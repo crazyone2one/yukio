@@ -1,8 +1,10 @@
 package cn.master.yukio.controller;
 
 import cn.master.yukio.constants.UserSource;
+import cn.master.yukio.dto.BasePageRequest;
 import cn.master.yukio.dto.user.UserBatchCreateRequest;
 import cn.master.yukio.dto.user.response.UserBatchCreateResponse;
+import cn.master.yukio.dto.user.response.UserTableResponse;
 import cn.master.yukio.util.SessionUtils;
 import cn.master.yukio.validation.groups.Created;
 import com.mybatisflex.core.paginate.Page;
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
 import cn.master.yukio.entity.User;
 import cn.master.yukio.service.IUserService;
 import org.springframework.web.bind.annotation.RestController;
@@ -92,12 +93,12 @@ public class UserController {
     /**
      * 分页查询用户。
      *
-     * @param page 分页对象
+     * @param request 分页对象
      * @return 分页对象
      */
-    @GetMapping("page")
-    public Page<User> page(Page<User> page) {
-        return iUserService.page(page);
+    @PostMapping("/page")
+    public Page<UserTableResponse> page(@Validated @RequestBody BasePageRequest request) {
+        return iUserService.getUserPageList(request);
     }
 
 }

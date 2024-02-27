@@ -1,16 +1,18 @@
 package cn.master.yukio.service.impl;
 
+import cn.master.yukio.dto.BasePageRequest;
 import cn.master.yukio.dto.OptionDTO;
 import cn.master.yukio.dto.user.UserBatchCreateRequest;
 import cn.master.yukio.dto.user.UserCreateInfo;
 import cn.master.yukio.dto.user.response.UserBatchCreateResponse;
+import cn.master.yukio.dto.user.response.UserTableResponse;
 import cn.master.yukio.entity.User;
 import cn.master.yukio.mapper.UserMapper;
 import cn.master.yukio.service.*;
 import cn.master.yukio.util.Translator;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.DistinctQueryColumn;
 import com.mybatisflex.core.query.QueryChain;
-import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -91,6 +93,39 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public List<User> getUserList(String keyword) {
         return QueryChain.of(User.class).select(new DistinctQueryColumn(USER.ID, USER.EMAIL, USER.NAME))
                 .where(USER.NAME.like(keyword).or(USER.EMAIL.like(keyword))).orderBy(USER.CREATE_TIME.desc()).limit(100).list();
+    }
+
+    @Override
+    public Page<UserTableResponse> getUserPageList(BasePageRequest request) {
+        String keyword = request.getKeyword();
+        QueryChain<User> queryChain = QueryChain.of(User.class).select(USER.ALL_COLUMNS)
+                .where(USER.NAME.like(keyword).or(USER.EMAIL.like(keyword)).or(USER.ID.eq(keyword)));
+        Page<UserTableResponse> responsePage = mapper.paginateAs(Page.of(request.getCurrent(), request.getPageSize()), queryChain, UserTableResponse.class);
+        List<UserTableResponse> userList = responsePage.getRecords();
+        if (CollectionUtils.isNotEmpty(userList)) {
+            List<String> userIdList = userList.stream().map(User::getId).toList();
+            Map<String, UserTableResponse> roleAndOrganizationMap = userRoleRelationService.selectGlobalUserRoleAndOrganization(userIdList);
+            userList.forEach(user -> {
+                UserTableResponse roleOrgModel = roleAndOrganizationMap.get(user.getId());
+                if (roleOrgModel != null) {
+                    user.setUserRoleList(roleOrgModel.getUserRoleList());
+                    user.setOrganizationList(roleOrgModel.getOrganizationList());
+                }
+            });
+        }
+        return responsePage;
+    }
+
+    @Override
+    public List<User> selectByKeyword(String keyword, boolean selectId) {
+        QueryChain<User> queryChain = QueryChain.of(User.class);
+        if (selectId) {
+            queryChain.select(USER.ID);
+        } else {
+            queryChain.select(USER.ALL_COLUMNS);
+        }
+        queryChain.where(USER.NAME.like(keyword).or(USER.EMAIL.like(keyword)).or(USER.ID.eq(keyword)));
+        return mapper.selectListByQuery(queryChain);
     }
 
     private List<OptionDTO> getSelectOptionByIdsWithDeleted(List<String> ids) {

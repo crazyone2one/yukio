@@ -1,7 +1,10 @@
 package cn.master.yukio.service;
 
+import cn.master.yukio.dto.BasePageRequest;
 import cn.master.yukio.dto.user.UserBatchCreateRequest;
 import cn.master.yukio.dto.user.response.UserBatchCreateResponse;
+import cn.master.yukio.dto.user.response.UserTableResponse;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
 import cn.master.yukio.entity.User;
 import org.apache.ibatis.annotations.Param;
@@ -25,4 +28,8 @@ public interface IUserService extends IService<User> {
     Map<String, String> getUserNameMap(List<String> userIds);
 
     List<User> getUserList(String keyword);
+
+    Page<UserTableResponse> getUserPageList(BasePageRequest request);
+
+    List<User> selectByKeyword(@Param("keyword") String keyword, @Param("selectId") boolean selectId);
 }

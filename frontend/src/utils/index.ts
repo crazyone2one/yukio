@@ -10,3 +10,13 @@ export function characterLimit(str?: string): string {
     }
     return `${str.slice(0, 20 - 3)}...`
 }
+/**
+ * 当前日期是本年第几周
+ * @returns
+ */
+export function getCurrentWeek() {
+    const currentDate = new Date()
+    const firstDayOfYear = new Date(currentDate.getFullYear(), 0, 1)
+    const daysBetween = (currentDate.valueOf() - firstDayOfYear.valueOf()) / 86400000
+    return Math.ceil(daysBetween / 7)
+}

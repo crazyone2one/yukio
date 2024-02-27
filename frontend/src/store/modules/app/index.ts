@@ -8,6 +8,8 @@ const useAppStore = defineStore('app', {
         menuCollapse: false,
         menuWidth: 240,
         device: 'desktop',
+        projectList: [],
+        ordList: [],
     }),
     getters: {
         getCurrentOrgId(state: AppState): string {
@@ -36,6 +38,12 @@ const useAppStore = defineStore('app', {
          */
         setCurrentProjectId(id: string) {
             this.currentProjectId = id
+        },
+        /**
+         * 设置当前组织列表
+         */
+        setOrdList(ordList: { id: string; name: string }[]) {
+            this.ordList = ordList
         },
     },
     persist: {
