@@ -2,6 +2,7 @@ package cn.master.yukio.service.impl;
 
 import cn.master.yukio.constants.*;
 import cn.master.yukio.dto.LogDTO;
+import cn.master.yukio.dto.OptionDTO;
 import cn.master.yukio.dto.organization.*;
 import cn.master.yukio.dto.user.UserExtendDTO;
 import cn.master.yukio.entity.Organization;
@@ -287,6 +288,12 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
             total.put("organizationTotal", 1L);
         }
         return total;
+    }
+
+    @Override
+    public List<OptionDTO> listAll() {
+        List<Organization> organizations = queryChain().list();
+        return organizations.stream().map(o -> new OptionDTO(o.getId(), o.getName())).toList();
     }
 
     private void buildExtraInfo(List<OrganizationDTO> organizationDTOS) {

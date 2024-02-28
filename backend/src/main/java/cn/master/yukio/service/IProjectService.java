@@ -1,6 +1,7 @@
 package cn.master.yukio.service;
 
 import cn.master.yukio.dto.project.AddProjectRequest;
+import cn.master.yukio.dto.project.OrganizationProjectRequest;
 import cn.master.yukio.dto.project.ProjectDTO;
 import cn.master.yukio.dto.project.ProjectRequest;
 import com.mybatisflex.core.paginate.Page;
@@ -19,4 +20,6 @@ public interface IProjectService extends IService<Project> {
     ProjectDTO add(AddProjectRequest request, String createUser);
 
     Page<ProjectDTO> getProjectPageList(ProjectRequest request);
+
+    Page<ProjectDTO> getProjectPageList(OrganizationProjectRequest request);
 }

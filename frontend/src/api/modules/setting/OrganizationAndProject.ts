@@ -1,9 +1,11 @@
+import { SelectOption } from 'naive-ui'
 import instance from '/@/api'
 import * as orgUrl from '/@/api/requrls/setting/organizationAndProject'
 import { getOrgList } from '/@/api/requrls/setting/organizationAndProject'
 import { UserSelectorOption } from '/@/components/user-selector/index.vue'
 import { CommonList, TableQueryParams } from '/@/models/common'
 import {
+    CreateOrUpdateOrgProjectParams,
     CreateOrUpdateSystemOrgParams,
     CreateOrUpdateSystemProjectParams,
     OrgProjectTableItem,
@@ -71,3 +73,30 @@ export const postProjectTable = (page: number, pageSize: number, data: TableQuer
 }
 
 export const postOrgList = () => instance.Get<Array<OrgProjectTableItem>>(`${getOrgList}`)
+// 组织-项目
+// 组织-获取项目列表
+export const postProjectTableByOrg = (page: number, pageSize: number, data: TableQueryParams) => {
+    data.current = page
+    data.pageSize = pageSize
+    const method = instance.Post<CommonList<OrgProjectTableItem>>(
+        orgUrl.postProjectTableByOrgIdUrl,
+        data,
+    )
+    method.meta = {
+        authRole: 'token',
+    }
+    return method
+}
+/**
+ * 组织-创建或更新项目
+ * @param data
+ * @returns
+ */
+export const createOrUpdateProjectByOrg = (data: CreateOrUpdateOrgProjectParams) =>
+    instance.Post(data.id ? orgUrl.postModifyProjectByOrgUrl : orgUrl.postAddProjectByOrgUrl, data)
+
+/**
+ * 获取组织下拉选项
+ * @returns // 获取组织下拉选项
+ */
+export const getSystemOrgOption = () => instance.Post<Array<SelectOption>>(orgUrl.postOrgOptionsUrl)

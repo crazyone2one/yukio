@@ -74,7 +74,7 @@ export const postProjectMemberByOrgIdUrl = '/organization/project/member-list'
 // 添加项目
 // 修改项目名称
 export const postModifyProjectNameByOrgUrl = '/organization/project/rename'
-export const postAddProjectByOrgUrl = '/organization/project/add'
+export const postAddProjectByOrgUrl = 'system/project/save'
 // 添加项目成员
 export const postAddProjectMemberByOrgUrl = '/organization/project/add-members'
 // 获取用户列表

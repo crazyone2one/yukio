@@ -1,11 +1,13 @@
 package cn.master.yukio.service;
 
+import cn.master.yukio.dto.OptionDTO;
 import cn.master.yukio.dto.organization.*;
 import cn.master.yukio.dto.user.UserExtendDTO;
 import cn.master.yukio.entity.Organization;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,4 +46,5 @@ public interface IOrganizationService extends IService<Organization> {
     Map<String, Long> getTotal(String organizationId);
 
 
+    List<OptionDTO> listAll();
 }

@@ -7,12 +7,14 @@ import com.mybatisflex.annotation.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import com.mybatisflex.core.handler.JacksonTypeHandler;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serial;
+import java.util.List;
 
 /**
  * 项目 实体类。
@@ -102,6 +104,7 @@ public class Project implements Serializable {
     /**
      * 模块设置
      */
-    private String moduleSetting;
+    @Column(typeHandler = JacksonTypeHandler.class)
+    private List<String> moduleSetting;
 
 }

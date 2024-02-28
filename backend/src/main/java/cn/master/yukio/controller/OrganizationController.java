@@ -1,5 +1,6 @@
 package cn.master.yukio.controller;
 
+import cn.master.yukio.dto.OptionDTO;
 import cn.master.yukio.dto.organization.*;
 import cn.master.yukio.dto.project.OrganizationProjectRequest;
 import cn.master.yukio.dto.project.ProjectDTO;
@@ -201,5 +202,15 @@ public class OrganizationController {
     @GetMapping("/total")
     public Map<String, Long> getTotal(@RequestParam(value = "organizationId", required = false) String organizationId) {
         return iOrganizationService.getTotal(organizationId);
+    }
+
+    /**
+     * 系统设置-系统-组织与项目-组织-获取系统所有组织下拉选项
+     *
+     * @return java.util.List<cn.master.yukio.dto.OptionDTO>
+     */
+    @PostMapping("/option/all")
+    public List<OptionDTO> listAll() {
+        return iOrganizationService.listAll();
     }
 }

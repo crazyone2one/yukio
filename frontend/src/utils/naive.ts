@@ -2,7 +2,10 @@ import {
     // component
     NButton,
     NCard,
+    NCheckbox,
+    NCheckboxGroup,
     NDataTable,
+    NDivider,
     NDropdown,
     NFlex,
     NForm,
@@ -22,6 +25,8 @@ import {
     NRadioGroup,
     NSelect,
     NSpace,
+    NSpin,
+    NSwitch,
     NTooltip,
     // create naive ui
     create,
@@ -52,6 +57,11 @@ const naive = create({
         NFlex,
         NIcon,
         NPopselect,
+        NSpin,
+        NDivider,
+        NCheckbox,
+        NCheckboxGroup,
+        NSwitch,
     ],
 })
 

@@ -1,5 +1,8 @@
 package cn.master.yukio.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,8 +16,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OptionDTO implements Serializable {
-    //@Schema(description =  "选项ID")
+    @JsonProperty("value")
     private String id;
-    //@Schema(description =  "选项名称")
+
+    @JsonProperty("label")
     private String name;
 }
