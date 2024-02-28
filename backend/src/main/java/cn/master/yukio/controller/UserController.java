@@ -2,24 +2,25 @@ package cn.master.yukio.controller;
 
 import cn.master.yukio.constants.UserSource;
 import cn.master.yukio.dto.BasePageRequest;
+import cn.master.yukio.dto.TableBatchProcessDTO;
+import cn.master.yukio.dto.TableBatchProcessResponse;
 import cn.master.yukio.dto.user.UserBatchCreateRequest;
+import cn.master.yukio.dto.user.UserChangeEnableRequest;
+import cn.master.yukio.dto.user.UserDTO;
+import cn.master.yukio.dto.user.UserEditRequest;
 import cn.master.yukio.dto.user.response.UserBatchCreateResponse;
+import cn.master.yukio.dto.user.response.UserSelectOption;
 import cn.master.yukio.dto.user.response.UserTableResponse;
+import cn.master.yukio.entity.User;
+import cn.master.yukio.service.IUserService;
 import cn.master.yukio.util.SessionUtils;
 import cn.master.yukio.validation.groups.Created;
+import cn.master.yukio.validation.groups.Updated;
 import com.mybatisflex.core.paginate.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import cn.master.yukio.entity.User;
-import cn.master.yukio.service.IUserService;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -50,23 +51,23 @@ public class UserController {
     /**
      * 根据主键删除用户。
      *
-     * @param id 主键
+     * @param request 主键
      * @return {@code true} 删除成功，{@code false} 删除失败
      */
-    @DeleteMapping("remove/{id}")
-    public boolean remove(@PathVariable Serializable id) {
-        return iUserService.removeById(id);
+    @PostMapping("delete")
+    public TableBatchProcessResponse remove(@Validated @RequestBody TableBatchProcessDTO request) {
+        return iUserService.deleteUser(request, SessionUtils.getUserId(), SessionUtils.getCurrentUser().getUsername());
     }
 
     /**
      * 根据主键更新用户。
      *
-     * @param user 用户
+     * @param request 用户
      * @return {@code true} 更新成功，{@code false} 更新失败
      */
-    @PutMapping("update")
-    public boolean update(@RequestBody User user) {
-        return iUserService.updateById(user);
+    @PostMapping("update")
+    public UserEditRequest updateUser(@Validated({Updated.class}) @RequestBody UserEditRequest request) {
+        return iUserService.updateUser(request, SessionUtils.getUserId());
     }
 
     /**
@@ -82,12 +83,12 @@ public class UserController {
     /**
      * 根据用户主键获取详细信息。
      *
-     * @param id 用户主键
+     * @param keyword 用户主键
      * @return 用户详情
      */
-    @GetMapping("getInfo/{id}")
-    public User getInfo(@PathVariable Serializable id) {
-        return iUserService.getById(id);
+    @GetMapping("getInfo/{keyword}")
+    public UserDTO getInfo(@PathVariable String keyword) {
+        return iUserService.getUserDtoByKeyword(keyword);
     }
 
     /**
@@ -101,4 +102,36 @@ public class UserController {
         return iUserService.getUserPageList(request);
     }
 
+    /**
+     * 系统设置-系统-用户-查找系统级用户组
+     *
+     * @return java.util.List<cn.master.yukio.dto.user.response.UserSelectOption>
+     */
+    @GetMapping("/get/global/system/role")
+    public List<UserSelectOption> getGlobalSystemRole() {
+        return iUserService.getGlobalSystemRoleList();
+    }
+
+    /**
+     * 系统设置-系统-用户-启用/禁用用户
+     *
+     * @param request
+     * @return cn.master.yukio.dto.TableBatchProcessResponse
+     */
+
+    @PostMapping("/update/enable")
+    public TableBatchProcessResponse updateUserEnable(@Validated @RequestBody UserChangeEnableRequest request) {
+        return iUserService.updateUserEnable(request, SessionUtils.getUserId(), SessionUtils.getCurrentUser().getUsername());
+    }
+
+    /**
+     * 系统设置-系统-用户-重置用户密码
+     *
+     * @param request
+     * @return cn.master.yukio.dto.TableBatchProcessResponse
+     */
+    @PostMapping("/reset/password")
+    public TableBatchProcessResponse resetPassword(@Validated @RequestBody TableBatchProcessDTO request) {
+        return iUserService.resetPassword(request, SessionUtils.getUserId());
+    }
 }

@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -25,4 +26,20 @@ public interface IUserRoleRelationService extends IService<UserRoleRelation> {
     Map<String, UserTableResponse> selectGlobalUserRoleAndOrganization(@Valid @NotEmpty List<String> userIdList);
 
     List<UserRoleRelation> selectGlobalRoleByUserIdList(@Param("userIds") List<String> userIdList);
+
+    List<UserRoleRelation> selectGlobalRoleByUserId(String userId);
+
+    void updateUserSystemGlobalRole(@Valid User user, @Valid @NotEmpty String operator, @Valid @NotEmpty List<String> roleList);
+
+    List<UserRoleRelation> selectByUserId(String id);
+
+    void removeByUserIdList(List<String> userIdList);
+
+    void deleteByRoleId(String roleId);
+
+    List<UserRoleRelation> getByRoleId(String roleId);
+
+    List<String> getUserIdByRoleId(String roleId);
+
+    List<UserRoleRelation> getUserIdAndSourceIdByUserIds(List<String> userIds);
 }

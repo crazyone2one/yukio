@@ -1,17 +1,18 @@
 package cn.master.yukio.controller;
 
-import com.mybatisflex.core.paginate.Page;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
+import cn.master.yukio.dto.permission.PermissionDefinitionItem;
+import cn.master.yukio.dto.request.OrganizationUserRoleEditRequest;
 import cn.master.yukio.entity.UserRole;
 import cn.master.yukio.service.IUserRoleService;
-import org.springframework.web.bind.annotation.RestController;
+import cn.master.yukio.util.SessionUtils;
+import cn.master.yukio.validation.groups.Created;
+import cn.master.yukio.validation.groups.Updated;
+import com.mybatisflex.core.paginate.Page;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -22,21 +23,24 @@ import java.util.List;
  * @since 1.0.0
  */
 @RestController
-@RequestMapping("/userRole")
+@RequestMapping("/user/role/organization")
+@RequiredArgsConstructor
 public class UserRoleController {
 
-    @Autowired
-    private IUserRoleService iUserRoleService;
+    private final IUserRoleService iUserRoleService;
 
     /**
      * 添加用户组。
      *
-     * @param userRole 用户组
+     * @param request 用户组
      * @return {@code true} 添加成功，{@code false} 添加失败
      */
     @PostMapping("save")
-    public boolean save(@RequestBody UserRole userRole) {
-        return iUserRoleService.save(userRole);
+    public UserRole save(@Validated({Created.class}) @RequestBody OrganizationUserRoleEditRequest request) {
+        UserRole userRole = new UserRole();
+        userRole.setCreateUser(SessionUtils.getUserId());
+        BeanUtils.copyProperties(request, userRole);
+        return iUserRoleService.add(userRole);
     }
 
     /**
@@ -45,30 +49,33 @@ public class UserRoleController {
      * @param id 主键
      * @return {@code true} 删除成功，{@code false} 删除失败
      */
-    @DeleteMapping("remove/{id}")
-    public boolean remove(@PathVariable Serializable id) {
-        return iUserRoleService.removeById(id);
+    @GetMapping("remove/{id}")
+    public void remove(@PathVariable String id) {
+        iUserRoleService.delete(id);
     }
 
     /**
      * 根据主键更新用户组。
      *
-     * @param userRole 用户组
+     * @param request 用户组
      * @return {@code true} 更新成功，{@code false} 更新失败
      */
-    @PutMapping("update")
-    public boolean update(@RequestBody UserRole userRole) {
-        return iUserRoleService.updateById(userRole);
+    @PostMapping("update")
+    public UserRole update(@Validated({Updated.class}) @RequestBody OrganizationUserRoleEditRequest request) {
+        UserRole userRole = new UserRole();
+        userRole.setCreateUser(SessionUtils.getUserId());
+        BeanUtils.copyProperties(request, userRole);
+        return iUserRoleService.updateItem(userRole);
     }
 
     /**
-     * 查询所有用户组。
+     * 系统设置-组织-用户组-获取用户组列表。
      *
      * @return 所有数据
      */
-    @GetMapping("list")
-    public List<UserRole> list() {
-        return iUserRoleService.list();
+    @GetMapping("/list/{organizationId}")
+    public List<UserRole> list(@PathVariable String organizationId) {
+        return iUserRoleService.listByOrgId(organizationId);
     }
 
     /**
@@ -91,6 +98,17 @@ public class UserRoleController {
     @GetMapping("page")
     public Page<UserRole> page(Page<UserRole> page) {
         return iUserRoleService.page(page);
+    }
+
+    /**
+     * 系统设置-组织-用户组-获取用户组对应的权限配置
+     *
+     * @param id 用户组ID
+     * @return java.util.List<PermissionDefinitionItem>
+     */
+    @GetMapping("/permission/setting/{id}")
+    public List<PermissionDefinitionItem> getPermissionSetting(@PathVariable String id) {
+        return iUserRoleService.getPermissionSetting(id);
     }
 
 }

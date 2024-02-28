@@ -5,7 +5,7 @@ import { useAttrs } from 'vue'
 export type TagType = 'default' | 'primary' | 'error' | 'warning' | 'success' | 'info'
 export type Size = 'small' | 'medium' | 'large'
 const attrs = useAttrs()
-console.log(`output->attrs`, attrs)
+
 const props = withDefaults(
     defineProps<{
         type?: TagType // tag类型

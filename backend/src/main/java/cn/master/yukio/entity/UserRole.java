@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
 import java.io.Serial;
 
 /**
@@ -17,12 +19,12 @@ import java.io.Serial;
  * @author 11's papa
  * @since 1.0.0
  */
-@Data
+@Data(staticConstructor = "create")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(value = "user_role")
-
+@Accessors(chain = true)
 public class UserRole implements Serializable {
 
     @Serial

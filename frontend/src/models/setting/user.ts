@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { BatchApiParams } from '/@/models/common'
 
 // 用户所属用户组模型
@@ -45,7 +46,7 @@ export interface UserListItem {
     createUser: string
     updateUser: string
     organizationList: OrganizationListItem[] // 用户所属组织
-    userRoleList: UserRoleListItem[] // 用户所属用户组
+    userRoleList: string[] // 用户所属用户组
     userRoles?: UserRoleListItem[] // 用户所属用户组
 }
 

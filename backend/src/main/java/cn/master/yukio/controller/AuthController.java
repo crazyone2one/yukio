@@ -69,6 +69,8 @@ public class AuthController {
                 String newRefreshToken = jwtProvider.createRefreshToken(userDetails);
                 map.put("refresh_token", newRefreshToken);
                 log.info("{}'s refreshToken recreated.", claims.getSubject());
+            }else {
+                map.put("refresh_token", refreshToken);
             }
             String accessToken = jwtProvider.createAccessToken(userDetails);
             map.put("token", accessToken);
