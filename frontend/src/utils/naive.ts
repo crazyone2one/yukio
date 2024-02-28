@@ -8,6 +8,7 @@ import {
     NForm,
     NFormItem,
     NH2,
+    NIcon,
     NInput,
     NLayout,
     NLayoutContent,
@@ -15,6 +16,7 @@ import {
     NLayoutHeader,
     NLayoutSider,
     NModal,
+    NPopselect,
     NRadio,
     NRadioButton,
     NRadioGroup,
@@ -48,6 +50,8 @@ const naive = create({
         NDropdown,
         NSpace,
         NFlex,
+        NIcon,
+        NPopselect,
     ],
 })
 

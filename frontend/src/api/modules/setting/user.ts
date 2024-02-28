@@ -1,3 +1,4 @@
+import { UpdateOrgUrl } from '../../requrls/user'
 import instance from '/@/api'
 import { GetUserListUrl } from '/@/api/requrls/setting/user'
 import { CommonList, TableQueryParams } from '/@/models/common'
@@ -9,3 +10,10 @@ export function getUserList(page: number, pageSize: number, data: TableQueryPara
     data.pageSize = pageSize
     return instance.Post<CommonList<UserListItem>>(GetUserListUrl, data)
 }
+/**
+ * 更新用户org
+ * @param orgId org id
+ * @returns
+ */
+export const updateUserOrg = (orgId: string) =>
+    instance.Get<UserListItem>(`${UpdateOrgUrl}${orgId}`)

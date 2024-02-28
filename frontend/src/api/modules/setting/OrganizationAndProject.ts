@@ -1,5 +1,6 @@
 import instance from '/@/api'
 import * as orgUrl from '/@/api/requrls/setting/organizationAndProject'
+import { getOrgList } from '/@/api/requrls/setting/organizationAndProject'
 import { UserSelectorOption } from '/@/components/user-selector/index.vue'
 import { CommonList, TableQueryParams } from '/@/models/common'
 import {
@@ -68,3 +69,5 @@ export const postProjectTable = (page: number, pageSize: number, data: TableQuer
     }
     return method
 }
+
+export const postOrgList = () => instance.Get<Array<OrgProjectTableItem>>(`${getOrgList}`)

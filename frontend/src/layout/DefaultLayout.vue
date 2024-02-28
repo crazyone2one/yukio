@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import HeaderWorkspace from '../components/header/HeaderWorkspace.vue'
 import PersonalMenus from '/@/components/personal-menus/index.vue'
 import YMenu from '/@/components/y-menu/index.vue'
 import { useAppStore } from '/@/store'
@@ -7,9 +8,10 @@ const appStore = useAppStore()
 </script>
 <template>
     <n-layout :style="{ height: appStore.innerHeight + 'px' }">
-        <n-layout-header style="height: 64px; padding: 24px" bordered>
-            <n-flex justify="space-between" class="items-center">
-                <div>颐和园路</div>
+        <n-layout-header style="height: 64px; padding: 24px" bordered class="nav">
+            <n-flex justify="end">
+                <!-- <div>颐和园路</div> -->
+                <header-workspace />
                 <personal-menus />
             </n-flex>
         </n-layout-header>

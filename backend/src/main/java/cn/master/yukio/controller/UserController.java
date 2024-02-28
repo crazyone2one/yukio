@@ -134,4 +134,9 @@ public class UserController {
     public TableBatchProcessResponse resetPassword(@Validated @RequestBody TableBatchProcessDTO request) {
         return iUserService.resetPassword(request, SessionUtils.getUserId());
     }
+
+    @GetMapping("/switch/source/ws/{sourceId}")
+    public UserDTO switchWorkspace(@PathVariable(value = "sourceId") String sourceId) {
+        return iUserService.switchWorkspace("workspace", sourceId);
+    }
 }

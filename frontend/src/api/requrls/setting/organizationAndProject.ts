@@ -27,6 +27,7 @@ export const getDisableOrgUrl = '/system/organization/disable/'
 export const getDeleteOrgUrl = '/system/organization/delete/'
 // 获取系统默认组织
 export const getOrgDefaultUrl = '/system/organization/default'
+export const getOrgList = '/system/organization/list'
 
 // 系统-项目
 // 更新项目信息

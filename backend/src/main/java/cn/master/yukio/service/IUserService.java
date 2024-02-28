@@ -53,4 +53,6 @@ public interface IUserService extends IService<User> {
     TableBatchProcessResponse updateUserEnable(UserChangeEnableRequest request, String operatorId, String operatorName);
 
     TableBatchProcessResponse resetPassword(TableBatchProcessDTO request, String operator);
+
+    UserDTO switchWorkspace(String sign, String sourceId);
 }

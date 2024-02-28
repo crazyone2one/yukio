@@ -11,11 +11,14 @@ import cn.master.yukio.dto.user.*;
 import cn.master.yukio.dto.user.response.UserBatchCreateResponse;
 import cn.master.yukio.dto.user.response.UserSelectOption;
 import cn.master.yukio.dto.user.response.UserTableResponse;
+import cn.master.yukio.entity.Project;
 import cn.master.yukio.entity.User;
 import cn.master.yukio.entity.UserRole;
+import cn.master.yukio.entity.UserRoleRelation;
 import cn.master.yukio.exception.MSException;
 import cn.master.yukio.mapper.UserMapper;
 import cn.master.yukio.service.*;
+import cn.master.yukio.util.SessionUtils;
 import cn.master.yukio.util.Translator;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.DistinctQueryColumn;
@@ -34,6 +37,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static cn.master.yukio.entity.table.ProjectTableDef.PROJECT;
+import static cn.master.yukio.entity.table.UserRoleRelationTableDef.USER_ROLE_RELATION;
 import static cn.master.yukio.entity.table.UserRoleTableDef.USER_ROLE;
 import static cn.master.yukio.entity.table.UserTableDef.USER;
 
@@ -242,6 +247,39 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         response.setTotalCount(request.getSelectIds().size());
         response.setSuccessCount(request.getSelectIds().size());
         return response;
+    }
+
+    @Override
+    public UserDTO switchWorkspace(String sign, String sourceId) {
+        UserDTO user = getUserDtoByName(SessionUtils.getCurrentUser().getUsername());
+        User newUser = new User();
+        if (StringUtils.equals("workspace", sign)) {
+            user.setLastOrganizationId(sourceId);
+            user.setLastProjectId(StringUtils.EMPTY);
+            List<Project> projects = getProjectListByWsAndUserId(SessionUtils.getUserId(), sourceId);
+            if (CollectionUtils.isNotEmpty(projects)) {
+                user.setLastProjectId(projects.get(0).getId());
+            } else {
+                user.setLastProjectId(StringUtils.EMPTY);
+            }
+        }
+        BeanUtils.copyProperties(user, newUser);
+        mapper.update(newUser);
+        return getUserDtoByName(user.getName());
+    }
+
+    private List<Project> getProjectListByWsAndUserId(String userId, String sourceId) {
+        List<Project> projectList = new ArrayList<>();
+        List<Project> projects = QueryChain.of(Project.class).where(PROJECT.ORGANIZATION_ID.eq(sourceId)).list();
+        List<UserRoleRelation> userRoleRelations = QueryChain.of(UserRoleRelation.class).where(USER_ROLE_RELATION.USER_ID.eq(userId)).list();
+        userRoleRelations.forEach(userRoleRelation -> {
+            projects.forEach(project -> {
+                if (StringUtils.equals(userRoleRelation.getSourceId(), project.getId())) {
+                    projectList.add(project);
+                }
+            });
+        });
+        return projectList;
     }
 
     private long enAbleUserByList(List<User> userList, String operatorId, UserChangeEnableRequest request) {

@@ -84,7 +84,7 @@ const dat = computed(() => {
 })
 </script>
 <template>
-    <div class="nav-end">
+    <div>
         <n-dropdown trigger="hover" :options="options" @select="handleSelect">
             <n-button>{{ dat }}</n-button>
         </n-dropdown>
