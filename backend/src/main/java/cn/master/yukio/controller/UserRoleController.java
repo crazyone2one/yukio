@@ -111,4 +111,13 @@ public class UserRoleController {
         return iUserRoleService.getPermissionSetting(id);
     }
 
+    /**
+     * 系统设置-系统-用户组-获取全局用户组列表
+     *
+     * @return java.util.List<cn.master.yukio.entity.UserRole>
+     */
+    @GetMapping("/global/list")
+    public List<UserRole> list() {
+        return iUserRoleService.globalList();
+    }
 }

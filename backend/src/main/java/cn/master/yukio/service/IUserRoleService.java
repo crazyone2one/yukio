@@ -42,4 +42,6 @@ public interface IUserRoleService extends IService<UserRole> {
     List<PermissionDefinitionItem> getPermissionSetting(String id);
 
     List<PermissionDefinitionItem> getPermissionSetting(UserRole userRole);
+
+    List<UserRole> globalList();
 }

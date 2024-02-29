@@ -3,6 +3,7 @@ package cn.master.yukio.service.impl;
 import cn.master.yukio.config.PermissionCache;
 import cn.master.yukio.constants.InternalUserRole;
 import cn.master.yukio.constants.UserRoleEnum;
+import cn.master.yukio.constants.UserRoleScope;
 import cn.master.yukio.constants.UserRoleType;
 import cn.master.yukio.dto.permission.Permission;
 import cn.master.yukio.dto.permission.PermissionDefinitionItem;
@@ -192,6 +193,29 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
             firstLevel.setEnable(allCheck);
         }
         return permissionDefinition;
+    }
+
+    @Override
+    public List<UserRole> globalList() {
+        List<UserRole> userRoles = queryChain().where(USER_ROLE.SCOPE_ID.eq(UserRoleScope.GLOBAL)).list();
+        // 先按照类型排序，再按照创建时间排序
+        userRoles.sort(Comparator.comparingInt(this::getTypeOrder)
+                .thenComparingInt(item -> getInternal(item.getInternal()))
+                .thenComparing(UserRole::getCreateTime));
+        return userRoles;
+    }
+
+    private int getInternal(Boolean internal) {
+        return BooleanUtils.isTrue(internal) ? 0 : 1;
+    }
+
+    private int getTypeOrder(UserRole userRole) {
+        Map<String, Integer> typeOrderMap = new HashMap<>(3) {{
+            put(UserRoleType.SYSTEM.name(), 1);
+            put(UserRoleType.ORGANIZATION.name(), 2);
+            put(UserRoleType.PROJECT.name(), 3);
+        }};
+        return typeOrderMap.getOrDefault(userRole.getType(), 0);
     }
 
     private String translateDefaultPermissionName(Permission p) {
