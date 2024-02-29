@@ -1,6 +1,18 @@
 server:
   port: 2024
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain,application/javascript,text/css,text/javascript,image/jpeg
+    min-response-size: 2048
 spring:
+  session:
+    timeout: 43200s
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
+  application:
+    name: yukio
   messages:
     basename: i18n/api,i18n/bug,i18n/system,i18n/case,i18n/commons,i18n/plan,i18n/project,i18n/load,i18n/ui,i18n/workstation
   datasource:
@@ -10,6 +22,9 @@ spring:
       maximum-pool-size: 15
       idle-timeout: 30000
       pool-name: HikariCP
+      connection-timeout: 30000
+      max-lifetime: 1800000
+      auto-commit: true
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/yukio?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC
     username: root
@@ -17,9 +32,10 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
   data:
     redis:
-      host: localhost
+      host: 172.16.2.10
+      password: c1$4T&9pW#z2Q@7vL
       port: 6379
-      database: 2
+      database: 3
 jwt:
   secret: U2FsdGVkX18epMj+KK0TtMyZJzvr45zahWHKpl4+kSg=
   access-token-ttl: 3600000 #accessToken过期时间，单位毫秒，3600000毫秒为1小时
@@ -28,3 +44,7 @@ jwt:
 mybatis-flex:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+springdoc:
+  api-docs:
+    groups:
+      enabled: true
