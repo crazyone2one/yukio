@@ -34,6 +34,7 @@
         <commons-compress.version>1.25.0</commons-compress.version>
         <mybatis-flex.version>1.7.9</mybatis-flex.version>
         <jjwt.version>0.11.5</jjwt.version>
+        <springdoc-openapi-ui.version>2.3.0</springdoc-openapi-ui.version>
     </properties>
     <modules>
         <module>backend</module>
