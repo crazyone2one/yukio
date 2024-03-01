@@ -19,6 +19,8 @@ import {
     NLayoutHeader,
     NLayoutSider,
     NModal,
+    NPopconfirm,
+    NPopover,
     NPopselect,
     NRadio,
     NRadioButton,
@@ -26,6 +28,7 @@ import {
     NSelect,
     NSpace,
     NSpin,
+    NSplit,
     NSwitch,
     NTooltip,
     // create naive ui
@@ -62,6 +65,9 @@ const naive = create({
         NCheckbox,
         NCheckboxGroup,
         NSwitch,
+        NSplit,
+        NPopover,
+        NPopconfirm,
     ],
 })
 

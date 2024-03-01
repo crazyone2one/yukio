@@ -42,7 +42,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(authorizeHttpRequests -> {
             authorizeHttpRequests
-                    .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
+                    .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/demo").permitAll()
+                    .requestMatchers("/swagger-ui/**").permitAll()
                     .anyRequest().authenticated();
         });
         // 禁用表单登录

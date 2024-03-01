@@ -48,6 +48,23 @@ public class OperationLogServiceImpl extends ServiceImpl<OperationLogMapper, Ope
         });
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void add(LogDTO log) {
+        if (StringUtils.isBlank(log.getProjectId())) {
+            log.setProjectId("none");
+        }
+        if (StringUtils.isBlank(log.getCreateUser())) {
+            log.setCreateUser("admin");
+        }
+        log.setContent(subStrContent(log.getContent()));
+        mapper.insert(log);
+        if (log.getHistory()) {
+            operationHistoryMapper.insert(getHistory(log));
+        }
+        logBlobMapper.insert(getBlob(log));
+    }
+
     private OperationLogBlob getBlob(LogDTO log) {
         OperationLogBlob blob = new OperationLogBlob();
         blob.setId(log.getId());
