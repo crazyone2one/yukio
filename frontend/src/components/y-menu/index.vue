@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { MenuOption } from 'naive-ui'
 import { NIcon, NMenu } from 'naive-ui'
-import { computed, h, onMounted, ref, watchEffect } from 'vue'
+import { computed, h, onMounted, ref } from 'vue'
 import { RouteRecordRaw, RouterLink, useRoute } from 'vue-router'
 import useMenuTree from './use-menu-tree'
+import { CaseManagementRouteEnum, SettingRouteEnum, TestPlanRouteEnum } from '/@/enums/route-enum'
 import { useI18n } from '/@/hooks/use-i18n'
 import { useAppStore } from '/@/store'
 
@@ -20,49 +21,196 @@ const collapsed = computed({
     },
 })
 const activeKey = ref<string | null>(null)
-
-const { menuTree } = useMenuTree()
-const menuOptions = ref<MenuOption[]>([])
-/**
- * 菜单label
- * @param item 路由信息
- */
-const generateMenuLabel = (item: RouteRecordRaw) => {
-    console.log(`output->item`, item)
-    if (item.meta?.isTopMenu) {
-        return () =>
-            h(
-                RouterLink,
-                { to: { name: item.name } },
-                {
-                    default: () => t(item.meta?.locale as string),
-                },
-            )
-    } else {
-        return () => t(item.meta?.locale as string)
-    }
-}
 /**
  * 菜单图标
  */
 const renderIcon = (icon: string) => {
     return () => h(NIcon, {}, { default: () => h('span', { class: icon }) })
 }
-const generateMenuOptions = (menu: RouteRecordRaw[]) => {
-    return menu.map((item) => {
-        let menuOption: MenuOption = {}
-        menuOption.label = generateMenuLabel(item)
-        menuOption.key = item.name as string
-        menuOption.icon = renderIcon(item.meta?.icon as string)
-        // if (item.component === null) {
-        //     menuOption.type = 'group'
-        // }
-        if (item.children && item.children.length > 0) {
-            menuOption.children = generateMenuOptions(item.children)
-        }
-        return menuOption
-    })
-}
+const { menuTree } = useMenuTree()
+const menuOptions: MenuOption[] = [
+    {
+        label: t('menu.caseManagement'),
+        key: CaseManagementRouteEnum.CASE_MANAGEMENT,
+        children: [
+            {
+                // label: t('menu.caseManagement.featureCase'),
+                label: () =>
+                    h(
+                        RouterLink,
+                        {
+                            to: {
+                                name: CaseManagementRouteEnum.CASE_MANAGEMENT_CASE,
+                            },
+                        },
+                        { default: () => t('menu.caseManagement.featureCase') },
+                    ),
+                key: CaseManagementRouteEnum.CASE_MANAGEMENT_CASE,
+            },
+            {
+                // label: t('menu.caseManagement.caseManagementReview'),
+                label: () =>
+                    h(
+                        RouterLink,
+                        {
+                            to: {
+                                name: CaseManagementRouteEnum.CASE_MANAGEMENT_REVIEW,
+                            },
+                        },
+                        { default: () => t('menu.caseManagement.featureCase') },
+                    ),
+                key: CaseManagementRouteEnum.CASE_MANAGEMENT_REVIEW,
+            },
+        ],
+    },
+    {
+        // label: t('menu.testPlan'),
+        label: () =>
+            h(
+                RouterLink,
+                {
+                    to: {
+                        name: TestPlanRouteEnum.TEST_PLAN_INDEX,
+                    },
+                },
+                { default: () => t('menu.testPlan') },
+            ),
+        key: TestPlanRouteEnum.TEST_PLAN_INDEX,
+        icon: renderIcon('i-icon-report'),
+    },
+    {
+        label: t('menu.settings'),
+        key: SettingRouteEnum.SETTING,
+        icon: renderIcon('i-tabler:settings'),
+        children: [
+            {
+                label: t('menu.settings.system'),
+                key: SettingRouteEnum.SETTING_SYSTEM,
+                children: [
+                    {
+                        // label: t('menu.settings.system.user'),
+                        label: () =>
+                            h(
+                                RouterLink,
+                                {
+                                    to: {
+                                        name: SettingRouteEnum.SETTING_SYSTEM_USER_SINGLE,
+                                    },
+                                },
+                                { default: () => t('menu.settings.system.user') },
+                            ),
+                        key: SettingRouteEnum.SETTING_SYSTEM_USER_SINGLE,
+                    },
+                    {
+                        // label: t('menu.settings.system.usergroup'),
+                        label: () =>
+                            h(
+                                RouterLink,
+                                {
+                                    to: {
+                                        name: SettingRouteEnum.SETTING_SYSTEM_USER_GROUP,
+                                    },
+                                },
+                                { default: () => t('menu.settings.system.usergroup') },
+                            ),
+                        key: SettingRouteEnum.SETTING_SYSTEM_USER_GROUP,
+                    },
+                    {
+                        // label: t('menu.settings.system.organizationAndProject'),
+                        label: () =>
+                            h(
+                                RouterLink,
+                                {
+                                    to: {
+                                        name: SettingRouteEnum.SETTING_SYSTEM_ORGANIZATION,
+                                    },
+                                },
+                                { default: () => t('menu.settings.system.organizationAndProject') },
+                            ),
+                        key: SettingRouteEnum.SETTING_SYSTEM_ORGANIZATION,
+                    },
+                    {
+                        // label: t('menu.settings.system.log'),
+                        label: () =>
+                            h(
+                                RouterLink,
+                                {
+                                    to: {
+                                        name: SettingRouteEnum.SETTING_SYSTEM_LOG,
+                                    },
+                                },
+                                { default: () => t('menu.settings.system.log') },
+                            ),
+                        key: SettingRouteEnum.SETTING_SYSTEM_LOG,
+                    },
+                ],
+            },
+            {
+                label: t('menu.settings.organization'),
+                key: SettingRouteEnum.SETTING_ORGANIZATION,
+                children: [
+                    {
+                        // label: t('menu.settings.organization.member'),
+                        label: () =>
+                            h(
+                                RouterLink,
+                                {
+                                    to: {
+                                        name: SettingRouteEnum.SETTING_ORGANIZATION_MEMBER,
+                                    },
+                                },
+                                { default: () => t('menu.settings.organization.member') },
+                            ),
+                        key: SettingRouteEnum.SETTING_ORGANIZATION_MEMBER,
+                    },
+                    {
+                        // label: t('menu.settings.organization.userGroup'),
+                        label: () =>
+                            h(
+                                RouterLink,
+                                {
+                                    to: {
+                                        name: SettingRouteEnum.SETTING_ORGANIZATION_USER_GROUP,
+                                    },
+                                },
+                                { default: () => t('menu.settings.organization.userGroup') },
+                            ),
+                        key: SettingRouteEnum.SETTING_ORGANIZATION_USER_GROUP,
+                    },
+                    {
+                        // label: t('menu.settings.organization.project'),
+                        label: () =>
+                            h(
+                                RouterLink,
+                                {
+                                    to: {
+                                        name: SettingRouteEnum.SETTING_ORGANIZATION_PROJECT,
+                                    },
+                                },
+                                { default: () => t('menu.settings.organization.project') },
+                            ),
+                        key: SettingRouteEnum.SETTING_ORGANIZATION_PROJECT,
+                    },
+                    {
+                        // label: t('menu.settings.organization.template'),
+                        label: () =>
+                            h(
+                                RouterLink,
+                                {
+                                    to: {
+                                        name: SettingRouteEnum.SETTING_ORGANIZATION_TEMPLATE,
+                                    },
+                                },
+                                { default: () => t('menu.settings.organization.template') },
+                            ),
+                        key: SettingRouteEnum.SETTING_ORGANIZATION_TEMPLATE,
+                    },
+                ],
+            },
+        ],
+    },
+]
+
 const findMenuOpenKeys = (target: string) => {
     const result: string[] = []
     let isFind = false
@@ -88,12 +236,6 @@ const findMenuOpenKeys = (target: string) => {
     return result
 }
 const selectedKey = ref<string[]>([])
-watchEffect(() => {
-    if (menuTree.value) {
-        menuOptions.value = generateMenuOptions(menuTree.value as RouteRecordRaw[])
-        console.log(`output->menuOptions.value`, menuOptions.value)
-    }
-})
 onMounted(() => {
     const menuOpenKeys = findMenuOpenKeys(route.name as string)
     selectedKey.value = [menuOpenKeys[menuOpenKeys.length - 1]]

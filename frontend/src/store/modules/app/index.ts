@@ -27,9 +27,9 @@ const useAppStore = defineStore('app', {
          * 更新设置
          * @param partial 设置
          */
-        // updateSettings(partial: Partial<AppState>) {
-        //     this.$patch(partial)
-        // },
+        updateSettings(partial: Partial<AppState>) {
+            this.$patch(partial)
+        },
         /**
          * 设置当前组织 ID
          */
