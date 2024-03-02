@@ -118,4 +118,15 @@ public class TestPlanModuleController {
         return iTestPlanModuleService.page(page);
     }
 
+    /**
+     * 测试计划管理-模块树-查找模块
+     *
+     * @param projectId
+     * @return java.util.List<cn.master.yukio.entity.TestPlanModule>
+     */
+    @GetMapping("/tree/{projectId}")
+    public List<TestPlanModule> getTree(@PathVariable String projectId) {
+        testPlanManagementService.checkModuleIsOpen(projectId, TestPlanResourceConfig.CHECK_TYPE_PROJECT, Collections.singletonList(TestPlanResourceConfig.CHECK_TYPE_TEST_PLAN));
+        return iTestPlanModuleService.getTree(projectId);
+    }
 }

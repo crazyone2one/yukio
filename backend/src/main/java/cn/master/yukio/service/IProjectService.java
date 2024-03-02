@@ -1,12 +1,12 @@
 package cn.master.yukio.service;
 
-import cn.master.yukio.dto.project.AddProjectRequest;
-import cn.master.yukio.dto.project.OrganizationProjectRequest;
-import cn.master.yukio.dto.project.ProjectDTO;
-import cn.master.yukio.dto.project.ProjectRequest;
+import cn.master.yukio.dto.project.*;
+import cn.master.yukio.dto.user.UserDTO;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
 import cn.master.yukio.entity.Project;
+
+import java.util.List;
 
 /**
  * 项目 服务层。
@@ -22,4 +22,8 @@ public interface IProjectService extends IService<Project> {
     Page<ProjectDTO> getProjectPageList(ProjectRequest request);
 
     Page<ProjectDTO> getProjectPageList(OrganizationProjectRequest request);
+
+    List<Project> getUserProject(String organizationId, String userId);
+
+    UserDTO switchProject(ProjectSwitchRequest request, String currentUserId);
 }

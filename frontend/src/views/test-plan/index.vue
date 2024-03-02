@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import PlanTable from './components/PlanTable.vue'
+import TestPlanTree from './components/TestPlanTree.vue'
 import YPopConfirm from '/@/components/y-pop-confirm/index.vue'
 import { useI18n } from '/@/hooks/use-i18n'
 
@@ -13,6 +15,11 @@ const expandHandler = () => {
 }
 const addSubVisible = ref(false)
 const rootModulesName = ref<string[]>([])
+const planTreeRef = ref<InstanceType<typeof TestPlanTree> | null>(null)
+const activeFolder = ref<string>('all')
+const offspringIds = ref<string[]>([])
+const activeCaseType = ref<'folder' | 'module'>('folder') // 激活计划树类型
+const setRootModules = (names: string[]) => (rootModulesName.value = names)
 </script>
 <template>
     <div class="rounded-2xl bg-white">
@@ -75,10 +82,18 @@ const rootModulesName = ref<string[]>([])
                                 </div>
                             </div>
                             <n-divider class="my-[8px]" />
+                            <test-plan-tree ref="planTreeRef" @init="setRootModules" />
                         </div>
                     </div>
                 </template>
-                <template #2> Pane 2 </template>
+                <template #2>
+                    <plan-table
+                        :active-folder="activeFolder"
+                        :offspring-ids="offspringIds"
+                        :active-folder-type="activeCaseType"
+                        :modules-count="modulesCount"
+                    />
+                </template>
             </n-split>
         </div>
     </div>

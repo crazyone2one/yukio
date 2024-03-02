@@ -1,10 +1,13 @@
 package cn.master.yukio.service;
 
+import cn.master.yukio.dto.BaseTreeNode;
 import cn.master.yukio.dto.NodeMoveRequest;
 import cn.master.yukio.dto.plan.TestPlanModuleCreateRequest;
 import cn.master.yukio.dto.plan.TestPlanModuleUpdateRequest;
-import com.mybatisflex.core.service.IService;
 import cn.master.yukio.entity.TestPlanModule;
+import com.mybatisflex.core.service.IService;
+
+import java.util.List;
 
 /**
  * 测试计划模块 服务层。
@@ -21,4 +24,8 @@ public interface ITestPlanModuleService extends IService<TestPlanModule> {
     void deleteModule(String deleteId, String operator, String requestUrl, String requestMethod);
 
     void moveNode(NodeMoveRequest request, String currentUser, String requestUrl, String requestMethod);
+
+    List<TestPlanModule> getTree(String projectId);
+
+    List<TestPlanModule> buildTreeAndCountResource(List<TestPlanModule> traverseList, boolean haveVirtualRootNode, String virtualRootName);
 }

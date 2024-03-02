@@ -1,4 +1,4 @@
-import { ProjectListItem } from '/@/models/setting/project'
+import { SelectOption } from 'naive-ui'
 
 export interface AppState {
     innerHeight: number
@@ -7,6 +7,7 @@ export interface AppState {
     currentOrgId: string
     currentProjectId: string
     device: string
-    projectList: ProjectListItem[]
+    projectList: SelectOption[]
+    // projectListOptions: SelectOption[]
     ordList: { id: string; name: string }[]
 }

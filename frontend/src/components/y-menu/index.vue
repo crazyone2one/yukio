@@ -28,6 +28,7 @@ const menuOptions = ref<MenuOption[]>([])
  * @param item 路由信息
  */
 const generateMenuLabel = (item: RouteRecordRaw) => {
+    console.log(`output->item`, item)
     if (item.meta?.isTopMenu) {
         return () =>
             h(
@@ -89,9 +90,8 @@ const findMenuOpenKeys = (target: string) => {
 const selectedKey = ref<string[]>([])
 watchEffect(() => {
     if (menuTree.value) {
-        menuOptions.value = generateMenuOptions(
-            menuTree.value as RouteRecordRaw[],
-        )
+        menuOptions.value = generateMenuOptions(menuTree.value as RouteRecordRaw[])
+        console.log(`output->menuOptions.value`, menuOptions.value)
     }
 })
 onMounted(() => {

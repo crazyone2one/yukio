@@ -3,7 +3,11 @@ package cn.master.yukio.controller;
 import cn.master.yukio.dto.project.AddProjectRequest;
 import cn.master.yukio.dto.project.ProjectDTO;
 import cn.master.yukio.dto.project.ProjectRequest;
+import cn.master.yukio.dto.project.ProjectSwitchRequest;
+import cn.master.yukio.dto.user.UserDTO;
+import cn.master.yukio.entity.Project;
 import cn.master.yukio.entity.User;
+import cn.master.yukio.service.IProjectService;
 import cn.master.yukio.service.IUserService;
 import cn.master.yukio.util.SessionUtils;
 import cn.master.yukio.validation.groups.Created;
@@ -11,8 +15,6 @@ import com.mybatisflex.core.paginate.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import cn.master.yukio.entity.Project;
-import cn.master.yukio.service.IProjectService;
 
 import java.io.Serializable;
 import java.util.List;
@@ -105,5 +107,20 @@ public class ProjectController {
     @GetMapping("/user-list")
     public List<User> getUserList(@RequestParam(value = "keyword", required = false) String keyword) {
         return userService.getUserList(keyword);
+    }
+
+    /**
+     * 根据组织ID获取所有有权限的项目
+     *
+     * @param organizationId
+     * @return java.util.List<cn.master.yukio.entity.Project>
+     */
+    @GetMapping("/list/options/{organizationId}")
+    public List<Project> getUserProject(@PathVariable String organizationId) {
+        return iProjectService.getUserProject(organizationId, SessionUtils.getUserId());
+    }
+    @PostMapping("/switch")
+    public UserDTO switchProject(@RequestBody ProjectSwitchRequest request) {
+        return iProjectService.switchProject(request, SessionUtils.getUserId());
     }
 }

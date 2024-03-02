@@ -2,7 +2,6 @@ package cn.master.yukio.service.impl;
 
 import cn.master.yukio.constants.ModuleConstants;
 import cn.master.yukio.dto.NodeMoveRequest;
-import cn.master.yukio.dto.NodeSortDTO;
 import cn.master.yukio.dto.plan.TestPlanBatchProcessRequest;
 import cn.master.yukio.dto.plan.TestPlanModuleCreateRequest;
 import cn.master.yukio.dto.plan.TestPlanModuleUpdateRequest;
@@ -21,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -88,6 +88,28 @@ public class TestPlanModuleServiceImpl extends ServiceImpl<TestPlanModuleMapper,
     @Transactional(rollbackFor = Exception.class)
     public void moveNode(NodeMoveRequest request, String currentUser, String requestUrl, String requestMethod) {
         // todo
+    }
+
+    @Override
+    public List<TestPlanModule> getTree(String projectId) {
+        List<TestPlanModule> fileModuleList = queryChain().select(TEST_PLAN_MODULE.ID, TEST_PLAN_MODULE.NAME, TEST_PLAN_MODULE.PARENT_ID)
+                .where(TEST_PLAN_MODULE.PROJECT_ID.eq(projectId)).list();
+        return buildTreeAndCountResource(fileModuleList, true, Translator.get("default.module"));
+    }
+
+    @Override
+    public List<TestPlanModule> buildTreeAndCountResource(List<TestPlanModule> traverseList, boolean haveVirtualRootNode, String virtualRootName) {
+        List<TestPlanModule> baseTreeNodeList = new ArrayList<>();
+        if (haveVirtualRootNode) {
+            TestPlanModule defaultNode = new TestPlanModule();
+            defaultNode.setId(ModuleConstants.DEFAULT_NODE_ID);
+            defaultNode.setName(virtualRootName);
+            defaultNode.setType(ModuleConstants.NODE_TYPE_DEFAULT);
+            defaultNode.setParentId(ModuleConstants.ROOT_NODE_PARENT_ID);
+            defaultNode.genModulePath(null);
+            baseTreeNodeList.add(defaultNode);
+        }
+        return baseTreeNodeList;
     }
 
     private void deleteModule(List<String> deleteIds, String projectId, String operator, String requestUrl, String requestMethod) {

@@ -1,5 +1,7 @@
+import { SelectOption } from 'naive-ui'
 import { defineStore } from 'pinia'
 import type { AppState } from './types'
+import { getProjectList } from '/@/api/modules/project-management/project'
 const useAppStore = defineStore('app', {
     state: (): AppState => ({
         innerHeight: 0,
@@ -9,6 +11,7 @@ const useAppStore = defineStore('app', {
         menuWidth: 240,
         device: 'desktop',
         projectList: [],
+        // projectListOptions:[],
         ordList: [],
     }),
     getters: {
@@ -24,9 +27,9 @@ const useAppStore = defineStore('app', {
          * 更新设置
          * @param partial 设置
          */
-        updateSettings(partial: Partial<AppState>) {
-            this.$patch(partial)
-        },
+        // updateSettings(partial: Partial<AppState>) {
+        //     this.$patch(partial)
+        // },
         /**
          * 设置当前组织 ID
          */
@@ -44,6 +47,25 @@ const useAppStore = defineStore('app', {
          */
         setOrdList(ordList: { id: string; name: string }[]) {
             this.ordList = ordList
+        },
+        async initProjectList() {
+            try {
+                if (this.currentOrgId) {
+                    const res = await getProjectList(this.getCurrentOrgId)
+                    this.projectList = []
+                    res.forEach((item) => {
+                        const option: SelectOption = {}
+                        option.label = item.name
+                        option.value = item.id
+                        this.projectList.push(option)
+                    })
+                } else {
+                    this.projectList = []
+                }
+            } catch (error) {
+                // eslint-disable-next-line no-console
+                console.log(error)
+            }
         },
     },
     persist: {

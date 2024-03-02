@@ -1,16 +1,19 @@
 package cn.master.yukio.entity;
 
-import com.mybatisflex.annotation.Column;
-import com.mybatisflex.annotation.Id;
-import com.mybatisflex.annotation.Table;
+import com.mybatisflex.annotation.*;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.io.Serial;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * 测试计划模块 实体类。
@@ -77,4 +80,25 @@ public class TestPlanModule implements Serializable {
      */
     private String updateUser;
 
+    @RelationManyToOne(selfField = "parentId", targetField = "id")
+    private TestPlanModule parent;
+
+    @RelationOneToMany(selfField = "id", targetField = "parentId")
+    private List<TestPlanModule> children;
+
+    @Schema(description = "节点类型")
+    @Column(ignore = true)
+    private String type;
+
+    @Schema(description = "节点路径（当前节点所在整棵树的路径）")
+    @Column(ignore = true)
+    private String path = "/";
+
+    public void genModulePath(TestPlanModule parent) {
+        if (parent != null) {
+            path = parent.getPath() + "/" + this.getName();
+        } else {
+            path = "/" + this.getName();
+        }
+    }
 }

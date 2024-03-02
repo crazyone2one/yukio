@@ -2,16 +2,11 @@ package cn.master.yukio.service.impl;
 
 import cn.master.yukio.constants.*;
 import cn.master.yukio.dto.LogDTO;
-import cn.master.yukio.dto.project.AddProjectRequest;
-import cn.master.yukio.dto.project.OrganizationProjectRequest;
-import cn.master.yukio.dto.project.ProjectDTO;
-import cn.master.yukio.dto.project.ProjectRequest;
+import cn.master.yukio.dto.project.*;
 import cn.master.yukio.dto.request.ProjectAddMemberBatchRequest;
+import cn.master.yukio.dto.user.UserDTO;
 import cn.master.yukio.dto.user.UserExtendDTO;
-import cn.master.yukio.entity.Organization;
-import cn.master.yukio.entity.Project;
-import cn.master.yukio.entity.User;
-import cn.master.yukio.entity.UserRoleRelation;
+import cn.master.yukio.entity.*;
 import cn.master.yukio.exception.MSException;
 import cn.master.yukio.mapper.ProjectMapper;
 import cn.master.yukio.mapper.UserRoleRelationMapper;
@@ -22,6 +17,7 @@ import cn.master.yukio.util.JsonUtils;
 import cn.master.yukio.util.Translator;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
+import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -41,6 +37,7 @@ import java.util.stream.Collectors;
 import static cn.master.yukio.entity.table.OrganizationTableDef.ORGANIZATION;
 import static cn.master.yukio.entity.table.ProjectTableDef.PROJECT;
 import static cn.master.yukio.entity.table.UserRoleRelationTableDef.USER_ROLE_RELATION;
+import static cn.master.yukio.entity.table.UserRoleTableDef.USER_ROLE;
 import static cn.master.yukio.entity.table.UserTableDef.USER;
 
 /**
@@ -206,6 +203,44 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
         ProjectRequest projectRequest = new ProjectRequest();
         BeanUtils.copyProperties(request, projectRequest);
         return getProjectPageList(projectRequest);
+    }
+
+    @Override
+    public List<Project> getUserProject(String organizationId, String userId) {
+        boolean exists = QueryChain.of(Organization.class).where(ORGANIZATION.ID.eq(organizationId)).exists();
+        if (!exists) {
+            throw new MSException(Translator.get("organization_not_exist"));
+        }
+        long count = QueryChain.of(UserRoleRelation.class).where(USER_ROLE_RELATION.USER_ID.eq(userId)
+                .and(USER_ROLE_RELATION.ROLE_ID.eq(InternalUserRole.ADMIN.name()))).count();
+        if (count > 0) {
+            return QueryChain.of(Project.class).where(PROJECT.ORGANIZATION_ID.eq(organizationId)).list();
+        }
+        return QueryChain.of(Project.class).select(QueryMethods.distinct(PROJECT.ALL_COLUMNS))
+                .from(PROJECT)
+                .join(UserRoleRelation.class).on(USER_ROLE_RELATION.ROLE_ID.eq(USER_ROLE.ID))
+                .join(UserRole.class).on(PROJECT.ID.eq(USER_ROLE_RELATION.SOURCE_ID))
+                .join(User.class).on(USER.ID.eq(USER_ROLE_RELATION.USER_ID))
+                .where(USER_ROLE_RELATION.USER_ID.eq(userId)
+                        .and(USER_ROLE.TYPE.eq("PROJECT"))
+                        .and(PROJECT.ORGANIZATION_ID.eq(organizationId))
+                        .and(PROJECT.ENABLE.eq(1))).list();
+    }
+
+    @Override
+    public UserDTO switchProject(ProjectSwitchRequest request, String currentUserId) {
+        if (!StringUtils.equals(currentUserId, request.getUserId())) {
+            throw new MSException(Translator.get("not_authorized"));
+        }
+        if (Objects.isNull(mapper.selectOneById(request.getProjectId()))) {
+            throw new MSException(Translator.get("project_not_exist"));
+        }
+        User user = new User();
+        user.setId(request.getUserId());
+        user.setLastProjectId(request.getProjectId());
+        userService.updateById(user);
+        //UserDTO userDTO = userService.getUserDtoByKeyword(user.getId());
+        return userService.getUserDtoByKeyword(user.getId());
     }
 
     private Page<ProjectDTO> buildUserInfo(Page<ProjectDTO> page) {
