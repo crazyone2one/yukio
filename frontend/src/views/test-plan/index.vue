@@ -44,6 +44,14 @@ const confirmHandler = () => {
         })
     }
 }
+const planNodeSelect = (keys: string, _offspringIds: string[]) => {
+    activeFolder.value = keys
+    activeCaseType.value = 'module'
+    offspringIds.value = [..._offspringIds]
+}
+const setActiveFolder = (type: string) => {
+    activeFolder.value = type
+}
 </script>
 <template>
     <div class="rounded-2xl bg-white">
@@ -57,7 +65,7 @@ const confirmHandler = () => {
                     <div class="p-[24px] pb-0">
                         <div class="test-plan h-[100%]">
                             <div class="case h-[38px]">
-                                <div class="flex items-center">
+                                <div class="flex items-center" @click="setActiveFolder('all')">
                                     <n-icon size="20" color="#333">
                                         <span class="i-tabler:folder-filled" />
                                     </n-icon>
@@ -111,7 +119,9 @@ const confirmHandler = () => {
                             <test-plan-tree
                                 ref="planTreeRef"
                                 :is-expand-all="isExpandAll"
+                                :active-folder="activeFolder"
                                 @init="setRootModules"
+                                @plan-tree-node-select="planNodeSelect"
                             />
                         </div>
                     </div>

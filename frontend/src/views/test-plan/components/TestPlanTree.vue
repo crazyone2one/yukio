@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRequest } from 'alova'
 import { NTree, TreeOption } from 'naive-ui'
-import { computed, onBeforeMount, ref } from 'vue'
+import { computed, onBeforeMount, ref, watch } from 'vue'
 import { getTestPlanModule } from '/@/api/modules/test-plan'
 import { useI18n } from '/@/hooks/use-i18n'
 import { ModuleTreeNode } from '/@/models/common'
@@ -63,11 +63,18 @@ const nodeProps = ({ option }: { option: TreeOption }) => {
                 offspringIds.push(e.key as string)
                 return e
             })
-            console.log(`output->option`, offspringIds)
+            emits('planTreeNodeSelect', option.key, offspringIds)
         },
     }
 }
-
+watch(
+    () => props.activeFolder,
+    (val) => {
+        if (val === 'all') {
+            initModules()
+        }
+    },
+)
 onBeforeMount(() => {
     initModules()
 })

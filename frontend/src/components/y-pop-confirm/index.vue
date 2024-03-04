@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FormInst } from 'naive-ui'
+import { FormInst, FormItemRule, FormRules } from 'naive-ui'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from '/@/hooks/use-i18n'
 
@@ -9,6 +9,7 @@ interface FieldConfig {
     maxLength?: number
     isTextArea?: boolean
     nameExistTipText?: string // 添加重复提示文本
+    rules?: FormRules[]
 }
 const props = withDefaults(
     defineProps<{
@@ -69,6 +70,23 @@ const handleConfirm = () => {
         emits('confirm', form.value, handleCancel)
     }
 }
+const rules: FormRules = {
+    name: [
+        {
+            required: true,
+            message: t('popConfirm.nameNotNull'),
+            validator(rule: FormItemRule, value: string) {
+                if ((props.allNames || []).includes(value)) {
+                    if (props.fieldConfig && props.fieldConfig.nameExistTipText) {
+                        return new Error(t(props.fieldConfig.nameExistTipText))
+                    } else {
+                        return new Error(t('popConfirm.nameExist'))
+                    }
+                }
+            },
+        },
+    ],
+}
 watch(
     () => props.fieldConfig?.field,
     (val) => {
@@ -124,8 +142,8 @@ defineExpose({
                 {{ props.subTitleTip }}
             </div>
             <!-- 表单展示 -->
-            <n-form v-else ref="formRef" :model="form">
-                <n-form-item>
+            <n-form v-else ref="formRef" :model="form" :rules="props.fieldConfig?.rules || rules">
+                <n-form-item path="name">
                     <n-input
                         v-if="props.fieldConfig?.isTextArea"
                         v-model:value="form.field"
