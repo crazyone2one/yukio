@@ -12,7 +12,10 @@ import cn.master.yukio.service.ITestPlanModuleService;
 import cn.master.yukio.service.ITestPlanService;
 import cn.master.yukio.service.TestPlanModuleLogService;
 import cn.master.yukio.util.Translator;
+import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.core.query.QueryMethods;
+import com.mybatisflex.core.query.QueryWrapper;
+import com.mybatisflex.core.relation.RelationManager;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -92,14 +95,21 @@ public class TestPlanModuleServiceImpl extends ServiceImpl<TestPlanModuleMapper,
 
     @Override
     public List<TestPlanModule> getTree(String projectId) {
-        List<TestPlanModule> fileModuleList = queryChain().select(TEST_PLAN_MODULE.ID, TEST_PLAN_MODULE.NAME, TEST_PLAN_MODULE.PARENT_ID)
-                .where(TEST_PLAN_MODULE.PROJECT_ID.eq(projectId)).list();
+        //QueryWrapper qw = QueryWrapper.create();
+        //qw.where(TEST_PLAN_MODULE.PARENT_ID.eq("NONE"));
+        //设置递归查询深度为 10 层
+        RelationManager.setMaxDepth(10);
+        QueryChain<TestPlanModule> qw = queryChain().select(TEST_PLAN_MODULE.ID, TEST_PLAN_MODULE.NAME, TEST_PLAN_MODULE.PARENT_ID)
+                .where(TEST_PLAN_MODULE.PROJECT_ID.eq(projectId))
+                .and(TEST_PLAN_MODULE.PARENT_ID.eq("NONE"));
+        List<TestPlanModule> fileModuleList = mapper.selectListWithRelationsByQuery(qw);
+
         return buildTreeAndCountResource(fileModuleList, true, Translator.get("default.module"));
     }
 
     @Override
     public List<TestPlanModule> buildTreeAndCountResource(List<TestPlanModule> traverseList, boolean haveVirtualRootNode, String virtualRootName) {
-        List<TestPlanModule> baseTreeNodeList = new ArrayList<>();
+        //List<TestPlanModule> baseTreeNodeList = new ArrayList<>();
         if (haveVirtualRootNode) {
             TestPlanModule defaultNode = new TestPlanModule();
             defaultNode.setId(ModuleConstants.DEFAULT_NODE_ID);
@@ -107,9 +117,10 @@ public class TestPlanModuleServiceImpl extends ServiceImpl<TestPlanModuleMapper,
             defaultNode.setType(ModuleConstants.NODE_TYPE_DEFAULT);
             defaultNode.setParentId(ModuleConstants.ROOT_NODE_PARENT_ID);
             defaultNode.genModulePath(null);
-            baseTreeNodeList.add(defaultNode);
+            traverseList.add(defaultNode);
         }
-        return baseTreeNodeList;
+        //baseTreeNodeList.add(traverseList);
+        return traverseList;
     }
 
     private void deleteModule(List<String> deleteIds, String projectId, String operator, String requestUrl, String requestMethod) {

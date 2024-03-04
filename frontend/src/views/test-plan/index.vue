@@ -1,11 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { useRequest } from 'alova'
+import { computed, ref } from 'vue'
 import PlanTable from './components/PlanTable.vue'
 import TestPlanTree from './components/TestPlanTree.vue'
+import { createPlanModuleTree } from '/@/api/modules/test-plan'
 import YPopConfirm from '/@/components/y-pop-confirm/index.vue'
 import { useI18n } from '/@/hooks/use-i18n'
+import { CreateOrUpdateModule } from '/@/models/case-management/feature-case'
+import { useAppStore } from '/@/store'
 
 const { t } = useI18n()
+const appStore = useAppStore()
+const currentProjectId = computed(() => appStore.currentProjectId)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const modulesCount = ref<Record<string, any>>({})
 const isExpandAll = ref(false)
@@ -20,6 +26,24 @@ const activeFolder = ref<string>('all')
 const offspringIds = ref<string[]>([])
 const activeCaseType = ref<'folder' | 'module'>('folder') // 激活计划树类型
 const setRootModules = (names: string[]) => (rootModulesName.value = names)
+const split = ref<number>(0.2)
+const confirmRef = ref<InstanceType<typeof YPopConfirm> | null>(null)
+const { send: save } = useRequest((param) => createPlanModuleTree(param), { immediate: false })
+const confirmHandler = () => {
+    const { field } = confirmRef.value?.form || {}
+    if (field) {
+        const params: CreateOrUpdateModule = {
+            projectId: currentProjectId.value,
+            name: field,
+            parentId: 'NONE',
+        }
+        save(params).then(() => {
+            window.$message.success(t('caseManagement.featureCase.addSuccess'))
+            planTreeRef.value?.initModules()
+            addSubVisible.value = false
+        })
+    }
+}
 </script>
 <template>
     <div class="rounded-2xl bg-white">
@@ -28,7 +52,7 @@ const setRootModules = (names: string[]) => (rootModulesName.value = names)
         </div>
         <n-divider class="!my-0" />
         <div class="pageWrap">
-            <n-split direction="horizontal" :max="0.75" :min="0.25" class="h-full">
+            <n-split v-model:size="split" direction="horizontal" :min="0.2" class="h-full">
                 <template #1>
                     <div class="p-[24px] pb-0">
                         <div class="test-plan h-[100%]">
@@ -70,6 +94,7 @@ const setRootModules = (names: string[]) => (rootModulesName.value = names)
                                         }}
                                     </n-tooltip>
                                     <y-pop-confirm
+                                        ref="confirmRef"
                                         v-model:visible="addSubVisible"
                                         :title="t('testPlan.testPlanIndex.addSubModule')"
                                         :ok-text="t('common.confirm')"
@@ -78,11 +103,16 @@ const setRootModules = (names: string[]) => (rootModulesName.value = names)
                                         :field-config="{
                                             placeholder: t('testPlan.testPlanIndex.addGroupTip'),
                                         }"
+                                        @confirm="confirmHandler"
                                     />
                                 </div>
                             </div>
                             <n-divider class="my-[8px]" />
-                            <test-plan-tree ref="planTreeRef" @init="setRootModules" />
+                            <test-plan-tree
+                                ref="planTreeRef"
+                                :is-expand-all="isExpandAll"
+                                @init="setRootModules"
+                            />
                         </div>
                     </div>
                 </template>

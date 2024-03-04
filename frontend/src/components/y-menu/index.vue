@@ -32,6 +32,7 @@ const menuOptions: MenuOption[] = [
     {
         label: t('menu.caseManagement'),
         key: CaseManagementRouteEnum.CASE_MANAGEMENT,
+        icon: renderIcon('i-icon-track'),
         children: [
             {
                 // label: t('menu.caseManagement.featureCase'),

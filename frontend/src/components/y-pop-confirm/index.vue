@@ -29,6 +29,9 @@ const props = withDefaults(
         cancelText: 'common.cancel',
         subTitleTip: '',
         allNames: () => [],
+        fieldConfig: () => {
+            return {} as FieldConfig
+        },
     },
 )
 const { t } = useI18n()
@@ -59,6 +62,13 @@ const titleClass = computed(() => {
         ? 'ml-2 font-medium text-[var(--color-text-1)] text-[14px]'
         : 'mb-[8px] font-medium text-[var(--color-text-1)] text-[14px] leading-[22px]'
 })
+const handleConfirm = () => {
+    if (props.isDelete) {
+        emits('confirm', undefined, handleCancel)
+    } else {
+        emits('confirm', form.value, handleCancel)
+    }
+}
 watch(
     () => props.fieldConfig?.field,
     (val) => {
@@ -69,6 +79,7 @@ watch(
     () => props.visible,
     (val) => {
         currentVisible.value = val
+        form.value.field = props.fieldConfig?.field || ''
     },
 )
 
@@ -81,6 +92,10 @@ watch(
         emits('update:visible', val)
     },
 )
+defineExpose({
+    form,
+    // isPass,
+})
 </script>
 <template>
     <n-popconfirm v-model:show="currentVisible" :class="props.isDelete ? 'w-[352px]' : ''">
@@ -132,7 +147,7 @@ watch(
             <n-button size="tiny" @click="handleCancel">
                 {{ t(props.cancelText) || t('common.cancel') }}
             </n-button>
-            <n-button type="primary" size="tiny">
+            <n-button type="primary" size="tiny" @click="handleConfirm">
                 {{ t(props.okText) || t('common.confirm') }}
             </n-button>
         </template>
