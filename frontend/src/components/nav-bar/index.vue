@@ -2,6 +2,7 @@
 import { useRequest } from 'alova'
 import { watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import LanguageSetting from './LanguageSetting.vue'
 import { switchProject } from '/@/api/modules/project-management/project'
 import logo from '/@/assets/vue.svg'
 import HeaderWorkspace from '/@/components/header/HeaderWorkspace.vue'
@@ -74,11 +75,12 @@ watch(
             <n-divider vertical class="mr-0" />
         </div>
         <ul class="right-side">
-            <li>
+            <n-space justify="end" class="items-center">
                 <header-workspace />
-                <n-divider vertical class="mr-0" />
-            </li>
-            <li><personal-menus /></li>
+                <!-- <n-divider vertical class="mr-0" /> -->
+                <language-setting />
+                <personal-menus />
+            </n-space>
         </ul>
     </div>
 </template>

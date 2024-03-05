@@ -68,6 +68,7 @@ const naive = create({
         NSplit,
         NPopover,
         NPopconfirm,
+        NDivider,
     ],
 })
 

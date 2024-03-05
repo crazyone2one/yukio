@@ -9,12 +9,12 @@ import cn.master.yukio.dto.user.UserExtendDTO;
 import cn.master.yukio.entity.*;
 import cn.master.yukio.exception.MSException;
 import cn.master.yukio.mapper.ProjectMapper;
+import cn.master.yukio.mapper.ProjectVersionMapper;
 import cn.master.yukio.mapper.UserRoleRelationMapper;
 import cn.master.yukio.service.IOperationLogService;
 import cn.master.yukio.service.IProjectService;
 import cn.master.yukio.service.IUserService;
-import cn.master.yukio.util.JsonUtils;
-import cn.master.yukio.util.Translator;
+import cn.master.yukio.util.*;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.core.query.QueryMethods;
@@ -25,6 +25,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -48,10 +49,12 @@ import static cn.master.yukio.entity.table.UserTableDef.USER;
  */
 @Service
 @RequiredArgsConstructor
+@Transactional(rollbackFor = Exception.class)
 public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> implements IProjectService {
     private final IUserService userService;
     private final UserRoleRelationMapper userRoleRelationMapper;
     private final IOperationLogService operationLogService;
+    private final ProjectVersionMapper projectVersionMapper;
 
     private final static String PREFIX = "/system/project";
     private final static String ADD_PROJECT = PREFIX + "/add";
@@ -78,12 +81,32 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
             projectDTO.setModuleIds(addProjectDTO.getModuleIds());
         }
         mapper.insert(project);
+        addProjectVersion(project);
         ProjectAddMemberBatchRequest memberRequest = new ProjectAddMemberBatchRequest();
         memberRequest.setProjectIds(List.of(project.getId()));
         memberRequest.setUserIds(addProjectDTO.getUserIds());
         addProjectAdmin(memberRequest, createUser, path, OperationLogType.ADD.name(), Translator.get("add"), module);
         BeanUtils.copyProperties(project, projectDTO);
         return projectDTO;
+    }
+
+    private void addProjectVersion(Project project) {
+        ProjectVersion projectVersion = ProjectVersion.builder()
+                .projectId(project.getId())
+                .name("v1.0")
+                .description(project.getDescription())
+                .status("open")
+                .latest(true)
+                .publishTime(LocalDateTime.now())
+                .startTime(LocalDateTime.now())
+                .createUser(SessionUtils.getUserId())
+                .build();
+        boolean exists = QueryChain.of(ProjectVersion.class).where(ProjectVersion::getProjectId).eq(projectVersion.getProjectId())
+                .and(ProjectVersion::getName).eq(projectVersion.getName()).exists();
+        if (exists) {
+            throw new MSException("当前版本已经存在");
+        }
+        projectVersionMapper.insert(projectVersion);
     }
 
     private void addProjectAdmin(ProjectAddMemberBatchRequest request, String createUser, String path, String type, String content, String module) {
@@ -241,6 +264,11 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
         userService.updateById(user);
         //UserDTO userDTO = userService.getUserDtoByKeyword(user.getId());
         return userService.getUserDtoByKeyword(user.getId());
+    }
+
+    @Override
+    public Project checkResourceExist(String id) {
+        return ServiceUtils.checkResourceExist(mapper.selectOneById(id), "permission.project.name");
     }
 
     private Page<ProjectDTO> buildUserInfo(Page<ProjectDTO> page) {

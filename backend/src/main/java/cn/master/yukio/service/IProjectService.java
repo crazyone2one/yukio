@@ -26,4 +26,6 @@ public interface IProjectService extends IService<Project> {
     List<Project> getUserProject(String organizationId, String userId);
 
     UserDTO switchProject(ProjectSwitchRequest request, String currentUserId);
+
+    Project checkResourceExist(String id);
 }

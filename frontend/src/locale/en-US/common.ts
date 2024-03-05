@@ -35,6 +35,8 @@ export default {
   'common.editFailed': 'Edit failed',
   'common.saveSuccess': 'Save success',
   'common.saveFailed': 'Save failed',
+  'common.linkSuccess': 'Link success',
+  'common.unLinkSuccess': 'Unlink success',
   'common.confirmEnable': 'Confirm enable',
   'common.confirmEnd': 'Confirm end',
   'common.confirmStart': 'Confirm start',
@@ -117,4 +119,10 @@ export default {
   'common.validateSuccess': 'Validate success',
   'common.to': 'To',
   'common.tip': 'Tips',
+  'common.stay': 'Stay',
+  'common.apply': 'Apply',
+  'common.stop': 'Stop',
+  'common.module': 'Module',
+  'common.yes': 'Yes',
+  'common.no': 'No'
 };

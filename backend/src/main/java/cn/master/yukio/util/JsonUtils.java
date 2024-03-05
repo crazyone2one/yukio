@@ -100,4 +100,7 @@ public class JsonUtils {
             throw new RuntimeException(e);
         }
     }
+    public static List parseArray(String content) {
+        return parseArray(content, Object.class);
+    }
 }

@@ -37,6 +37,8 @@ export default {
   'common.editFailed': '编辑失败',
   'common.saveSuccess': '保存成功',
   'common.saveFailed': '保存失败',
+  'common.linkSuccess': '关联成功',
+  'common.unLinkSuccess': '取消关联成功',
   'common.confirmEnable': '确认启用',
   'common.confirmDisable': '确认禁用',
   'common.confirmClose': '确认关闭',
@@ -55,7 +57,7 @@ export default {
   'common.revokeDelete': '撤销删除',
   'common.revokeDeleteSuccess': '已撤销删除',
   'common.unSaveLeaveTitle': '离开此页面？',
-  'common.unSaveLeaveContent': '系统可能不会保存你所做的更改',
+  'common.unSaveLeaveContent': '系统不会保存您所做的更改',
   'common.leave': '离开',
   'common.rename': '重命名',
   'common.noData': '暂无数据',
@@ -120,4 +122,10 @@ export default {
   'common.validateSuccess': '验证成功',
   'common.to': '至',
   'common.tip': '温馨提示',
+  'common.stay': '留下',
+  'common.apply': '应用',
+  'common.stop': '停止',
+  'common.module': '模块',
+  'common.yes': '是',
+  'common.no': '否'
 };
