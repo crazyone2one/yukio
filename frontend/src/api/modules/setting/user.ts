@@ -1,9 +1,14 @@
 import { SelectOption } from 'naive-ui'
 import { UpdateOrgUrl } from '../../requrls/user'
 import instance from '/@/api'
-import { CreateUserUrl, GetSystemRoleUrl, GetUserListUrl } from '/@/api/requrls/setting/user'
+import {
+    CreateUserUrl,
+    GetSystemRoleUrl,
+    GetUserListUrl,
+    ResetPasswordUrl,
+} from '/@/api/requrls/setting/user'
 import { CommonList, TableQueryParams } from '/@/models/common'
-import { CreateUserResult, UserListItem } from '/@/models/setting/user'
+import { CreateUserResult, ResetUserPasswordParams, UserListItem } from '/@/models/setting/user'
 
 // 获取用户列表
 export function getUserList(page: number, pageSize: number, data: TableQueryParams) {
@@ -50,3 +55,11 @@ export const batchCreateUser = (userForm: {
 
     return instance.Post<CreateUserResult>(`${CreateUserUrl}`, params)
 }
+
+/**
+ * 重置用户密码
+ * @param data
+ * @returns
+ */
+export const resetUserPassword = (data: ResetUserPasswordParams) =>
+    instance.Post(`${ResetPasswordUrl}`, data)

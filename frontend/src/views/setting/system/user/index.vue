@@ -1,14 +1,17 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
 import { usePagination } from '@alova/scene-vue'
-import { DataTableColumns, NButton, NIcon, NSpace } from 'naive-ui'
-import { Ref, h, onBeforeMount, ref } from 'vue'
-import { getUserList } from '/@/api/modules/setting/user'
-import { FormItemModel } from '/@/components/batch-form/types'
+import { useRequest } from 'alova'
+import { DataTableColumns, DataTableRowKey, DropdownOption, NButton, NIcon, NSpace } from 'naive-ui'
+import { h, onBeforeMount, ref } from 'vue'
+import { getUserList, resetUserPassword } from '/@/api/modules/setting/user'
+import TableMoreAction from '/@/components/table-more-action/index.vue'
+import { ActionsItem } from '/@/components/table-more-action/types'
 import YTagGroup from '/@/components/y-tag/YTagGroup.vue'
 import { useI18n } from '/@/hooks/use-i18n'
-import { CommonList, TableQueryParams } from '/@/models/common'
+import { BatchActionQueryParams, CommonList, TableQueryParams } from '/@/models/common'
 import { UserListItem } from '/@/models/setting/user'
+import { characterLimit } from '/@/utils'
 import AddUserModal from '/@/views/setting/system/user/components/SimpleAddModal.vue'
 
 type UserModalMode = 'create' | 'edit'
@@ -17,9 +20,29 @@ const keyword = ref('')
 const param = ref<TableQueryParams>({})
 const visible = ref(false)
 const userFormMode = ref<UserModalMode>('create')
-
+const checkedRowKeys = ref<DataTableRowKey[]>([])
 const addUserModalRef = ref<InstanceType<typeof AddUserModal> | null>(null)
-
+const tableActions: ActionsItem[] = [
+    {
+        label: 'system.user.resetPassword',
+        eventTag: 'resetPassword',
+        permission: ['SYSTEM_USER:READ+UPDATE'],
+    },
+    {
+        label: 'system.user.disable',
+        eventTag: 'disabled',
+        permission: ['SYSTEM_USER:READ+UPDATE'],
+    },
+    {
+        isDivider: true,
+    },
+    {
+        label: 'system.user.delete',
+        eventTag: 'delete',
+        danger: true,
+        permission: ['SYSTEM_USER:READ+DELETE'],
+    },
+]
 const columns: DataTableColumns<UserListItem> = [
     {
         title: t('system.user.tableColumnEmail'),
@@ -111,12 +134,26 @@ const columns: DataTableColumns<UserListItem> = [
         render(row) {
             if (row.enable) {
                 return h(
-                    NButton,
+                    NSpace,
+                    {},
                     {
-                        text: true,
-                        type: 'primary',
+                        default: () => {
+                            return [
+                                h(
+                                    NButton,
+                                    {
+                                        text: true,
+                                        type: 'warning',
+                                    },
+                                    { default: () => t('system.user.editUser') },
+                                ),
+                                h(TableMoreAction, {
+                                    list: tableActions,
+                                    onSelect: (record) => handleSelect(record, row),
+                                }),
+                            ]
+                        },
                     },
-                    { default: () => t('system.user.editUser') },
                 )
             } else if (!row.enable) {
                 return h(
@@ -127,12 +164,12 @@ const columns: DataTableColumns<UserListItem> = [
                             return [
                                 h(
                                     NButton,
-                                    { text: true, type: 'primary' },
+                                    { text: true, type: 'info' },
                                     { default: () => t('system.user.enable') },
                                 ),
                                 h(
                                     NButton,
-                                    { text: true, type: 'primary' },
+                                    { text: true, type: 'error' },
                                     {
                                         default: () => t('system.user.delete'),
                                     },
@@ -185,12 +222,76 @@ const showUserModal = (mode: UserModalMode, record?: UserListItem) => {
         addUserModalRef.value?.editUser(record)
     }
 }
-
+const handleSelect = (item: DropdownOption, record: UserListItem) => {
+    switch (item.eventTag) {
+        case 'resetPassword':
+            resetPassword(record)
+            break
+        case 'disabled':
+            disabledUser(record)
+            break
+        case 'delete':
+            deleteUser(record)
+            break
+        default:
+            break
+    }
+}
 const handleAddUserCancel = (shouldSearch: boolean) => {
     visible.value = false
     if (shouldSearch) {
         fetchData()
     }
+}
+const { send: resetPwd } = useRequest((param) => resetUserPassword(param), {
+    immediate: false,
+})
+/**
+ *  重置密码
+ */
+const resetPassword = (
+    record?: UserListItem,
+    isBatch?: boolean,
+    params?: BatchActionQueryParams,
+) => {
+    let title = t('system.user.resetPswTip', { name: characterLimit(record?.name) })
+    let selectIds = [record?.id || '']
+    if (isBatch) {
+        title = t('system.user.batchResetPswTip', {
+            count: params?.currentSelectCount || checkedRowKeys.value.length,
+        })
+        selectIds = checkedRowKeys.value as string[]
+    }
+    window.$dialog.warning({
+        title: title,
+        content: t('system.user.resetPswContent'),
+        positiveText: t('system.user.resetPswConfirm'),
+        negativeText: t('system.user.resetPswCancel'),
+        onPositiveClick: () => {
+            // window.$message.success('确定')
+            resetPwd({
+                selectIds,
+                selectAll: !!params?.selectAll,
+                excludeIds: params?.excludeIds || [],
+                condition: { keyword: keyword.value },
+            }).then(() => {
+                window.$message.success(t('system.user.resetPswSuccess'))
+                checkedRowKeys.value = []
+            })
+        },
+    })
+}
+/**
+ * 禁用用户
+ */
+const disabledUser = (record?: UserListItem) => {
+    console.log('禁用用户', record)
+}
+/**
+ * 删除用户
+ */
+const deleteUser = (record?: UserListItem) => {
+    console.log('删除用户', record)
 }
 onBeforeMount(() => {
     fetchData()
