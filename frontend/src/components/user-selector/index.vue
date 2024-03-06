@@ -50,7 +50,7 @@ onBeforeMount(() => {
     loadList({})
 })
 onSuccess((res) => {
-    console.log(`output->res`, res)
+    // console.log(`output->res`, res)
     const { firstLabelKey, secondLabelKey, disabledKey, valueKey } = props
     res.data.forEach((item: UserSelectorOption) => {
         const option: SelectOption = {}

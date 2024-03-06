@@ -3,7 +3,10 @@ import { usePagination } from '@alova/scene-vue'
 import { DataTableColumns, NButton, NSpace } from 'naive-ui'
 import { h, ref, toRef } from 'vue'
 import AddOrganizationModal from './AddOrganizationModal.vue'
+import AddUserModal from './AddUserModal.vue'
 import { postOrgTable } from '/@/api/modules/setting/OrganizationAndProject'
+import TableMoreAction from '/@/components/table-more-action/index.vue'
+import { ActionsItem } from '/@/components/table-more-action/types'
 import { useI18n } from '/@/hooks/use-i18n'
 import { CommonList } from '/@/models/common'
 import { OrganizationListItem } from '/@/models/setting/orgnization'
@@ -19,8 +22,16 @@ const props = defineProps<SystemOrganizationProps>()
 const { t } = useI18n()
 const orgVisible = ref(false)
 const currentOrganizationId = ref('')
+const userVisible = ref(false)
+const AddUserModalRef = ref<InstanceType<typeof AddUserModal> | null>(null)
 const currentUpdateOrganization = ref<CreateOrUpdateSystemOrgParams>()
-
+const tableActions: ActionsItem[] = [
+    {
+        label: 'system.user.delete',
+        eventTag: 'delete',
+        danger: true,
+    },
+]
 const columns: DataTableColumns<OrganizationListItem> = [
     {
         title: t('system.organization.ID'),
@@ -123,7 +134,11 @@ const columns: DataTableColumns<OrganizationListItem> = [
                                 ),
                                 h(
                                     NButton,
-                                    { text: true, type: 'primary' },
+                                    {
+                                        text: true,
+                                        type: 'primary',
+                                        onClick: () => showAddUserModal(row),
+                                    },
                                     {
                                         default: () => t('system.organization.addMember'),
                                     },
@@ -133,6 +148,7 @@ const columns: DataTableColumns<OrganizationListItem> = [
                                     { text: true, type: 'primary' },
                                     { default: () => t('common.end') },
                                 ),
+                                h(TableMoreAction, { list: tableActions }),
                             ]
                         },
                     },
@@ -141,23 +157,7 @@ const columns: DataTableColumns<OrganizationListItem> = [
         },
     },
 ]
-// const data = Array.from({ length: 100 }).map((_, index) => ({
-//     id: index,
-//     num: `${index}`,
-//     name: `Organization ${index}`,
-//     memberCount: 100 - index,
-//     projectCount: 10 - index,
-//     enable: index % 2 === 0 ? true : false,
-//     deleted: index % 2 === 0 ? true : false,
-//     deleteUser: index % 2 === 0 ? `User ${index}` : '',
-//     deleteTime: index % 2 === 0 ? new Date().toLocaleString() : '',
-//     description: `This is the description of Organization ${index}`,
-//     createUser: `User ${index}`,
-//     updateUser: `User ${index}`,
-//     createTime: new Date().toLocaleString(),
-//     updateTime: new Date().toLocaleString(),
-//     memberIds: [],
-// }))
+
 const {
     // 加载状态
     // loading,
@@ -209,9 +209,13 @@ const handleAddOrgModalCancel = (shouldSearch: boolean) => {
         fetchData()
     }
 }
-// onMounted(() => {
-//     fetchData()
-// })
+const showAddUserModal = (record: OrganizationListItem) => {
+    currentOrganizationId.value = record.id
+    userVisible.value = true
+}
+const handleAddUserModalCancel = () => {
+    userVisible.value = false
+}
 defineExpose({ fetchData })
 </script>
 <template>
@@ -220,6 +224,13 @@ defineExpose({ fetchData })
         :visible="orgVisible"
         :current-organization="currentUpdateOrganization"
         @cancel="handleAddOrgModalCancel"
+    />
+    <add-user-modal
+        ref="AddUserModalRef"
+        :organization-id="currentOrganizationId"
+        :visible="userVisible"
+        @cancel="handleAddUserModalCancel"
+        @submit="fetchData"
     />
 </template>
 

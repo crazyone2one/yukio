@@ -10,6 +10,7 @@ import {
     CreateOrUpdateSystemProjectParams,
     OrgProjectTableItem,
 } from '/@/models/setting/system/orgAndProject'
+import { AddUserToOrgOrProjectParams } from '/@/models/setting/systemOrg'
 
 /**
  * 获取组织列表
@@ -100,3 +101,15 @@ export const createOrUpdateProjectByOrg = (data: CreateOrUpdateOrgProjectParams)
  * @returns // 获取组织下拉选项
  */
 export const getSystemOrgOption = () => instance.Post<Array<SelectOption>>(orgUrl.postOrgOptionsUrl)
+
+/**
+ * 给组织或项目添加成员
+ * @param data
+ * @returns
+ */
+export const addUserToOrgOrProject = (data: AddUserToOrgOrProjectParams) => {
+    return instance.Post(
+        `${data.projectId ? orgUrl.postAddProjectMemberUrl : orgUrl.postAddOrgMemberUrl}`,
+        data,
+    )
+}
