@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class UserSelectOption {
     private String id;
-    private String key;
+    private String value;
     private String name;
     private String label;
     private boolean selected = false;

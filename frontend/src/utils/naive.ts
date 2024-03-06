@@ -33,6 +33,7 @@ import {
     NTooltip,
     // create naive ui
     create,
+    NAlert,
 } from 'naive-ui'
 
 const naive = create({
@@ -69,6 +70,7 @@ const naive = create({
         NPopover,
         NPopconfirm,
         NDivider,
+        NAlert,
     ],
 })
 

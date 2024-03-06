@@ -151,8 +151,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         list.forEach(userRole -> {
             UserSelectOption userRoleOption = new UserSelectOption();
             userRoleOption.setId(userRole.getId());
-            userRoleOption.setKey(userRole.getId());
-            userRoleOption.setLabel(userRole.getId());
+            userRoleOption.setValue(userRole.getId());
+            userRoleOption.setLabel(userRole.getName());
             userRoleOption.setName(userRole.getName());
             userRoleOption.setSelected(StringUtils.equals(userRole.getId(), InternalUserRole.MEMBER.getValue()));
             userRoleOption.setCloseable(!StringUtils.equals(userRole.getId(), InternalUserRole.MEMBER.getValue()));

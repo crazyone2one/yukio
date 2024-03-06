@@ -1,56 +1,25 @@
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
 import { usePagination } from '@alova/scene-vue'
-import { cloneDeep } from 'lodash-es'
-import {
-    DataTableColumns,
-    FormInst,
-    FormRules,
-    NAlert,
-    NButton,
-    NIcon,
-    NSpace,
-    SelectOption,
-} from 'naive-ui'
-import { h, onMounted, ref } from 'vue'
+import { DataTableColumns, NButton, NIcon, NSpace } from 'naive-ui'
+import { Ref, h, onBeforeMount, ref } from 'vue'
 import { getUserList } from '/@/api/modules/setting/user'
+import { FormItemModel } from '/@/components/batch-form/types'
 import YTagGroup from '/@/components/y-tag/YTagGroup.vue'
 import { useI18n } from '/@/hooks/use-i18n'
 import { CommonList, TableQueryParams } from '/@/models/common'
 import { UserListItem } from '/@/models/setting/user'
+import AddUserModal from '/@/views/setting/system/user/components/SimpleAddModal.vue'
 
 type UserModalMode = 'create' | 'edit'
-interface UserForm {
-    id?: string
-    name: string
-    email: string
-    phone?: string
-    userGroup: string[]
-}
 const { t } = useI18n()
-
 const keyword = ref('')
 const param = ref<TableQueryParams>({})
 const visible = ref(false)
 const userFormMode = ref<UserModalMode>('create')
-const defaultUserForm = {
-    name: '',
-    email: '',
-    phone: '',
-    userGroup: [],
-}
-const userForm = ref<UserForm>(cloneDeep(defaultUserForm))
-const formRef = ref<FormInst | null>(null)
-const rules: FormRules = {
-    name: [{ required: true, message: t('system.user.createUserNameNotNull') }],
-    email: {
-        required: true,
-        message: t('system.user.createUserEmailNotNull'),
-    },
-    phone: {
-        message: t('system.user.createUserEmailNotNull'),
-    },
-}
-const userGroupOptions = ref([])
+
+const addUserModalRef = ref<InstanceType<typeof AddUserModal> | null>(null)
+
 const columns: DataTableColumns<UserListItem> = [
     {
         title: t('system.user.tableColumnEmail'),
@@ -213,38 +182,17 @@ const showUserModal = (mode: UserModalMode, record?: UserListItem) => {
     visible.value = true
     userFormMode.value = mode
     if (mode === 'edit' && record) {
-        userForm.value.id = record.id
-        userForm.value.name = record.name
-        ;(userForm.value.phone = record.phone ? record.phone.replace(/\s/g, '') : record.phone),
-            (userForm.value.email = record.email)
-        userForm.value.userGroup = record.userRoleList
+        addUserModalRef.value?.editUser(record)
     }
 }
-const handleBeforeClose = () => {
-    window.$dialog.warning({
-        title: t('common.tip'),
-        content: t('system.user.closeTip'),
-        positiveText: t('common.close'),
-        onPositiveClick: () => {
-            cancelCreate()
-        },
-    })
-}
-const cancelCreate = () => {
+
+const handleAddUserCancel = (shouldSearch: boolean) => {
     visible.value = false
-    resetUserForm()
+    if (shouldSearch) {
+        fetchData()
+    }
 }
-const resetUserForm = () => {
-    formRef.value?.validate()
-    userForm.value.email = ''
-    userForm.value.name = ''
-    userForm.value.phone = ''
-    userForm.value.id = ''
-    userForm.value.userGroup = userGroupOptions.value.filter(
-        (e: SelectOption) => e.selected === true,
-    )
-}
-onMounted(() => {
+onBeforeMount(() => {
     fetchData()
 })
 </script>
@@ -258,7 +206,7 @@ onMounted(() => {
                 <!-- <n-button type="primary" class="mr-3">
                     {{ t('system.user.emailInvite') }}
                 </n-button> -->
-                <n-button type="primary" class="mr-3">
+                <n-button class="mr-3">
                     {{ t('system.user.importUser') }}
                 </n-button>
             </div>
@@ -271,73 +219,12 @@ onMounted(() => {
         </div>
         <n-data-table :columns="columns" :data="data" />
     </n-card>
-    <n-modal v-model:show="visible" preset="dialog" transform-origin="center">
-        <template #header>
-            <div>
-                {{
-                    userFormMode === 'create'
-                        ? t('system.user.createUserModalTitle')
-                        : t('system.user.editUserModalTitle')
-                }}
-            </div>
-        </template>
-        <div>
-            <n-alert class="mb-[16px]">
-                {{ t('system.user.createUserTip') }}
-            </n-alert>
-            <n-form
-                v-if="visible"
-                ref="formRef"
-                :model="userForm"
-                :rules="rules"
-                label-placement="left"
-                label-width="auto"
-                :style="{
-                    maxWidth: '640px',
-                }"
-                class="rounded-[4px]"
-            >
-                <n-form-item :label="t('system.user.createUserName')" path="name">
-                    <n-input
-                        v-model:value="userForm.name"
-                        :placeholder="t('system.user.createUserNamePlaceholder')"
-                    />
-                </n-form-item>
-                <n-form-item :label="t('system.user.createUserEmail')" path="email">
-                    <n-input
-                        v-model:value="userForm.email"
-                        :placeholder="t('system.user.createUserEmailPlaceholder')"
-                    />
-                </n-form-item>
-                <n-form-item :label="t('system.user.createUserPhone')" path="phone">
-                    <n-input
-                        v-model:value="userForm.phone"
-                        :placeholder="t('system.user.createUserPhonePlaceholder')"
-                    />
-                </n-form-item>
-                <n-form-item :label="t('system.user.createUserUserGroup')">
-                    <n-select v-model:value="userForm.userGroup" :options="userGroupOptions" />
-                </n-form-item>
-            </n-form>
-        </div>
-        <template #action>
-            <n-button size="small" @click="handleBeforeClose">
-                {{ t('system.user.editUserModalCancelCreate') }}</n-button
-            >
-            <n-button v-if="userFormMode === 'create'" size="small">
-                {{ t('system.user.editUserModalSaveAndContinue') }}
-            </n-button>
-            <n-button type="primary" size="small">
-                {{
-                    t(
-                        userFormMode === 'create'
-                            ? 'system.user.editUserModalCreateUser'
-                            : 'system.user.editUserModalEditUser',
-                    )
-                }}</n-button
-            >
-        </template>
-    </n-modal>
+    <add-user-modal
+        ref="addUserModalRef"
+        :visible="visible"
+        :form-mode="userFormMode"
+        @cancel="handleAddUserCancel"
+    />
 </template>
 
 <style scoped></style>

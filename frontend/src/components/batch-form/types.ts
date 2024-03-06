@@ -11,8 +11,6 @@ export interface FormItemModel {
     rules?: (FormRules & CustomValidator)[]
     label?: string
     placeholder?: string
-    min?: number
-    max?: number
     maxLength?: number
     hideAsterisk?: boolean
     hideLabel?: boolean
@@ -21,5 +19,4 @@ export interface FormItemModel {
     // filedNames?: SelectFieldNames; // select option 选项字段名
     className?: string // 自定义样式
     defaultValue?: string | string[] | number | number[] | boolean // 默认值
-    hasRedStar?: boolean // 是否有红星
 }
