@@ -1,36 +1,32 @@
 <script setup lang="ts">
 import { DropdownOption } from 'naive-ui'
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { ActionsItem } from './types'
 
+const props = defineProps<{
+    list: ActionsItem[]
+}>()
 const { t } = useI18n()
 const emit = defineEmits(['select'])
-const options = ref([
-    {
-        label: t('system.user.resetPassword'),
-        key: 'resetPassword',
-        eventTag: 'resetPassword',
-    },
-    {
-        label: t('system.user.disable'),
-        eventTag: 'disabled',
-        key: 'disabled',
-    },
-    {
-        type: 'divider',
-        key: 'd1',
-    },
-    {
-        label: t('system.user.delete'),
-        eventTag: 'delete',
-        key: 'delete',
-    },
-])
+const options = ref<Array<DropdownOption>>([])
 
 const handleSelect = (value: string) => {
-    const item = options.value.find((e: DropdownOption) => e?.eventTag === value)
+    const item = options.value.find((e) => e.key === value)
     emit('select', item)
 }
+watchEffect(() => {
+    props.list.forEach((e: ActionsItem) => {
+        const option: DropdownOption = {}
+        if (e.isDivider) {
+            option.type = 'divider'
+        } else {
+            option.label = t(e.label || '')
+        }
+        option.key = e.eventTag
+        options.value.push(option)
+    })
+})
 </script>
 <template>
     <div>

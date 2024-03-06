@@ -35,6 +35,7 @@ const tableActions: ActionsItem[] = [
     },
     {
         isDivider: true,
+        eventTag: 'divider',
     },
     {
         label: 'system.user.delete',
@@ -223,7 +224,7 @@ const showUserModal = (mode: UserModalMode, record?: UserListItem) => {
     }
 }
 const handleSelect = (item: DropdownOption, record: UserListItem) => {
-    switch (item.eventTag) {
+    switch (item.key) {
         case 'resetPassword':
             resetPassword(record)
             break
