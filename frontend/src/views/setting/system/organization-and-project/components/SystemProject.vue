@@ -1,31 +1,44 @@
 <script setup lang="ts">
 import { usePagination } from '@alova/scene-vue'
 import { DataTableColumns, NButton, NSpace } from 'naive-ui'
-import { h, onMounted } from 'vue'
+import { h, onMounted, ref } from 'vue'
+import AddUserModal from './AddUserModal.vue'
 import { postProjectTable } from '/@/api/modules/setting/OrganizationAndProject'
+import BasePagination from '/@/components/base-pagination/index.vue'
+import UserAdminDiv from '/@/components/user-admin-div/index.vue'
 import { useI18n } from '/@/hooks/use-i18n'
 import { CommonList } from '/@/models/common'
 import { CreateOrUpdateSystemProjectParams } from '/@/models/setting/system/orgAndProject'
+
+export interface SystemOrganizationProps {
+    keyword: string
+}
 const { t } = useI18n()
+const props = defineProps<SystemOrganizationProps>()
+const userVisible = ref(false)
+const currentProjectId = ref('')
 const {
     // 加载状态
     // loading,
 
     // 列表数据
     data,
-
-    // 当前页码，改变此页码将自动触发请求
-    //  page,
-
-    // 每页数据条数
-    //  pageSize,
+    page,
+    pageSize,
 
     // 总数据量
     //  total,
     send: fetchData,
 } = usePagination(
     // Method实例获取函数，它将接收page和pageSize，并返回一个Method实例
-    (page, pageSize) => postProjectTable(page, pageSize, { keyword: '' }),
+    (page, pageSize) => {
+        const param = {
+            current: page,
+            pageSize: pageSize,
+            keyword: '',
+        }
+        return postProjectTable(param)
+    },
     {
         // 请求前的初始数据（接口返回的数据格式）
         initialData: {
@@ -37,22 +50,30 @@ const {
         immediate: false,
         // total: (response) => response.totalRow,
         data: (response: CommonList<CreateOrUpdateSystemProjectParams>) => response.records,
+        // watchingStates: [props.keyword],
     },
 )
 const columns: DataTableColumns<CreateOrUpdateSystemProjectParams> = [
     {
         title: t('system.organization.ID'),
         key: 'num',
-        width: 100,
+        ellipsis: {
+            tooltip: true,
+        },
     },
     {
         title: t('system.organization.name'),
         key: 'name',
-        width: 300,
+        ellipsis: {
+            tooltip: true,
+        },
     },
     {
         title: t('system.organization.member'),
         key: 'memberCount',
+        render(record) {
+            return h('span', {}, { default: () => record.memberCount || 0 })
+        },
     },
 
     {
@@ -78,6 +99,12 @@ const columns: DataTableColumns<CreateOrUpdateSystemProjectParams> = [
             tooltip: true,
         },
         width: 200,
+        render(record) {
+            return h(UserAdminDiv, {
+                isAdmin: record.projectCreateUserIsAdmin,
+                name: record.createUser,
+            })
+        },
     },
     {
         title: t('system.organization.createTime'),
@@ -144,7 +171,11 @@ const columns: DataTableColumns<CreateOrUpdateSystemProjectParams> = [
                                 ),
                                 h(
                                     NButton,
-                                    { text: true, type: 'primary' },
+                                    {
+                                        text: true,
+                                        type: 'primary',
+                                        onClick: () => showAddUserModal(row),
+                                    },
                                     {
                                         default: () => t('system.organization.addMember'),
                                     },
@@ -162,11 +193,25 @@ const columns: DataTableColumns<CreateOrUpdateSystemProjectParams> = [
         },
     },
 ]
+const showAddUserModal = (record: CreateOrUpdateSystemProjectParams) => {
+    currentProjectId.value = record.id as string
+    userVisible.value = true
+}
+const handleAddUserModalCancel = () => {
+    userVisible.value = false
+}
 onMounted(() => {
     fetchData()
 })
 </script>
 <template>
     <n-data-table :columns="columns" :data="data" />
+    <base-pagination :page="page" :page-size="pageSize" />
+    <add-user-modal
+        :project-id="currentProjectId"
+        :visible="userVisible"
+        @submit="fetchData"
+        @cancel="handleAddUserModalCancel"
+    />
 </template>
 <style scoped></style>

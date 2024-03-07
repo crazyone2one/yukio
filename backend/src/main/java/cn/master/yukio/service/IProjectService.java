@@ -1,6 +1,7 @@
 package cn.master.yukio.service;
 
 import cn.master.yukio.dto.project.*;
+import cn.master.yukio.dto.request.ProjectAddMemberBatchRequest;
 import cn.master.yukio.dto.user.UserDTO;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
@@ -28,4 +29,6 @@ public interface IProjectService extends IService<Project> {
     UserDTO switchProject(ProjectSwitchRequest request, String currentUserId);
 
     Project checkResourceExist(String id);
+
+    void addProjectMember(ProjectAddMemberBatchRequest request, String createUser);
 }

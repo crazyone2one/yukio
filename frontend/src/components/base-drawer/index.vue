@@ -71,7 +71,11 @@ const handleCancel = () => {
                         </div>
                     </slot>
                     <div>
-                        <n-button v-if="props.showFullScreen" @click="fullScreen?.toggleFullScreen">
+                        <n-button
+                            v-if="props.showFullScreen"
+                            size="tiny"
+                            @click="fullScreen?.toggleFullScreen"
+                        >
                             <template #icon>
                                 <n-icon>
                                     <span

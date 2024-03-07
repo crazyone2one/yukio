@@ -62,9 +62,7 @@ export const createOrUpdateOrg = (
  * @param data
  * @returns
  */
-export const postProjectTable = (page: number, pageSize: number, data: TableQueryParams) => {
-    data.current = page
-    data.pageSize = pageSize
+export const postProjectTable = (data: TableQueryParams) => {
     const method = instance.Post<CommonList<CreateOrUpdateSystemProjectParams>>(
         orgUrl.postProjectTableUrl,
         data,

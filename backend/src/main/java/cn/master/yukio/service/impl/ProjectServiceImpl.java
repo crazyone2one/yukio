@@ -14,7 +14,10 @@ import cn.master.yukio.mapper.UserRoleRelationMapper;
 import cn.master.yukio.service.IOperationLogService;
 import cn.master.yukio.service.IProjectService;
 import cn.master.yukio.service.IUserService;
-import cn.master.yukio.util.*;
+import cn.master.yukio.util.JsonUtils;
+import cn.master.yukio.util.ServiceUtils;
+import cn.master.yukio.util.SessionUtils;
+import cn.master.yukio.util.Translator;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.core.query.QueryMethods;
@@ -271,6 +274,44 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
         return ServiceUtils.checkResourceExist(mapper.selectOneById(id), "permission.project.name");
     }
 
+    @Override
+    public void addProjectMember(ProjectAddMemberBatchRequest request, String createUser) {
+        addProjectMember(request, createUser, ADD_MEMBER, OperationLogType.ADD.name(), Translator.get("add"), OperationLogModule.SETTING_SYSTEM_ORGANIZATION);
+    }
+
+    private void addProjectMember(ProjectAddMemberBatchRequest request, String createUser, String path, String type, String content, String module) {
+        List<LogDTO> logDTOList = new ArrayList<>();
+        //List<UserRoleRelation> userRoleRelations = new ArrayList<>();
+        request.getProjectIds().forEach(projectId -> {
+            Project project = getById(projectId);
+            Map<String, String> userMap = addUserPre(request, createUser, path, module, projectId, project);
+            request.getUserIds().forEach(userId -> {
+                List<UserRoleRelation> userRoleRelations1 = QueryChain.of(UserRoleRelation.class).where(UserRoleRelation::getUserId).eq(userId)
+                        .and(UserRoleRelation::getSourceId).eq(projectId).list();
+                if (userRoleRelations1.isEmpty()) {
+                    UserRoleRelation userRoleRelation = UserRoleRelation.builder()
+                            .userId(userId)
+                            .roleId(InternalUserRole.PROJECT_MEMBER.getValue())
+                            .sourceId(projectId)
+                            .createUser(createUser)
+                            .organizationId(project.getOrganizationId())
+                            .build();
+                    userRoleRelationMapper.insert(userRoleRelation);
+                    String logProjectId = OperationLogConstants.SYSTEM;
+                    if (StringUtils.equals(module, OperationLogModule.SETTING_ORGANIZATION_PROJECT)) {
+                        logProjectId = OperationLogConstants.ORGANIZATION;
+                    }
+                    LogDTO logDTO = new LogDTO(logProjectId, OperationLogConstants.SYSTEM, userRoleRelation.getId(), createUser, type, module, content + Translator.get("project_member") + ": " + userMap.get(userId));
+                    setLog(logDTO, path, HttpMethodConstants.POST.name(), logDTOList);
+                }
+            });
+        });
+        //if (CollectionUtils.isNotEmpty(userRoleRelations)) {
+        //    userRoleRelationMapper.insertBatch(userRoleRelations);
+        //}
+        operationLogService.batchAdd(logDTOList);
+    }
+
     private Page<ProjectDTO> buildUserInfo(Page<ProjectDTO> page) {
         //取项目的创建人  修改人  删除人到一个list中
         List<String> userIds = new ArrayList<>();
@@ -329,15 +370,12 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     }
 
     private List<ProjectDTO> getProjectExtendDTOList(List<String> projectIds) {
-        return QueryChain.of(Project.class).select(PROJECT.ID)
-                .from(PROJECT)
-                .leftJoin(
-                        QueryChain.of(UserRoleRelation.class).select(USER_ROLE_RELATION.SOURCE_ID)
-                                .from(USER_ROLE_RELATION)
-                                .leftJoin(USER).on(USER_ROLE_RELATION.USER_ID.eq(USER.ID))
-                                .where(USER_ROLE_RELATION.SOURCE_ID.in(projectIds))
-                ).as("temp").on(PROJECT.ID.eq("temp.source_id"))
-                .groupBy(PROJECT.ID)
+        return QueryChain.of(UserRoleRelation.class).select(USER_ROLE_RELATION.SOURCE_ID.as("id"),
+                        QueryMethods.count(QueryMethods.distinct(USER.ID)).as("memberCount"))
+                .from(USER_ROLE_RELATION.as("ur"))
+                .leftJoin(USER).as("u").on(USER_ROLE_RELATION.USER_ID.eq(USER.ID))
+                .where(USER_ROLE_RELATION.SOURCE_ID.in(projectIds))
+                .groupBy(USER_ROLE_RELATION.SOURCE_ID)
                 .listAs(ProjectDTO.class);
     }
 }

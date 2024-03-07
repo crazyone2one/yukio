@@ -4,6 +4,8 @@ import cn.master.yukio.dto.project.AddProjectRequest;
 import cn.master.yukio.dto.project.ProjectDTO;
 import cn.master.yukio.dto.project.ProjectRequest;
 import cn.master.yukio.dto.project.ProjectSwitchRequest;
+import cn.master.yukio.dto.request.ProjectAddMemberBatchRequest;
+import cn.master.yukio.dto.request.ProjectAddMemberRequest;
 import cn.master.yukio.dto.user.UserDTO;
 import cn.master.yukio.entity.Project;
 import cn.master.yukio.entity.User;
@@ -119,8 +121,22 @@ public class ProjectController {
     public List<Project> getUserProject(@PathVariable String organizationId) {
         return iProjectService.getUserProject(organizationId, SessionUtils.getUserId());
     }
+
     @PostMapping("/switch")
     public UserDTO switchProject(@RequestBody ProjectSwitchRequest request) {
         return iProjectService.switchProject(request, SessionUtils.getUserId());
+    }
+
+    /**
+     * 系统设置-系统-组织与项目-项目-添加成员
+     *
+     * @param request
+     */
+    @PostMapping("/add-member")
+    public void addProjectMember(@Validated @RequestBody ProjectAddMemberRequest request) {
+        ProjectAddMemberBatchRequest batchRequest = new ProjectAddMemberBatchRequest();
+        batchRequest.setProjectIds(List.of(request.getProjectId()));
+        batchRequest.setUserIds(request.getUserIds());
+        iProjectService.addProjectMember(batchRequest, SessionUtils.getUserId());
     }
 }

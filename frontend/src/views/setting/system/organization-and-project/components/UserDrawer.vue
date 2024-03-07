@@ -118,6 +118,7 @@ const {
         initialPageSize: 10, // 初始每页数据条数，默认为10
         immediate: false,
         data: (response) => response.records,
+        watchingStates: [keyword],
     },
 )
 const { send: deleteUser } = useRequest(
