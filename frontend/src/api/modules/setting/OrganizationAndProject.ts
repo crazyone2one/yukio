@@ -9,8 +9,10 @@ import {
     CreateOrUpdateSystemOrgParams,
     CreateOrUpdateSystemProjectParams,
     OrgProjectTableItem,
+    SystemGetUserByOrgOrProjectIdParams,
 } from '/@/models/setting/system/orgAndProject'
 import { AddUserToOrgOrProjectParams } from '/@/models/setting/systemOrg'
+import { UserListItem } from '/@/models/setting/user'
 
 /**
  * 获取组织列表
@@ -113,3 +115,17 @@ export const addUserToOrgOrProject = (data: AddUserToOrgOrProjectParams) => {
         data,
     )
 }
+/**
+ * 根据 orgId 或 projectId 获取用户列表
+ * @param data
+ */
+export const postUserTableByOrgIdOrProjectId = (data: SystemGetUserByOrgOrProjectIdParams) =>
+    instance.Post<CommonList<UserListItem>>(
+        `${data.organizationId ? orgUrl.postOrgMemberUrl : orgUrl.postProjectMemberUrl}`,
+        data,
+    )
+
+export const deleteUserFromOrgOrProject = (sourceId: string, userId: string, isOrg = true) =>
+    instance.Get(
+        `${isOrg ? orgUrl.getDeleteOrgMemberUrl : orgUrl.getDeleteProjectMemberUrl}${sourceId}/${userId}`,
+    )

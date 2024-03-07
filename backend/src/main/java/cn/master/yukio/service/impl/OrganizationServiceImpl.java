@@ -172,7 +172,7 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
                                         .or(USER.EMAIL.like(request.getKeyword()))
                                         .or(USER.PHONE.like(request.getKeyword()))))
                         .orderBy(USER_ROLE_RELATION.CREATE_TIME.desc()).as("temp")
-        ).groupBy("temp.id").orderBy("adminFlag desc", "groupTime desc");
+        ).groupBy("temp.id").orderBy("adminFlag desc", "groupTime desc").as("temp");
         return mapper.paginateAs(Page.of(request.getCurrent(), request.getPageSize()), queryChain, UserExtendDTO.class);
     }
 

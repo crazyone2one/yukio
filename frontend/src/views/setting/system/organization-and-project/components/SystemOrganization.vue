@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { usePagination } from '@alova/scene-vue'
 import { DataTableColumns, NButton, NSpace } from 'naive-ui'
-import { h, ref, toRef } from 'vue'
+import { h, reactive, ref, toRef } from 'vue'
 import AddOrganizationModal from './AddOrganizationModal.vue'
 import AddUserModal from './AddUserModal.vue'
+import UserDrawer from './UserDrawer.vue'
 import { postOrgTable } from '/@/api/modules/setting/OrganizationAndProject'
 import TableMoreAction from '/@/components/table-more-action/index.vue'
 import { ActionsItem } from '/@/components/table-more-action/types'
@@ -46,6 +47,17 @@ const columns: DataTableColumns<OrganizationListItem> = [
     {
         title: t('system.organization.member'),
         key: 'memberCount',
+        render(rowData) {
+            return h(
+                'span',
+                { onClick: () => showUserDrawer(rowData) },
+                {
+                    default: () => {
+                        return rowData.memberCount
+                    },
+                },
+            )
+        },
     },
     {
         title: t('system.organization.project'),
@@ -157,7 +169,16 @@ const columns: DataTableColumns<OrganizationListItem> = [
         },
     },
 ]
-
+const currentProjectDrawer = reactive({
+    visible: false,
+    organizationId: '',
+    currentName: '',
+})
+const currentUserDrawer = reactive({
+    visible: false,
+    organizationId: '',
+    currentName: '',
+})
 const {
     // 加载状态
     // loading,
@@ -216,6 +237,15 @@ const showAddUserModal = (record: OrganizationListItem) => {
 const handleAddUserModalCancel = () => {
     userVisible.value = false
 }
+const showUserDrawer = (record: OrganizationListItem) => {
+    currentProjectDrawer.visible = false
+    currentUserDrawer.visible = true
+    currentUserDrawer.organizationId = record.id
+    currentUserDrawer.currentName = record.name
+}
+const handleUserDrawerCancel = () => {
+    currentUserDrawer.visible = false
+}
 defineExpose({ fetchData })
 </script>
 <template>
@@ -231,6 +261,11 @@ defineExpose({ fetchData })
         :visible="userVisible"
         @cancel="handleAddUserModalCancel"
         @submit="fetchData"
+    />
+    <user-drawer
+        v-bind="currentUserDrawer"
+        @cancel="handleUserDrawerCancel"
+        @request-fetch-data="fetchData"
     />
 </template>
 
