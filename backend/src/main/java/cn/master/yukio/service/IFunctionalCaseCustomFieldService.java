@@ -1,6 +1,7 @@
 package cn.master.yukio.service;
 
 import cn.master.yukio.dto.functional.CaseCustomFieldDTO;
+import cn.master.yukio.dto.functional.FunctionalCaseCustomFieldDTO;
 import com.mybatisflex.core.service.IService;
 import cn.master.yukio.entity.FunctionalCaseCustomField;
 
@@ -15,4 +16,6 @@ import java.util.List;
 public interface IFunctionalCaseCustomFieldService extends IService<FunctionalCaseCustomField> {
 
     void saveCustomField(String id, List<CaseCustomFieldDTO> customFields);
+
+    List<FunctionalCaseCustomFieldDTO> getCustomFieldsByCaseIds(List<String> ids);
 }

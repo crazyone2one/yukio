@@ -21,8 +21,7 @@ const Setting: RouteRecordRaw = {
                 {
                     path: 'user',
                     name: SettingRouteEnum.SETTING_SYSTEM_USER_SINGLE,
-                    component: () =>
-                        import(`/@/views/setting/system/user/index.vue`),
+                    component: () => import(`/@/views/setting/system/user/index.vue`),
                     meta: {
                         locale: 'menu.settings.system.user',
                         roles: ['SYSTEM_USER:READ'],
@@ -33,9 +32,7 @@ const Setting: RouteRecordRaw = {
                     path: 'usergroup',
                     name: SettingRouteEnum.SETTING_SYSTEM_USER_GROUP,
                     component: () =>
-                        import(
-                            `/@/views/setting/system/user-group/SystemUserGroup.vue`
-                        ),
+                        import(`/@/views/setting/system/user-group/SystemUserGroup.vue`),
                     meta: {
                         locale: 'menu.settings.system.usergroup',
                         roles: ['SYSTEM_USER_ROLE:READ'],
@@ -46,9 +43,7 @@ const Setting: RouteRecordRaw = {
                     path: 'organization-and-project',
                     name: SettingRouteEnum.SETTING_SYSTEM_ORGANIZATION,
                     component: () =>
-                        import(
-                            `/@/views/setting//system/organization-and-project/index.vue`
-                        ),
+                        import(`/@/views/setting//system/organization-and-project/index.vue`),
                     meta: {
                         locale: 'menu.settings.system.organizationAndProject',
                         roles: ['SYSTEM_ORGANIZATION_PROJECT:READ'],
@@ -58,8 +53,7 @@ const Setting: RouteRecordRaw = {
                 {
                     path: 'log',
                     name: SettingRouteEnum.SETTING_SYSTEM_LOG,
-                    component: () =>
-                        import(`/@/views/setting/system/log/index.vue`),
+                    component: () => import(`/@/views/setting/system/log/index.vue`),
                     meta: {
                         locale: 'menu.settings.system.log',
                         roles: ['SYSTEM_LOG:READ'],
@@ -89,10 +83,7 @@ const Setting: RouteRecordRaw = {
                 {
                     path: 'member',
                     name: SettingRouteEnum.SETTING_ORGANIZATION_MEMBER,
-                    component: () =>
-                        import(
-                            `/@/views/setting/organization/member/index.vue`
-                        ),
+                    component: () => import(`/@/views/setting/organization/member/index.vue`),
                     meta: {
                         locale: 'menu.settings.organization.member',
                         roles: ['ORGANIZATION_MEMBER:READ'],
@@ -103,9 +94,7 @@ const Setting: RouteRecordRaw = {
                     path: 'usergroup',
                     name: SettingRouteEnum.SETTING_ORGANIZATION_USER_GROUP,
                     component: () =>
-                        import(
-                            `/@/views/setting/organization/user-group/OrgUserGroup.vue`
-                        ),
+                        import(`/@/views/setting/organization/user-group/OrgUserGroup.vue`),
                     meta: {
                         locale: 'menu.settings.organization.userGroup',
                         roles: ['ORGANIZATION_USER_ROLE:READ'],
@@ -115,10 +104,7 @@ const Setting: RouteRecordRaw = {
                 {
                     path: 'project',
                     name: SettingRouteEnum.SETTING_ORGANIZATION_PROJECT,
-                    component: () =>
-                        import(
-                            `/@/views/setting/organization/project/OrgProject.vue`
-                        ),
+                    component: () => import(`/@/views/setting/organization/project/OrgProject.vue`),
                     meta: {
                         locale: 'menu.settings.organization.project',
                         roles: ['ORGANIZATION_PROJECT:READ'],
@@ -128,12 +114,65 @@ const Setting: RouteRecordRaw = {
                 {
                     path: 'template',
                     name: SettingRouteEnum.SETTING_ORGANIZATION_TEMPLATE,
-                    component: () =>
-                        import(
-                            `/@/views/setting/organization/template/index.vue`
-                        ),
+                    component: () => import(`/@/views/setting/organization/template/index.vue`),
                     meta: {
                         locale: 'menu.settings.organization.template',
+                        roles: ['ORGANIZATION_TEMPLATE:READ'],
+                        isTopMenu: true,
+                    },
+                },
+                {
+                    path: 'templateFiledSetting',
+                    name: SettingRouteEnum.SETTING_ORGANIZATION_TEMPLATE_FILED_SETTING,
+                    component: () =>
+                        import(
+                            `/@/views/setting/organization/template/components/OrdFieldSetting.vue`
+                        ),
+                    meta: {
+                        locale: 'menu.settings.organization.templateFieldSetting',
+                        roles: ['ORGANIZATION_TEMPLATE:READ'],
+                        isTopMenu: true,
+                    },
+                },
+                // 模板管理-模板列表
+                {
+                    path: 'templateManagement',
+                    name: SettingRouteEnum.SETTING_ORGANIZATION_TEMPLATE_MANAGEMENT,
+                    component: () =>
+                        import(
+                            `/@/views/setting/organization/template/components/TemplateManagement.vue`
+                        ),
+                    meta: {
+                        locale: 'menu.settings.organization.templateManagementList',
+                        roles: ['ORGANIZATION_TEMPLATE:READ'],
+                        isTopMenu: true,
+                    },
+                },
+                // 模板列表-创建&编辑模板
+                // 用例模板
+                {
+                    path: 'templateManagementCaseDetail/:mode?',
+                    name: SettingRouteEnum.SETTING_ORGANIZATION_TEMPLATE_MANAGEMENT_CASE_DETAIL,
+                    component: () =>
+                        import(
+                            `/@/views/setting/organization/template/components/TemplateDetail.vue`
+                        ),
+                    meta: {
+                        locale: 'system.orgTemplate.createCaseTemplate',
+                        roles: ['ORGANIZATION_TEMPLATE:READ'],
+                        isTopMenu: true,
+                    },
+                },
+                // 缺陷模板
+                {
+                    path: 'templateManagementBugDetail/:mode?',
+                    name: SettingRouteEnum.SETTING_ORGANIZATION_TEMPLATE_MANAGEMENT_BUG_DETAIL,
+                    component: () =>
+                        import(
+                            `/@/views/setting/organization/template/components/TemplateDetail.vue`
+                        ),
+                    meta: {
+                        locale: 'system.orgTemplate.createCaseTemplate',
                         roles: ['ORGANIZATION_TEMPLATE:READ'],
                         isTopMenu: true,
                     },

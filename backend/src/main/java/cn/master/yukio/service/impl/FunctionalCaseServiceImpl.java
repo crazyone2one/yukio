@@ -2,9 +2,7 @@ package cn.master.yukio.service.impl;
 
 import cn.master.yukio.constants.*;
 import cn.master.yukio.dto.LogDTO;
-import cn.master.yukio.dto.functional.CaseCustomFieldDTO;
-import cn.master.yukio.dto.functional.FunctionalCaseAddRequest;
-import cn.master.yukio.dto.functional.FunctionalCaseHistoryLogDTO;
+import cn.master.yukio.dto.functional.*;
 import cn.master.yukio.entity.*;
 import cn.master.yukio.mapper.FunctionalCaseBlobMapper;
 import cn.master.yukio.mapper.FunctionalCaseMapper;
@@ -12,6 +10,8 @@ import cn.master.yukio.service.*;
 import cn.master.yukio.util.JsonUtils;
 import cn.master.yukio.util.NumGenerator;
 import cn.master.yukio.util.ServiceUtils;
+import cn.master.yukio.util.Translator;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +23,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static cn.master.yukio.entity.table.FunctionalCaseTableDef.FUNCTIONAL_CASE;
 import static cn.master.yukio.entity.table.ProjectVersionTableDef.PROJECT_VERSION;
+import static cn.master.yukio.entity.table.CaseReviewFunctionalCaseTableDef.CASE_REVIEW_FUNCTIONAL_CASE;
 
 /**
  * 功能用例 服务层实现。
@@ -52,6 +57,8 @@ public class FunctionalCaseServiceImpl extends ServiceImpl<FunctionalCaseMapper,
     private final ICaseReviewService caseReviewService;
     private final ICaseReviewFunctionalCaseService caseReviewFunctionalCaseService;
     private final IOperationLogService operationLogService;
+    private final ICustomFieldOptionService customFieldOptionService;
+    private final IUserService userService;
 
     @Override
     public FunctionalCase addFunctionalCase(FunctionalCaseAddRequest request, List<MultipartFile> files, String userId, String organizationId) {
@@ -71,6 +78,65 @@ public class FunctionalCaseServiceImpl extends ServiceImpl<FunctionalCaseMapper,
         FunctionalCaseHistoryLogDTO historyLogDTO = getImportLogModule(functionalCase);
         saveImportDataLog(functionalCase, new FunctionalCaseHistoryLogDTO(), historyLogDTO, userId, organizationId, OperationLogType.ADD.name(), OperationLogModule.CASE_MANAGEMENT_CASE_CREATE);
         return functionalCase;
+    }
+
+    @Override
+    public Page<FunctionalCase> getFunctionalCasePage(FunctionalCasePageRequest request, boolean deleted) {
+        QueryChain<FunctionalCase> queryChain = queryChain().select(FUNCTIONAL_CASE.ALL_COLUMNS, PROJECT_VERSION.NAME.as("versionName"))
+                .leftJoin(PROJECT_VERSION).on(PROJECT_VERSION.ID.eq(FUNCTIONAL_CASE.VERSION_ID))
+                .where(FUNCTIONAL_CASE.PROJECT_ID.eq(request.getProjectId()))
+                .and(FUNCTIONAL_CASE.DELETED.eq(deleted))
+                .and(FUNCTIONAL_CASE.MODULE_ID.in(request.getModuleIds()))
+                .and(FUNCTIONAL_CASE.NAME.like(request.getKeyword())
+                        .or(FUNCTIONAL_CASE.NUM.like(request.getKeyword()))
+                        .or(FUNCTIONAL_CASE.TAGS.like(request.getKeyword())))
+                .and(FUNCTIONAL_CASE.ID.notIn(
+                        QueryChain.of(CaseReviewFunctionalCase.class).where(CASE_REVIEW_FUNCTIONAL_CASE.REVIEW_ID.eq(request.getReviewId()))
+                ).when(StringUtils.isNoneBlank(request.getReviewId())))
+                .and(FUNCTIONAL_CASE.ID.notIn(request.getExcludeIds()));
+        Page<FunctionalCase> page = mapper.paginate(Page.of(request.getCurrent(), request.getPageSize()), queryChain);
+        return handleCustomFields(page);
+    }
+
+    private Page<FunctionalCase> handleCustomFields(Page<FunctionalCase> page) {
+        List<FunctionalCase> functionalCaseLists = page.getRecords();
+        List<String> ids = functionalCaseLists.stream().map(FunctionalCase::getId).toList();
+        Map<String, List<FunctionalCaseCustomFieldDTO>> collect = getCaseCustomFiledMap(ids);
+        Set<String> userIds = extractUserIds(functionalCaseLists);
+        Map<String, String> userMap = userService.getUserNameMap(new ArrayList<>(userIds));
+        functionalCaseLists.forEach(functionalCasePageDTO -> {
+            functionalCasePageDTO.setCustomFields(collect.get(functionalCasePageDTO.getId()));
+            functionalCasePageDTO.setCreateUserName(userMap.get(functionalCasePageDTO.getCreateUser()));
+            functionalCasePageDTO.setUpdateUserName(userMap.get(functionalCasePageDTO.getUpdateUser()));
+            functionalCasePageDTO.setDeleteUserName(userMap.get(functionalCasePageDTO.getDeleteUser()));
+        });
+        return page;
+    }
+
+    private Set<String> extractUserIds(List<FunctionalCase> list) {
+        return list.stream()
+                .flatMap(functionalCasePageDTO -> Stream.of(functionalCasePageDTO.getUpdateUser(), functionalCasePageDTO.getDeleteUser(), functionalCasePageDTO.getCreateUser()))
+                .collect(Collectors.toSet());
+    }
+
+    private Map<String, List<FunctionalCaseCustomFieldDTO>> getCaseCustomFiledMap(List<String> ids) {
+        List<FunctionalCaseCustomFieldDTO> customFields = functionalCaseCustomFieldService.getCustomFieldsByCaseIds(ids);
+        customFields.forEach(customField -> {
+            if (customField.getInternal()) {
+                customField.setFieldName(translateInternalField(customField.getFieldName()));
+            }
+        });
+        List<String> fieldIds = customFields.stream().map(FunctionalCaseCustomFieldDTO::getFieldId).toList();
+        List<CustomFieldOption> fieldOptions = customFieldOptionService.getByFieldIds(fieldIds);
+        Map<String, List<CustomFieldOption>> customOptions = fieldOptions.stream().collect(Collectors.groupingBy(CustomFieldOption::getFieldId));
+        customFields.forEach(customField -> {
+            customField.setOptions(customOptions.get(customField.getFieldId()));
+        });
+        return customFields.stream().collect(Collectors.groupingBy(FunctionalCaseCustomFieldDTO::getCaseId));
+    }
+
+    private String translateInternalField(String filedName) {
+        return Translator.get("custom_field." + filedName);
     }
 
     private void saveImportDataLog(FunctionalCase functionalCase, FunctionalCaseHistoryLogDTO originalValue, FunctionalCaseHistoryLogDTO modifiedLogDTO, String userId, String organizationId, String type, String module) {

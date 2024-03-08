@@ -1,5 +1,6 @@
 package cn.master.yukio.entity;
 
+import cn.master.yukio.dto.functional.FunctionalCaseCustomFieldDTO;
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.Table;
@@ -7,6 +8,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import com.mybatisflex.core.handler.JacksonTypeHandler;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -144,5 +146,25 @@ public class FunctionalCase implements Serializable {
      * 删除时间
      */
     private LocalDateTime deleteTime;
+
+    @Schema(description = "自定义字段集合")
+    @Column(ignore = true)
+    private List<FunctionalCaseCustomFieldDTO> customFields;
+
+    @Schema(description = "版本名称")
+    @Column(ignore = true)
+    private String versionName;
+
+    @Schema(description = "创建人名称")
+    @Column(ignore = true)
+    private String createUserName;
+
+    @Schema(description = "更新人名称")
+    @Column(ignore = true)
+    private String updateUserName;
+
+    @Schema(description = "删除人名称")
+    @Column(ignore = true)
+    private String deleteUserName;
 
 }

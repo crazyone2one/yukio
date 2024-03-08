@@ -1,6 +1,8 @@
 package cn.master.yukio.service;
 
 import cn.master.yukio.dto.functional.FunctionalCaseAddRequest;
+import cn.master.yukio.dto.functional.FunctionalCasePageRequest;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
 import cn.master.yukio.entity.FunctionalCase;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,4 +18,7 @@ import java.util.List;
 public interface IFunctionalCaseService extends IService<FunctionalCase> {
 
     FunctionalCase addFunctionalCase(FunctionalCaseAddRequest request, List<MultipartFile> files, String userId, String organizationId);
+
+    Page<FunctionalCase> getFunctionalCasePage(FunctionalCasePageRequest request, boolean deleted);
+
 }

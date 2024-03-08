@@ -42,6 +42,7 @@ const emits = defineEmits<{
     (e: 'update:visible', visible: boolean): void
 }>()
 const formRef = ref<FormInst | null>(null)
+const isPass = ref(false)
 // 表单
 const form = ref({
     field: props.fieldConfig?.field || '',
@@ -63,7 +64,14 @@ const titleClass = computed(() => {
         ? 'ml-2 font-medium text-[var(--color-text-1)] text-[14px]'
         : 'mb-[8px] font-medium text-[var(--color-text-1)] text-[14px] leading-[22px]'
 })
-const handleConfirm = () => {
+const validateForm = async () => {
+    await formRef.value?.validate((errors) => {
+        isPass.value = !errors
+        console.log(isPass.value)
+    })
+}
+const handleConfirm = async () => {
+    // await validateForm()
     if (props.isDelete) {
         emits('confirm', undefined, handleCancel)
     } else {
@@ -71,21 +79,19 @@ const handleConfirm = () => {
     }
 }
 const rules: FormRules = {
-    name: [
-        {
-            required: true,
-            message: t('popConfirm.nameNotNull'),
-            validator(rule: FormItemRule, value: string) {
-                if ((props.allNames || []).includes(value)) {
-                    if (props.fieldConfig && props.fieldConfig.nameExistTipText) {
-                        return new Error(t(props.fieldConfig.nameExistTipText))
-                    } else {
-                        return new Error(t('popConfirm.nameExist'))
-                    }
+    name: {
+        required: true,
+        message: t('popConfirm.nameNotNull'),
+        validator(rule: FormItemRule, value: string) {
+            if ((props.allNames || []).includes(value)) {
+                if (props.fieldConfig && props.fieldConfig.nameExistTipText) {
+                    return new Error(t(props.fieldConfig.nameExistTipText))
+                } else {
+                    return new Error(t('popConfirm.nameExist'))
                 }
-            },
+            }
         },
-    ],
+    },
 }
 watch(
     () => props.fieldConfig?.field,
@@ -112,7 +118,7 @@ watch(
 )
 defineExpose({
     form,
-    // isPass,
+    isPass,
 })
 </script>
 <template>
@@ -142,7 +148,7 @@ defineExpose({
                 {{ props.subTitleTip }}
             </div>
             <!-- 表单展示 -->
-            <n-form v-else ref="formRef" :model="form" :rules="props.fieldConfig?.rules || rules">
+            <n-form v-else ref="formRef" :model="form" :rules="rules">
                 <n-form-item path="name">
                     <n-input
                         v-if="props.fieldConfig?.isTextArea"

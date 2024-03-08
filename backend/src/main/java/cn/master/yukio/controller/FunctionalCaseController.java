@@ -1,6 +1,7 @@
 package cn.master.yukio.controller;
 
 import cn.master.yukio.dto.functional.FunctionalCaseAddRequest;
+import cn.master.yukio.dto.functional.FunctionalCasePageRequest;
 import cn.master.yukio.entity.FunctionalCase;
 import cn.master.yukio.service.IFunctionalCaseService;
 import cn.master.yukio.util.SessionUtils;
@@ -83,14 +84,14 @@ public class FunctionalCaseController {
     }
 
     /**
-     * 分页查询功能用例。
+     * 用例管理-功能用例-用例列表查询。
      *
-     * @param page 分页对象
+     * @param request 分页对象
      * @return 分页对象
      */
-    @GetMapping("page")
-    public Page<FunctionalCase> page(Page<FunctionalCase> page) {
-        return iFunctionalCaseService.page(page);
+    @PostMapping("page")
+    public Page<FunctionalCase> page(@Validated @RequestBody FunctionalCasePageRequest request) {
+        return iFunctionalCaseService.getFunctionalCasePage(request, false);
     }
 
 }

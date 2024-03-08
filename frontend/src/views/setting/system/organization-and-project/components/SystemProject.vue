@@ -10,11 +10,8 @@ import { useI18n } from '/@/hooks/use-i18n'
 import { CommonList } from '/@/models/common'
 import { CreateOrUpdateSystemProjectParams } from '/@/models/setting/system/orgAndProject'
 
-export interface SystemOrganizationProps {
-    keyword: string
-}
 const { t } = useI18n()
-const props = defineProps<SystemOrganizationProps>()
+
 const userVisible = ref(false)
 const currentProjectId = ref('')
 const {
