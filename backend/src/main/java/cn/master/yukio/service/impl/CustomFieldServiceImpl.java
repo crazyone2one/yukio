@@ -1,15 +1,19 @@
 package cn.master.yukio.service.impl;
 
-import cn.master.yukio.service.IOrganizationParameterService;
-import cn.master.yukio.util.ServiceUtils;
-import com.mybatisflex.spring.service.impl.ServiceImpl;
 import cn.master.yukio.entity.CustomField;
 import cn.master.yukio.mapper.CustomFieldMapper;
 import cn.master.yukio.service.ICustomFieldService;
+import cn.master.yukio.service.IOrganizationParameterService;
+import cn.master.yukio.util.ServiceUtils;
+import com.mybatisflex.spring.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 自定义字段 服务层实现。
@@ -33,6 +37,14 @@ public class CustomFieldServiceImpl extends ServiceImpl<CustomFieldMapper, Custo
     public CustomField getWithCheck(String id) {
         checkResourceExist(id);
         return getById(id);
+    }
+
+    @Override
+    public List<CustomField> getByIds(List<String> fieldIds) {
+        if (CollectionUtils.isEmpty(fieldIds)) {
+            return new ArrayList<>(0);
+        }
+        return queryChain().where(CustomField::getId).in(fieldIds).list();
     }
 
     private CustomField checkResourceExist(String id) {

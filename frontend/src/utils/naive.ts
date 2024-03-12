@@ -34,6 +34,8 @@ import {
     // create naive ui
     create,
     NAlert,
+    NSkeleton,
+    NTreeSelect,
 } from 'naive-ui'
 
 const naive = create({
@@ -71,6 +73,8 @@ const naive = create({
         NPopconfirm,
         NDivider,
         NAlert,
+        NSkeleton,
+        NTreeSelect,
     ],
 })
 

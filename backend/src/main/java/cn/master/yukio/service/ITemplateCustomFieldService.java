@@ -18,4 +18,6 @@ public interface ITemplateCustomFieldService extends IService<TemplateCustomFiel
     void addSystemFieldByTemplateId(String id, List<TemplateCustomFieldRequest> customFieldRequests);
 
     void deleteByTemplateIdAndSystem(String id, boolean isSystem);
+
+    List<TemplateCustomField> getByTemplateId(String id);
 }

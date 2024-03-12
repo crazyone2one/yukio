@@ -3,6 +3,8 @@ package cn.master.yukio.service;
 import com.mybatisflex.core.service.IService;
 import cn.master.yukio.entity.CustomField;
 
+import java.util.List;
+
 /**
  * 自定义字段 服务层。
  *
@@ -13,4 +15,6 @@ public interface ICustomFieldService extends IService<CustomField> {
     boolean isOrganizationTemplateEnable(String orgId, String scene);
 
     CustomField getWithCheck(String id);
+
+    List<CustomField> getByIds(List<String> fieldIds);
 }

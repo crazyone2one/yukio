@@ -6,6 +6,8 @@ import useFeatureCaseStore from '/@/store/modules/case/feature-case.ts'
 import CaseTree from '/@/views/case-management/case-management-feature/components/CaseTree.vue'
 import { CreateOrUpdateModule } from '/@/models/case-management/feature-case.ts'
 import { useAppStore } from '/@/store'
+import { useRouter } from 'vue-router'
+import { CaseManagementRouteEnum } from '/@/enums/route-enum.ts'
 
 const { t } = useI18n()
 const appStore = useAppStore()
@@ -17,6 +19,7 @@ const confirmRef = ref<InstanceType<typeof YPopConfirm> | null>(null)
 const addSubVisible = ref(false)
 const rootModulesName = ref<string[]>([]) // 根模块名称列表
 const offspringIds = ref<string[]>([])
+const router = useRouter()
 const currentProjectId = computed(() => appStore.currentProjectId)
 // 获取激活用例类型样式
 const getActiveClass = (type: string) => {
@@ -61,13 +64,18 @@ const caseNodeSelect = (keys: string[], _offspringIds: string[]) => {
 }
 //设置根模块名称列表
 const setRootModules = (names: string[]) => (rootModulesName.value = names)
+const caseDetail = () => {
+    router.push({
+        name: CaseManagementRouteEnum.CASE_MANAGEMENT_CASE_DETAIL,
+    })
+}
 </script>
 <template>
     <n-card class="rounded-2xl bg-white" hoverable>
         <div class="p-[24px] pb-[16px]">
-            <n-button size="small" type="primary">{{
-                t('caseManagement.featureCase.creatingCase')
-            }}</n-button>
+            <n-button size="small" type="primary" @click="caseDetail">
+                {{ t('caseManagement.featureCase.creatingCase') }}
+            </n-button>
             <n-button size="small" class="mx-3">
                 {{ t('caseManagement.featureCase.importExcel') }}
             </n-button>

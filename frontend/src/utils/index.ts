@@ -48,3 +48,15 @@ export const mapTree = (
         })
         .filter(Boolean)
 }
+/**
+ * 生成 id 序列号
+ * @returns
+ */
+export const getGenerateId = () => {
+    const timestamp = new Date().getTime().toString()
+    const randomDigits = Math.floor(Math.random() * 10000)
+        .toString()
+        .padStart(4, '0')
+    const generateId = timestamp + randomDigits
+    return generateId.substring(0, 16)
+}

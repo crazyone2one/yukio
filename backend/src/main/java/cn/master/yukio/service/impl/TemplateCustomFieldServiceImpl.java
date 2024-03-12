@@ -65,6 +65,11 @@ public class TemplateCustomFieldServiceImpl extends ServiceImpl<TemplateCustomFi
         mapper.deleteByQuery(qw);
     }
 
+    @Override
+    public List<TemplateCustomField> getByTemplateId(String id) {
+        return queryChain().where(TemplateCustomField::getTemplateId).eq(id).list();
+    }
+
     private void addByTemplateId(String templateId, List<TemplateCustomFieldRequest> customFieldRequests, boolean isSystem) {
         AtomicReference<Integer> pos = new AtomicReference<>(0);
         List<TemplateCustomField> templateCustomFields = customFieldRequests.stream().map(field -> {

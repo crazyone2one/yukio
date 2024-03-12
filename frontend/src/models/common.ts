@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { RequestMethods } from '/@/enums/apiEnum'
+import { TreeSelectOption } from 'naive-ui'
 
 // 请求返回结构
 export default interface CommonResponse<T> {
@@ -55,7 +56,7 @@ export interface MoveModules {
     dropPosition: number // 放入的位置（取值：-1，,0，,1。 -1：dropNodeId节点之前。 0:dropNodeId节点内。 1：dropNodeId节点后）
 }
 // 模块树节点
-export interface ModuleTreeNode {
+export interface ModuleTreeNode extends TreeSelectOption {
     id: string
     name: string
     type: 'MODULE' | 'API'

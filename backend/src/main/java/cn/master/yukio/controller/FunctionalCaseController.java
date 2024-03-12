@@ -1,9 +1,12 @@
 package cn.master.yukio.controller;
 
+import cn.master.yukio.constants.TemplateScene;
 import cn.master.yukio.dto.functional.FunctionalCaseAddRequest;
 import cn.master.yukio.dto.functional.FunctionalCasePageRequest;
+import cn.master.yukio.dto.system.TemplateDTO;
 import cn.master.yukio.entity.FunctionalCase;
 import cn.master.yukio.service.IFunctionalCaseService;
+import cn.master.yukio.service.ITemplateService;
 import cn.master.yukio.util.SessionUtils;
 import com.mybatisflex.core.paginate.Page;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,7 @@ import java.util.List;
 public class FunctionalCaseController {
 
     private final IFunctionalCaseService iFunctionalCaseService;
+    private final ITemplateService templateService;
 
     /**
      * 添加功能用例。
@@ -94,4 +98,14 @@ public class FunctionalCaseController {
         return iFunctionalCaseService.getFunctionalCasePage(request, false);
     }
 
+    /**
+     * 用例管理-功能用例-获取默认模板自定义字段
+     *
+     * @param projectId projectId
+     * @return cn.master.yukio.dto.system.TemplateDTO
+     */
+    @GetMapping("/default/template/field/{projectId}")
+    public TemplateDTO getDefaultTemplateField(@PathVariable String projectId) {
+        return templateService.getDefaultTemplateDTO(projectId, TemplateScene.FUNCTIONAL.name());
+    }
 }

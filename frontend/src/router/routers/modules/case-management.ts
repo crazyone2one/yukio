@@ -25,6 +25,20 @@ const CaseManagement: RouteRecordRaw = {
                 isTopMenu: true,
             },
         },
+        // 创建用例&编辑用例
+        {
+            path: 'featureCaseDetail/:mode?',
+            name: CaseManagementRouteEnum.CASE_MANAGEMENT_CASE_DETAIL,
+            component: () =>
+                import(
+                    '/@/views/case-management/case-management-feature/components/CaseDetail.vue'
+                ),
+            meta: {
+                locale: 'menu.caseManagement.featureCaseDetail',
+                roles: ['FUNCTIONAL_CASE:READ'],
+                isTopMenu: true,
+            },
+        },
         // 用例评审
         {
             path: 'caseManagementReview',

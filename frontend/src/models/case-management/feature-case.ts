@@ -204,7 +204,7 @@ export interface DetailCase {
     publicCase: boolean
     latest?: boolean
     createUser?: string
-    steps: string
+    steps: StepList[]
     textDescription: string
     expectedResult: string
     prerequisite: string

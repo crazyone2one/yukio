@@ -10,7 +10,11 @@
     },
     "dependencies": {
         "@alova/scene-vue": "^1.4.3",
+        "@halo-dev/richtext-editor": "^2.13.0",
+        "@vueup/vue-quill": "^1.2.0",
         "@vueuse/core": "^10.8.0",
+        "@wangeditor/editor": "^5.1.23",
+        "@wangeditor/editor-for-vue": "^5.1.12",
         "alova": "^2.17.0",
         "echarts": "^5.5.0",
         "lodash-es": "^4.17.21",

@@ -101,101 +101,66 @@ watch(
 
 <template>
     <n-spin :show="props.loading" class="!block h-full">
-        <div
-            ref="fullRef"
-            :class="[
-                'ms-card',
-                'relative',
-                'h-full',
-                props.isFullscreen || isFullScreen ? 'ms-card--fullScreen' : '',
-                props.autoHeight ? '' : 'min-h-[500px]',
-                props.noContentPadding ? 'ms-card--noContentPadding' : 'p-[24px]',
-                props.noBottomRadius ? 'ms-card--noBottomRadius' : '',
-            ]"
-        >
-            <n-scrollbar v-if="!props.simple" :style="{ overflow: 'auto' }">
-                <div
-                    class="ms-card-header"
-                    :style="props.headerMinWidth ? { minWidth: `${props.headerMinWidth}px` } : {}"
-                >
-                    <div v-if="!props.hideBack" class="back-btn" @click="back">
-                        <n-icon>
-                            <span class="i-tabler:arrow-left" />
+        <n-card>
+            <template #header>
+                <div v-if="!props.hideBack" class="back-btn" @click="back">
+                    <n-icon>
+                        <span class="i-tabler:arrow-left" />
+                    </n-icon>
+                </div>
+                <slot name="headerLeft">
+                    <div class="font-medium">
+                        {{ props.title }}
+                    </div>
+                    <div class="text-[var(--color-text-4)]">{{ props.subTitle }}</div>
+                </slot>
+            </template>
+            <template #header-extra>
+                <div class="ml-auto flex items-center">
+                    <slot name="headerRight"></slot>
+                    <div
+                        v-if="props.showFullScreen"
+                        class="cursor-pointer text-right !text-[var(--color-text-4)]"
+                        @click="toggleFullScreen"
+                    >
+                        <n-icon v-if="isFullScreen">
+                            <span class="i-tabler:arrows-minimize" />
                         </n-icon>
-                    </div>
-                    <slot name="headerLeft">
-                        <div class="font-medium text-[var(--color-text-000)]">
-                            {{ props.title }}
-                        </div>
-                        <div class="text-[var(--color-text-4)]">{{ props.subTitle }}</div>
-                    </slot>
-                    <div class="ml-auto flex items-center">
-                        <slot name="headerRight"></slot>
-                        <div
-                            v-if="props.showFullScreen"
-                            class="cursor-pointer text-right !text-[var(--color-text-4)]"
-                            @click="toggleFullScreen"
-                        >
-                            <n-icon v-if="isFullScreen">
-                                <span class="i-tabler:arrows-minimize" />
-                            </n-icon>
-                            <n-icon v-else>
-                                <span class="i-tabler:arrows-maximize" />
-                            </n-icon>
+                        <n-icon v-else>
+                            <span class="i-tabler:arrows-maximize" />
+                        </n-icon>
 
-                            {{ t(isFullScreen ? 'common.offFullScreen' : 'common.fullScreen') }}
-                        </div>
-                    </div>
-                    <div v-if="$slots.subHeader" class="basis-full">
-                        <slot name="subHeader"></slot>
+                        {{ t(isFullScreen ? 'common.offFullScreen' : 'common.fullScreen') }}
                     </div>
                 </div>
-            </n-scrollbar>
-            <div :class="{ 'px-[24px]': props.dividerHasPX }">
-                <n-divider v-if="!props.simple && !props.hideDivider" class="mb-[16px] mt-0" />
-            </div>
-            <div class="relativer">
-                <n-scrollbar
-                    :class="['h-full', props.noContentPadding ? '' : 'pr-[5px]']"
-                    :style="getComputedContentStyle"
-                >
-                    <div
-                        class="relative h-full w-full"
-                        :style="{ minWidth: `${props.minWidth || 1000}px` }"
-                    >
-                        <slot></slot>
-                    </div>
-                </n-scrollbar>
-            </div>
-            <div
-                v-if="!props.hideFooter && !props.simple"
-                class="ms-card-footer fixed flex justify-between bg-white"
-                :style="{
-                    width:
-                        props.isFullscreen || isFullScreen
-                            ? '100%'
-                            : `calc(100% - ${menuWidth + 16}px)`,
-                }"
-            >
+            </template>
+            <slot />
+            <template #footer>
                 <div class="ml-0 mr-auto">
                     <slot name="footerLeft"></slot>
+                    <slot name="footerRight">
+                        <div class="flex justify-end gap-[16px]">
+                            <n-button @click="back">{{ t('mscard.defaultCancelText') }}</n-button>
+                            <n-button
+                                v-if="!props.hideContinue && !props.isEdit"
+                                @click="emit('saveAndContinue')"
+                            >
+                                {{ t('mscard.defaultSaveAndContinueText') }}
+                            </n-button>
+                            <n-button type="primary" @click="emit('save')">
+                                {{
+                                    t(
+                                        props.isEdit
+                                            ? 'mscard.defaultUpdate'
+                                            : 'mscard.defaultConfirm',
+                                    )
+                                }}
+                            </n-button>
+                        </div>
+                    </slot>
                 </div>
-                <slot name="footerRight">
-                    <div class="flex justify-end gap-[16px]">
-                        <n-button @click="back">{{ t('mscard.defaultCancelText') }}</n-button>
-                        <n-button
-                            v-if="!props.hideContinue && !props.isEdit"
-                            @click="emit('saveAndContinue')"
-                        >
-                            {{ t('mscard.defaultSaveAndContinueText') }}
-                        </n-button>
-                        <n-button type="primary" @click="emit('save')">
-                            {{ t(props.isEdit ? 'mscard.defaultUpdate' : 'mscard.defaultConfirm') }}
-                        </n-button>
-                    </div>
-                </slot>
-            </div>
-        </div>
+            </template>
+        </n-card>
     </n-spin>
 </template>
 

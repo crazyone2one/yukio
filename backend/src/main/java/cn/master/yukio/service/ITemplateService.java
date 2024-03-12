@@ -3,6 +3,7 @@ package cn.master.yukio.service;
 import cn.master.yukio.dto.project.TemplateCustomFieldRequest;
 import cn.master.yukio.dto.project.TemplateSystemCustomFieldRequest;
 import cn.master.yukio.dto.project.TemplateUpdateRequest;
+import cn.master.yukio.dto.system.TemplateDTO;
 import com.mybatisflex.core.service.IService;
 import cn.master.yukio.entity.Template;
 
@@ -31,4 +32,8 @@ public interface ITemplateService extends IService<Template> {
     String getDefaultTemplateId(String projectId, String scene);
 
     void setDefaultTemplate(String projectId, String id);
+
+    TemplateDTO getDefaultTemplateDTO(String projectId, String scene);
+
+    TemplateDTO getTemplateDTO(Template template);
 }
