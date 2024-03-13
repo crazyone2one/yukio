@@ -1,62 +1,25 @@
-import { TreeOption } from 'naive-ui'
+type TargetContext = '_self' | '_parent' | '_blank' | '_top';
 
-/**
- * 对话框标题动态内容字符限制
- * @param str 标题的动态内容
- * @returns 转化后的字符串
- */
-export function characterLimit(str?: string): string {
-    if (!str) return ''
-    if (str.length <= 20) {
-        return str
-    }
-    return `${str.slice(0, 20 - 3)}...`
-}
-/**
- * 当前日期是本年第几周
- * @returns
- */
-export function getCurrentWeek() {
-    const currentDate = new Date()
-    const firstDayOfYear = new Date(currentDate.getFullYear(), 0, 1)
-    const daysBetween = (currentDate.valueOf() - firstDayOfYear.valueOf()) / 86400000
-    return Math.ceil(daysBetween / 7)
-}
-
-export const mapTree = (
-    tree: TreeOption | TreeOption[],
-    customNodeFn: (node: TreeOption, path: string) => TreeOption | null = (node) => node,
-    customChildrenKey: string = 'children',
-    parentPath = '',
+export const openWindow = (
+  url: string,
+  opts?: { target?: TargetContext; [key: string]: any }
 ) => {
-    if (!Array.isArray(tree)) {
-        tree = [tree]
-    }
-    return tree
-        .map((node: TreeOption) => {
-            const fullPath = node.path ? `${parentPath}/${node.path}`.replace(/\/+/g, '/') : ''
-            const newNode = typeof customNodeFn === 'function' ? customNodeFn(node, fullPath) : node
-            if (newNode && newNode[customChildrenKey] && newNode[customChildrenKey].length > 0) {
-                newNode[customChildrenKey] = mapTree(
-                    newNode[customChildrenKey],
-                    customNodeFn,
-                    customChildrenKey,
-                )
-            }
+  const { target = '_blank', ...others } = opts || {};
+  window.open(
+    url,
+    target,
+    Object.entries(others)
+      .reduce((preValue: string[], curValue) => {
+        const [key, value] = curValue;
+        return [...preValue, `${key}=${value}`];
+      }, [])
+      .join(',')
+  );
+};
 
-            return newNode
-        })
-        .filter(Boolean)
-}
-/**
- * 生成 id 序列号
- * @returns
- */
-export const getGenerateId = () => {
-    const timestamp = new Date().getTime().toString()
-    const randomDigits = Math.floor(Math.random() * 10000)
-        .toString()
-        .padStart(4, '0')
-    const generateId = timestamp + randomDigits
-    return generateId.substring(0, 16)
-}
+export const regexUrl = new RegExp(
+  '^(?!mailto:)(?:(?:http|https|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$',
+  'i'
+);
+
+export default null;

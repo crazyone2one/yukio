@@ -1,13 +1,20 @@
-import { SelectOption } from 'naive-ui'
+import type { RouteRecordNormalized } from 'vue-router';
 
 export interface AppState {
-    innerHeight: number
-    menuCollapse: boolean
-    menuWidth: number
-    currentOrgId: string
-    currentProjectId: string
-    device: string
-    projectList: SelectOption[]
-    // projectListOptions: SelectOption[]
-    ordList: { id: string; name: string }[]
+  theme: string;
+  colorWeak: boolean;
+  navbar: boolean;
+  menu: boolean;
+  topMenu: boolean;
+  hideMenu: boolean;
+  menuCollapse: boolean;
+  footer: boolean;
+  themeColor: string;
+  menuWidth: number;
+  globalSettings: boolean;
+  device: string;
+  tabBar: boolean;
+  menuFromServer: boolean;
+  serverMenu: RouteRecordNormalized[];
+  [key: string]: unknown;
 }

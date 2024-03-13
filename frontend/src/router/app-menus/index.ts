@@ -1,15 +1,16 @@
-import appRoutes from '/@/router/routers'
-const mixinRoutes = [...appRoutes]
-// 菜单信息根据路由配置推导
-const appClientMenus = mixinRoutes.map((el) => {
-    const { name, path, meta, redirect, children } = el
-    return {
-        name,
-        path,
-        meta,
-        redirect,
-        children,
-    }
-})
+import { appRoutes, appExternalRoutes } from '../routes';
 
-export default appClientMenus
+const mixinRoutes = [...appRoutes, ...appExternalRoutes];
+
+const appClientMenus = mixinRoutes.map((el) => {
+  const { name, path, meta, redirect, children } = el;
+  return {
+    name,
+    path,
+    meta,
+    redirect,
+    children,
+  };
+});
+
+export default appClientMenus;
