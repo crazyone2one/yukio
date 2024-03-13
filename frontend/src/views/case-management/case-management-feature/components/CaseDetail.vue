@@ -3,25 +3,29 @@ import BaseCard from '/@/components/base-card/index.vue'
 import CaseTemplateDetail from '/@/views/case-management/case-management-feature/components/CaseTemplateDetail.vue'
 import { useI18n } from '/@/hooks/use-i18n.ts'
 import { useRoute, useRouter } from 'vue-router'
-import { CreateOrUpdateCase } from '/@/models/case-management/feature-case.ts'
 import { computed, ref, watchEffect } from 'vue'
-import { FormValidationError } from 'naive-ui'
 import { CaseManagementRouteEnum } from '/@/enums/route-enum.ts'
 import useLeaveUnSaveTip from '/@/hooks/use-leave-un-save-tip.ts'
+import { useForm } from '@alova/scene-vue'
+import {
+    createCaseRequest,
+    updateCaseRequest,
+} from '/@/api/modules/case-management/feature-case.ts'
 
 const { setState } = useLeaveUnSaveTip()
 setState(false)
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
-const caseDetailInfo = ref({
-    request: {} as CreateOrUpdateCase,
-    fileList: [],
-})
+// const caseDetailInfo = ref({
+//     request: {} as CreateOrUpdateCase,
+//     fileList: [],
+// })
 const title = ref('')
 const okText = ref<string>('')
 const caseModuleDetailRef = ref()
 const isContinueFlag = ref(false)
+const createSuccessId = ref<string>('')
 const isEdit = computed(() => !!route.query.id)
 
 const isFormReviewCase = computed(() => route.query.reviewId)
@@ -36,9 +40,29 @@ const saveHandler = (isContinue = false, isReview = false) => {
         return save(isReview, isContinue)
     }
 }
+const {
+    loading: submitting,
+    send: submit,
+    form: caseDetailInfo,
+} = useForm(
+    (formData) => {
+        // 可以在此转换表单数据并提交
+        return route.params.mode === 'edit'
+            ? updateCaseRequest(formData)
+            : createCaseRequest(formData)
+    },
+    {
+        // 初始化表单数据
+        initialForm: {
+            request: {},
+            files: [],
+        },
+    },
+)
 const save = (isReview: boolean, isContinue: boolean) => {
     if (route.params.mode === 'edit') {
         // todo 编辑用例
+        submit()
         window.$message.success(t('caseManagement.featureCase.editSuccess'))
         router.push({
             name: CaseManagementRouteEnum.CASE_MANAGEMENT_CASE,
@@ -52,18 +76,42 @@ const save = (isReview: boolean, isContinue: boolean) => {
         }
         // todo 创建用例
         console.log(caseDetailInfo.value)
+        submit().then((res) => {
+            console.log(res)
+            window.$message.success(
+                route.params.mode === 'copy'
+                    ? t('ms.description.copySuccess')
+                    : t('common.addSuccess'),
+            )
+        })
         if (isContinue) {
             window.$message.success(t('caseManagement.featureCase.addSuccess'))
             caseModuleDetailRef.value.resetForm()
             return
         }
-        window.$message.success(
-            route.params.mode === 'copy' ? t('ms.description.copySuccess') : t('common.addSuccess'),
-        )
+
         if (isReview) {
             router.back()
             return
         }
+        if (!route.query.id) {
+            router.push({
+                name: CaseManagementRouteEnum.CASE_MANAGEMENT_CASE_CREATE_SUCCESS,
+                query: {
+                    id: createSuccessId.value,
+                    ...route.query,
+                },
+            })
+        } else {
+            router.push({
+                name: CaseManagementRouteEnum.CASE_MANAGEMENT_CASE,
+                query: {
+                    organizationId: route.query.organizationId,
+                    projectId: route.query.projectId,
+                },
+            })
+        }
+        setState(true)
     }
 }
 watchEffect(() => {
@@ -81,7 +129,7 @@ watchEffect(() => {
 </script>
 
 <template>
-    <base-card :title="title" :is-edit="isEdit" :hide-continue="!isEdit">
+    <base-card :title="title" :is-edit="isEdit" :hide-continue="!isEdit" :loading="submitting">
         <case-template-detail
             ref="caseModuleDetailRef"
             :case-id="(route.query.id as string) || ''"

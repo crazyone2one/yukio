@@ -77,7 +77,7 @@ const handleSelectType = (key: string) => (model.value.caseEditType = key)
 // 总参数
 const params = ref<Record<string, any>>({
     request: {},
-    fileList: [], // 总文件列表
+    files: [], // 总文件列表
 })
 const { loading, send: getDefaultFields } = useRequest(
     () => getCaseDefaultFields(currentProjectId.value),
