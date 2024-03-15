@@ -3,8 +3,10 @@ import { NDivider } from 'naive-ui'
 import { ref } from 'vue'
 import PersonalMenu from './PersonalMenu.vue'
 import logo from '/@/assets/logo.svg'
+import { useI18n } from '/@/hooks/use-i18n'
 
 const value = ref('')
+const { t } = useI18n()
 </script>
 <template>
   <div class="navbar">
@@ -39,7 +41,7 @@ const value = ref('')
               </n-badge>
             </div>
           </template>
-          如果它长得像鸭子，走起来像鸭子，叫起来也像鸭子，那它一定是个鸭子。
+          {{ t('settings.navbar.alerts') }}
         </n-tooltip>
       </li>
       <li>
@@ -51,7 +53,7 @@ const value = ref('')
               </template>
             </n-button>
           </template>
-          如果它长得像鸭子，走起来像鸭子，叫起来也像鸭子，那它一定是个鸭子。
+          {{ t('settings.navbar.task') }}
         </n-tooltip>
       </li>
       <li>

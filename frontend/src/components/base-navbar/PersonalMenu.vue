@@ -8,7 +8,7 @@
         <n-input
           v-model:value="orgKeyword"
           type="text"
-          placeholder="基本的 Input"
+          :placeholder="t('personal.searchOrgPlaceholder')"
         />
         <n-divider />
         <n-spin :show="orgListLoading">
@@ -30,7 +30,7 @@
                     type="success"
                     class="ml-[4px] px-[4px]"
                   >
-                    爱在西元前
+                    {{ t('personal.currentOrg') }}
                   </n-tag>
                 </div>
               </n-list-item>
@@ -45,8 +45,10 @@
 <script setup lang="ts">
 import { NAvatar, NText } from 'naive-ui'
 import { h, ref } from 'vue'
+import { useI18n } from '/@/hooks/use-i18n'
 import { renderIcon } from '/@/utils'
 
+const { t } = useI18n()
 const show = ref(false)
 const orgListLoading = ref(false)
 const orgKeyword = ref('')
@@ -91,17 +93,17 @@ const options = [
     type: 'divider',
   },
   {
-    label: '用户资料',
+    label: t('personal.info'),
     key: 'profile',
     icon: renderIcon('i-solar:user-id-linear'),
   },
   {
-    label: 'switchOrg',
+    label: t('personal.switchOrg'),
     key: 'switchOrg',
     icon: renderIcon('i-custom-switch'),
   },
   {
-    label: '退出登录',
+    label: t('personal.exit'),
     key: 'logout',
     icon: renderIcon('i-solar:exit-broken'),
   },
