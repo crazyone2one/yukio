@@ -1,47 +1,37 @@
 // uno.config.ts
-import { FileSystemIconLoader } from '@iconify/utils/lib/loader/node-loaders'
+import transformerDirectives from '@unocss/transformer-directives'
 import {
-    defineConfig,
-    presetAttributify,
-    presetIcons,
-    presetTypography,
-    presetUno,
-    presetWebFonts,
-    transformerDirectives,
-    transformerVariantGroup,
+  defineConfig,
+  presetAttributify,
+  presetIcons,
+  presetTypography,
+  presetUno,
+  presetWebFonts,
+  transformerVariantGroup,
 } from 'unocss'
 
 export default defineConfig({
-    shortcuts: [
+  // ...UnoCSS options
+  presets: [
+    presetUno(),
+    presetAttributify(),
+    presetIcons({
+      extraProperties: {
+        display: 'inline-block',
+        // 'vertical-align': 'middle',
         // ...
-    ],
-    theme: {
-        colors: {
-            // ...
-        },
-    },
-    presets: [
-        presetUno(),
-        presetAttributify(),
-        presetIcons({
-            extraProperties: {
-                display: 'inline-block',
-                // 'vertical-align': 'middle',
-                // ...
-            },
-            collections: {
-                tabler: () => import('@iconify-json/tabler/icons.json').then((i) => i.default),
-                icon: FileSystemIconLoader('./src/assets/icons', (svg) => {
-                    return svg.replace(/#fff/, 'currentColor')
-                }),
-            },
-        }),
-        presetTypography(),
-        presetWebFonts({
-            fonts: {
-                // ...
-            },
-        }),
-    ],
-    transformers: [transformerDirectives(), transformerVariantGroup()],
+      },
+      collections: {
+        solar: () =>
+          import('@iconify-json/solar/icons.json').then((i) => i.default),
+      },
+    }),
+    presetTypography(),
+    presetWebFonts({
+      fonts: {
+        // ...
+      },
+    }),
+  ],
+  transformers: [transformerDirectives(), transformerVariantGroup()],
 })

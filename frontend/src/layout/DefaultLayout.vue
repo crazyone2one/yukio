@@ -1,38 +1,57 @@
 <script setup lang="ts">
-import NavBar from '/@/components/nav-bar/index.vue'
-import YMenu from '/@/components/y-menu/index.vue'
-import { useAppStore } from '/@/store'
+import { useWindowSize } from '@vueuse/core'
+import { NH2, NLayout, NLayoutFooter } from 'naive-ui'
+import { computed } from 'vue'
+import Menus from '/@/components/base-menu/index.vue'
+import BaseNavBar from '/@/components/base-navbar/index.vue'
+import useAppStore from '/@/store/modules/app'
 
 const appStore = useAppStore()
+const { height } = useWindowSize()
+const navbar = computed(() => appStore.navbar)
 </script>
 <template>
-    <n-layout :style="{ height: appStore.innerHeight + 'px' }">
-        <div class="fixed left-0 top-0 w-full z-[100]">
-            <nav-bar />
-        </div>
-
-        <!-- <n-layout-header style="height: 64px; padding: 24px" bordered class="nav">
-            <n-flex justify="end">
-                
-                <header-workspace />
-                <personal-menus />
-            </n-flex>
-        </n-layout-header> -->
-        <n-layout position="absolute" style="top: 64px; bottom: 64px" has-sider>
-            <y-menu />
-            <n-layout content-style="padding: 24px;" :native-scrollbar="false">
-                <!-- <page-layout></page-layout> -->
-                <router-view />
-            </n-layout>
-        </n-layout>
-        <n-layout-footer position="absolute" style="height: 64px; padding: 24px" bordered>
-            城府路
-        </n-layout-footer>
+  <n-layout class="layout" :style="{ height: height + 'px' }">
+    <div v-if="navbar" class="layout-navbar z-[100]">
+      <BaseNavBar />
+    </div>
+    <n-layout position="absolute" style="top: 64px; bottom: 64px" has-sider>
+      <Menus />
+      <n-layout content-style="padding: 24px;" :native-scrollbar="false">
+        <n-h2>平山道</n-h2>
+        <n-h2>平山道</n-h2>
+        <n-h2>平山道</n-h2>
+        <n-h2>平山道</n-h2>
+        <n-h2>平山道</n-h2>
+        <n-h2>平山道</n-h2>
+        <n-h2>平山道</n-h2>
+        <n-h2>平山道</n-h2>
+        <n-h2>平山道</n-h2>
+        <n-h2>平山道</n-h2>
+        <n-h2>平山道</n-h2>
+        <n-h2>平山道</n-h2>
+      </n-layout>
     </n-layout>
+    <n-layout-footer
+      v-if="appStore.footer"
+      position="absolute"
+      style="height: 64px; padding: 24px"
+      bordered
+    >
+      城府路
+    </n-layout-footer>
+  </n-layout>
 </template>
 
 <style scoped>
-.nav {
-    align-items: center;
+@nav-size-height: 56px;
+@layout-max-width: 1100px;
+.layout {
+  @apply h-full w-full;
+}
+.layout-navbar {
+  @apply fixed left-0 top-0 w-full;
+
+  height: 56px;
 }
 </style>

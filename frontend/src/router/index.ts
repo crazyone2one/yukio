@@ -1,35 +1,12 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
-import createRouteGuard from './guard'
-import appRoutes from './routers'
+import { createMemoryHistory, createRouter } from 'vue-router'
+import DefaultLayout from '../layout/DefaultLayout.vue'
+const routes = [{ path: '/', component: DefaultLayout }]
 
 const router = createRouter({
-    history: createWebHashHistory(),
-    routes: [
-        {
-            path: '/',
-            redirect: '/workbench',
-            component: () => import('/@/layout/DefaultLayout.vue'),
-            children: [
-                {
-                    path: '/workbench',
-                    name: 'workbench',
-                    component: () => import(`/@/views/workbench/index.vue`),
-                },
-            ],
-        },
-        {
-            path: '/login',
-            name: 'login',
-            component: () => import('/@/views/login/index.vue'),
-            meta: {
-                requiresAuth: false,
-            },
-        },
-        ...appRoutes,
-    ],
-    scrollBehavior() {
-        return { top: 0 }
-    },
+  history: createMemoryHistory(),
+  routes,
+  scrollBehavior() {
+    return { top: 0 }
+  },
 })
-createRouteGuard(router)
 export default router
