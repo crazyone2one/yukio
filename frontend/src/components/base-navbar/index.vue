@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { NDivider } from 'naive-ui'
 import { ref } from 'vue'
+import PersonalMenu from './PersonalMenu.vue'
 import logo from '/@/assets/logo.svg'
+
 const value = ref('')
 </script>
 <template>
@@ -69,6 +71,9 @@ const value = ref('')
             </template>
           </n-button>
         </n-dropdown>
+      </li>
+      <li>
+        <personal-menu />
       </li>
     </ul>
   </div>

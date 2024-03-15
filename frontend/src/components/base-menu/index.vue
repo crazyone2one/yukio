@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { NLayoutSider, NMenu, MenuOption, NIcon } from 'naive-ui'
-import { computed, h } from 'vue'
+import { MenuOption, NLayoutSider, NMenu } from 'naive-ui'
+import { computed } from 'vue'
 import useAppStore from '/@/store/modules/app'
+import { renderIcon } from '/@/utils'
 const appStore = useAppStore()
 const collapsed = computed({
   get() {
@@ -12,9 +13,9 @@ const collapsed = computed({
     appStore.updateSettings({ menuCollapse: value })
   },
 })
-const renderIcon = (icon: string) => {
-  return () => h(NIcon, {}, { default: () => h('span', { class: icon }) })
-}
+// const renderIcon = (icon: string) => {
+//   return () => h(NIcon, {}, { default: () => h('span', { class: icon }) })
+// }
 const menuOptions: MenuOption[] = [
   {
     label: '1973年的弹珠玩具',
