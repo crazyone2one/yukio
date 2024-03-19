@@ -35,6 +35,10 @@ export default defineConfig(({ mode }) => {
     define: {
       __APP_ENV__: JSON.stringify(env.APP_ENV),
       __APP_VERSION__: JSON.stringify('v1.x'),
+      __VUE_OPTIONS_API__: true,
+      __VUE_PROD_DEVTOOLS__: false,
+      // 设置hydration不匹配详细信息的标志
+      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: true,
     },
   }
 })

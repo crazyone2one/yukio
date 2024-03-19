@@ -1,6 +1,6 @@
 <template>
   <n-dropdown trigger="hover" :options="options" @select="handleSelect">
-    <n-button secondary>2021年 第36周</n-button>
+    <n-button secondary size="small">2021年 第36周</n-button>
   </n-dropdown>
   <n-drawer v-model:show="show" :width="502">
     <n-drawer-content title="斯通纳" closable>

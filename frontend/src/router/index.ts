@@ -1,12 +1,21 @@
-import { createMemoryHistory, createRouter } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import DefaultLayout from '../layout/DefaultLayout.vue'
-const routes = [{ path: '/', component: DefaultLayout }]
+import appRoutes from './routes'
 
 const router = createRouter({
-  history: createMemoryHistory(),
-  routes,
+  history: createWebHashHistory(),
+  routes: [
+    { path: '/', component: DefaultLayout },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import(`/@/views/login/index.vue`),
+    },
+    ...appRoutes,
+  ],
   scrollBehavior() {
     return { top: 0 }
   },
 })
+// createRouteGuard(router)
 export default router

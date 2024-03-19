@@ -33,9 +33,9 @@ const { t } = useI18n()
           <template #trigger>
             <div class="message-box-trigger">
               <n-badge :value="8">
-                <n-button secondary>
+                <n-button secondary size="small">
                   <template #icon>
-                    <span class="i-solar:bell-outline" />
+                    <span class="i-carbon:notification" />
                   </template>
                 </n-button>
               </n-badge>
@@ -47,9 +47,9 @@ const { t } = useI18n()
       <li>
         <n-tooltip trigger="hover">
           <template #trigger>
-            <n-button secondary>
+            <n-button secondary size="small">
               <template #icon>
-                <span class="i-solar:notification-lines-remove-line-duotone" />
+                <span class="i-carbon:task" />
               </template>
             </n-button>
           </template>
@@ -58,18 +58,18 @@ const { t } = useI18n()
       </li>
       <li>
         <n-dropdown trigger="hover" :options="[]">
-          <n-button secondary>
+          <n-button secondary size="small">
             <template #icon>
-              <span class="i-solar:question-circle-bold" />
+              <span class="i-carbon:help" />
             </template>
           </n-button>
         </n-dropdown>
       </li>
       <li>
         <n-dropdown trigger="hover" :options="[]">
-          <n-button secondary>
+          <n-button secondary size="small">
             <template #icon>
-              <span class="i-solar:black-hole-3-line-duotone" />
+              <span class="i-carbon:ibm-watson-language-translator" />
             </template>
           </n-button>
         </n-dropdown>
@@ -83,11 +83,14 @@ const { t } = useI18n()
 
 <style scoped>
 .navbar {
-  @apply flex h-full justify-between bg-transparent;
+  display: flex;
+  height: 100%;
+  justify-content: space-between;
+  background-color: transparent;
 }
 .left-side {
-  @apply flex items-center;
-
+  display: flex;
+  align-items: center;
   padding-left: 24px;
   width: 185px;
 }
@@ -105,21 +108,8 @@ const { t } = useI18n()
     @apply flex items-center;
 
     padding-left: 10px;
-    .arco-btn-secondary {
-      @apply !bg-transparent;
-
-      color: var(--color-text-4) !important;
-      &:hover,
-      &:focus-visible {
-        color: var(--color-text-1) !important;
-      }
-    }
   }
-  a {
-    @apply no-underline;
 
-    color: var(--color-text-1);
-  }
   .nav-btn {
     font-size: 16px;
     border-color: rgb(var(--gray-2));
@@ -128,8 +118,7 @@ const { t } = useI18n()
   }
   .trigger-btn,
   .ref-btn {
-    @apply absolute;
-
+    position: absolute;
     bottom: 14px;
   }
   .trigger-btn {

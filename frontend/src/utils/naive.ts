@@ -73,5 +73,6 @@ export default create({
     NTag,
     NList,
     NListItem,
+    NResult,
   ],
 })
