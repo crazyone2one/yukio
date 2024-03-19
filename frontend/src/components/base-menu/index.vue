@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { MenuOption, NLayoutSider, NMenu } from 'naive-ui'
-import { computed, h } from 'vue'
+import { computed, h, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import {
   BugManagementRouteEnum,
@@ -11,9 +11,11 @@ import {
 import { useI18n } from '/@/hooks/use-i18n'
 import useAppStore from '/@/store/modules/app'
 import { renderIcon } from '/@/utils'
+import { listenerRouteChange } from '/@/utils/route-listener'
 
 const { t } = useI18n()
 const appStore = useAppStore()
+const selectedValue = ref<string>()
 const collapsed = computed({
   get() {
     if (appStore.device === 'desktop') return appStore.menuCollapse
@@ -276,6 +278,24 @@ const menuOptions: MenuOption[] = [
     ],
   },
 ]
+
+listenerRouteChange((newRoute) => {
+  // console.log(`output->newRoute`, newRoute)
+  // const { requiresAuth, activeMenu, hideInMenu } = newRoute.meta
+  // if (requiresAuth !== false && (!hideInMenu || activeMenu)) {
+  //   const menuOpenKeys = findMenuOpenKeys(
+  //     (activeMenu || newRoute.name) as string,
+  //   )
+  //   console.log(`output->menuOpenKeys`, menuOpenKeys)
+  //   const keySet = new Set([...menuOpenKeys, ...openKeys.value])
+  //   openKeys.value = [...keySet]
+  //   selectedKey.value = [
+  //     (activeMenu as string) || menuOpenKeys[menuOpenKeys.length - 1],
+  //   ]
+  //   console.log(`output->menuOpenKeys`, selectedKey.value)
+  // }
+  selectedValue.value = newRoute.name as string
+}, true)
 </script>
 <template>
   <n-layout-sider
@@ -290,6 +310,7 @@ const menuOptions: MenuOption[] = [
     @expand="collapsed = false"
   >
     <n-menu
+      v-model:value="selectedValue"
       :collapsed="collapsed"
       :collapsed-width="appStore.collapsedWidth"
       :collapsed-icon-size="appStore.collapsedIconSize"

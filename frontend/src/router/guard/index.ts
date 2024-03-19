@@ -33,7 +33,7 @@ export default function createRouteGuard(router: Router) {
   // 设置路由监听守卫
   setupPageGuard(router)
   // 设置用户登录校验守卫
-  setupUserLoginInfoGuard(router)
+  // setupUserLoginInfoGuard(router)
   // 设置菜单权限守卫
   // setupPermissionGuard(router);
 }

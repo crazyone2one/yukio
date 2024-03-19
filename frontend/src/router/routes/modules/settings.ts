@@ -1,10 +1,9 @@
 import { RouteRecordRaw } from 'vue-router'
 import { SettingRouteEnum } from '/@/enums/route-enum'
-import DefaultLayout from '/@/layout/DefaultLayout.vue'
 const Setting: RouteRecordRaw = {
   path: '/setting',
   name: SettingRouteEnum.SETTING,
-  component: DefaultLayout,
+  component: () => import(`/@/layout/DefaultLayout.vue`),
   meta: {
     locale: 'menu.settings',
     roles: [],
@@ -18,6 +17,7 @@ const Setting: RouteRecordRaw = {
       meta: {
         locale: 'menu.settings.system',
         roles: [],
+        hideChildrenInMenu: true,
       },
       children: [
         {
