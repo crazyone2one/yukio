@@ -15,6 +15,7 @@ export default defineConfig(({ mode }) => {
     server: {
       host: true,
       proxy: {
+        // 带选项写法：http://localhost:5173/api/bar -> http://jsonplaceholder.typicode.com/bar
         [env.VITE_APP_BASE_API]: {
           target: env.VITE_APP_PROXY_URL,
           changeOrigin: true,

@@ -1,5 +1,8 @@
 import { defineStore } from 'pinia'
 import { UserState } from './types'
+import { LoginRes } from '/@/api/interface/user.ts'
+import useAppStore from '/@/store/modules/app'
+import { setToken } from '/@/utils/auth'
 
 const useUserStore = defineStore('user', {
   persist: true,
@@ -43,6 +46,13 @@ const useUserStore = defineStore('user', {
     // 重置用户信息
     resetInfo() {
       this.$reset()
+    },
+    async login(result: LoginRes) {
+      const appStore = useAppStore()
+      setToken(result.token, result.refresh_token)
+      appStore.setCurrentOrgId(result.user.lastOrganizationId || '')
+      appStore.setCurrentProjectId(result.user.lastProjectId || '')
+      this.setInfo(result)
     },
   },
 })

@@ -9,7 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@alova/scene-vue": "^1.4.5",
     "@vueuse/core": "^10.9.0",
+    "alova": "^2.17.1",
     "mitt": "^3.0.1",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
