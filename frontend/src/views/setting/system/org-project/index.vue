@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import AddOrganization from './components/AddOrganization.vue'
 import SystemOrganization from './components/SystemOrganization.vue'
 import SystemProject from './components/SystemProject.vue'
 import BaseCard from '/@/components/base-card/index.vue'
@@ -12,11 +13,27 @@ const organizationCount = ref(0)
 const projectCount = ref(0)
 const orgTableRef = ref()
 const projectTableRef = ref()
+const organizationVisible = ref(false)
+const projectVisible = ref(false)
+
+const handleAddOrganization = () => {
+  if (currentTable.value === 'organization') {
+    organizationVisible.value = true
+  } else {
+    projectVisible.value = true
+  }
+}
+const handleAddOrganizationCancel = (shouldSearch: boolean) => {
+  organizationVisible.value = false
+  if (shouldSearch) {
+    // tableSearch();
+  }
+}
 </script>
 <template>
   <base-card :loading="false" hide-back hide-footer>
     <template #headerLeft>
-      <n-button type="primary">
+      <n-button type="primary" @click="handleAddOrganization">
         {{
           currentTable === 'organization'
             ? t('system.organization.createOrganization')
@@ -55,6 +72,10 @@ const projectTableRef = ref()
       <system-project v-if="currentTable === 'project'" ref="projectTableRef" />
     </div>
   </base-card>
+  <add-organization
+    :visible="organizationVisible"
+    @cancel="handleAddOrganizationCancel"
+  />
 </template>
 
 <style scoped></style>

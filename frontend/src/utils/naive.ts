@@ -8,11 +8,13 @@ import {
   NBreadcrumbItem,
   NButton,
   NCard,
+  NDataTable,
   NDivider,
   NDrawer,
   NDrawerContent,
   NDropdown,
   NForm,
+  NFormItem,
   NFormItemRow,
   // component
   NH1,
@@ -81,5 +83,7 @@ export default create({
     NSplit,
     NRadioGroup,
     NRadio,
+    NDataTable,
+    NFormItem,
   ],
 })
