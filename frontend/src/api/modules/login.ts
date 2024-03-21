@@ -17,11 +17,18 @@ export const loginAPI = (param: { username: string; password: string }) => {
  * @param refreshToken
  */
 export const refreshTokenAPI = (refreshToken: string) => {
-  const methodInstance = alovaInst.Post('/api/auth/refresh', {
-    refreshToken,
-  })
+  const methodInstance = alovaInst.Post<LoginRes>(
+    `/api/auth/refresh?refreshToken=${refreshToken}`,
+  )
   methodInstance.meta = {
-    ignoreToken: true,
+    authRole: 'refreshToken',
   }
   return methodInstance
+}
+export const logoutApi = () => {
+  const method = alovaInst.Get('/api/auth/signout')
+  method.meta = {
+    authRole: 'logout',
+  }
+  return method
 }

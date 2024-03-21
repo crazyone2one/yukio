@@ -43,14 +43,21 @@
 </template>
 
 <script setup lang="ts">
+import { useRequest } from 'alova'
 import { NAvatar, NText } from 'naive-ui'
 import { h, ref } from 'vue'
+import { logoutApi } from '/@/api/modules/login'
 import { useI18n } from '/@/hooks/use-i18n'
+import router from '/@/router'
+import useUserStore from '/@/store/modules/user'
 import { renderIcon } from '/@/utils'
+import { clearToken } from '/@/utils/auth'
+import { removeRouteListener } from '/@/utils/route-listener'
 
 const { t } = useI18n()
 const show = ref(false)
 const orgListLoading = ref(false)
+const userStore = useUserStore()
 const orgKeyword = ref('')
 const orgList = ref([
   { id: 1, name: '测试1' },
@@ -95,7 +102,7 @@ const options = [
   {
     label: t('personal.info'),
     key: 'profile',
-    icon: renderIcon('i-solar:user-id-linear'),
+    icon: renderIcon('i-mdi:card-account-details-outline'),
   },
   {
     label: t('personal.switchOrg'),
@@ -105,14 +112,45 @@ const options = [
   {
     label: t('personal.exit'),
     key: 'logout',
-    icon: renderIcon('i-solar:exit-broken'),
+    icon: renderIcon('i-mdi:location-exit'),
   },
 ]
-const handleSelect = (key: string) => {
+const { send: doLogout } = useRequest(logoutApi(), { immediate: false })
+const logout = async (logoutTo?: string) => {
+  doLogout()
+    .then(() => {
+      userStore.resetInfo()
+      const currentRoute = router.currentRoute.value
+      window.$message.success(t('message.logoutSuccess'))
+      router.push({
+        name: logoutTo && typeof logoutTo === 'string' ? logoutTo : 'login',
+        query: {
+          ...router.currentRoute.value.query,
+          redirect: currentRoute.name as string,
+        },
+      })
+    })
+    .finally(() => {
+      clearToken()
+      removeRouteListener()
+    })
+}
+const handleSelect = async (key: string) => {
   if ('switchOrg' === key) {
     show.value = true
   }
   window.$message.info(key)
+  if ('logout' === key) {
+    window.$dialog.warning({
+      title: '警告',
+      content: '你确定？',
+      positiveText: '确定',
+      negativeText: '不确定',
+      onPositiveClick() {
+        logout()
+      },
+    })
+  }
 }
 </script>
 

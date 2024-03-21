@@ -24,12 +24,11 @@ export interface TableQueryParams {
   keyword?: string
   [key: string]: any
 }
-export interface CommonList<T> {
+export interface CommonPage<T> {
   [x: string]: any
   pageSize: number
-  total: number
-  current: number
-  list: T[]
+  totalRow: number
+  records: T[]
 }
 
 export interface TemplateOption {

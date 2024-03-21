@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { useRequest } from 'alova'
+import { nextTick, onBeforeMount, ref } from 'vue'
 import AddOrganization from './components/AddOrganization.vue'
 import SystemOrganization from './components/SystemOrganization.vue'
 import SystemProject from './components/SystemProject.vue'
+import { getOrgAndProjectCount } from '/@/api/modules/setting/org-and-project'
 import BaseCard from '/@/components/base-card/index.vue'
 import { useI18n } from '/@/hooks/use-i18n'
 
@@ -16,6 +18,27 @@ const projectTableRef = ref()
 const organizationVisible = ref(false)
 const projectVisible = ref(false)
 
+const { send: loadOrgAndProCount, loading } = useRequest(
+  getOrgAndProjectCount(),
+  {
+    immediate: false,
+  },
+)
+const tableSearch = () => {
+  if (currentTable.value === 'organization') {
+    if (orgTableRef.value) {
+      orgTableRef.value.fetchData()
+    } else {
+      nextTick(() => {
+        orgTableRef.value?.fetchData()
+      })
+    }
+  }
+  loadOrgAndProCount().then((res) => {
+    organizationCount.value = res.organizationTotal
+    projectCount.value = res.projectTotal
+  })
+}
 const handleAddOrganization = () => {
   if (currentTable.value === 'organization') {
     organizationVisible.value = true
@@ -26,12 +49,15 @@ const handleAddOrganization = () => {
 const handleAddOrganizationCancel = (shouldSearch: boolean) => {
   organizationVisible.value = false
   if (shouldSearch) {
-    // tableSearch();
+    tableSearch()
   }
 }
+onBeforeMount(() => {
+  tableSearch()
+})
 </script>
 <template>
-  <base-card :loading="false" hide-back hide-footer>
+  <base-card :loading="loading" hide-back hide-footer>
     <template #headerLeft>
       <n-button type="primary" @click="handleAddOrganization">
         {{
@@ -46,6 +72,7 @@ const handleAddOrganizationCancel = (shouldSearch: boolean) => {
         v-model:value="keyword"
         :placeholder="t('system.organization.searchIndexPlaceholder')"
         class="w-[240px]"
+        clearable
       />
       <n-radio-group
         v-model:value="currentTable"
@@ -68,6 +95,7 @@ const handleAddOrganizationCancel = (shouldSearch: boolean) => {
       <system-organization
         v-if="currentTable === 'organization'"
         ref="orgTableRef"
+        :keyword="keyword"
       />
       <system-project v-if="currentTable === 'project'" ref="projectTableRef" />
     </div>
