@@ -12,13 +12,12 @@ const { onAuthRequired, onResponseRefreshToken } =
     refreshTokenOnSuccess: {
       // 响应时触发，可获取到response和method，并返回boolean表示token是否过期
       // 当服务端返回401时，表示token过期
-      isExpired: (response, method) => {
+      isExpired: (response) => {
         return response.status === 401
       },
 
       // 当token过期时触发，在此函数中触发刷新token
-      handler: async (response, method) => {
-        console.log(`output->'refreshTokenOnSuccess'`, 'refreshTokenOnSuccess')
+      handler: async () => {
         const token1 = getToken()
         const { token, refresh_token } = await refreshTokenAPI(
           token1.refresh_token,
@@ -30,12 +29,12 @@ const { onAuthRequired, onResponseRefreshToken } =
     refreshTokenOnError: {
       // 响应时触发，可获取到error和method，并返回boolean表示token是否过期
       // 当服务端返回401时，表示token过期
-      isExpired: (error, method) => {
+      isExpired: (error) => {
         return error.response.status === 401
       },
 
       // 当token过期时触发，在此函数中触发刷新token
-      handler: async (error, method) => {
+      handler: async () => {
         const token1 = getToken()
         const { token, refresh_token } = await refreshTokenAPI(
           token1.refresh_token,
@@ -63,7 +62,9 @@ export const alovaInst = createAlova({
       ORGANIZATION: appStore.currentOrgId,
       PROJECT: appStore.currentProjectId,
     }
-    if (!method.meta?.ignoreToken) {
+    if (method.meta?.authRole === 'refreshToken') {
+      method.config.headers.Authorization = `${'Bearer ' + token.refresh_token}`
+    } else if (!method.meta?.ignoreToken) {
       method.config.headers.Authorization = `${'Bearer ' + token.token}`
     }
   }),
