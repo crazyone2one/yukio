@@ -8,6 +8,7 @@ import { TableQueryParams } from '/@/api/interface/common'
 import { UserListItem } from '/@/api/interface/setting/user'
 import { getUserList } from '/@/api/modules/setting/user'
 import BaseCard from '/@/components/base-card/index.vue'
+import BasePagination from '/@/components/base-pagination/index.vue'
 import TableMoreAction from '/@/components/base-table/TableMoreAction.vue'
 import { ActionsItem } from '/@/components/base-table/types'
 import EnAble from '/@/components/enable-status/index.vue'
@@ -130,24 +131,12 @@ const {
       data: [],
     },
     data: (response) => response.records,
+    total: (response) => response.totalRow,
     watchingStates: [keyword],
     immediate: false,
   },
 )
-const pagination = reactive({
-  page: page,
-  pageSize: pageSize,
-  showSizePicker: true,
-  pageSizes: [10, 20, 30],
-  total: total,
-  onChange: (page: number) => {
-    pagination.page = page
-  },
-  onUpdatePageSize: (pageSize: number) => {
-    pagination.pageSize = pageSize
-    pagination.page = 1
-  },
-})
+
 const handleCheck = (rowKeys: DataTableRowKey[]) =>
   (checkedRowKeys.value = rowKeys)
 const showUserModal = (mode: UserModalMode, record?: UserListItem) => {
@@ -158,6 +147,12 @@ const showUserModal = (mode: UserModalMode, record?: UserListItem) => {
   }
 }
 const handleCancle = () => (visible.value = false)
+const handlePrevPage = (val: number) => {
+  pageSize.value = val
+}
+const handlePage = (val: number) => {
+  page.value = val
+}
 onMounted(() => {
   fetchData()
 })
@@ -184,8 +179,14 @@ onMounted(() => {
       <n-data-table
         :columns="columns"
         :data="data"
-        :pagination="pagination"
         @update:checked-row-keys="handleCheck"
+      />
+      <base-pagination
+        :total="total"
+        :page-size="pageSize"
+        :page="page"
+        @update:page-size="handlePrevPage"
+        @update:page="handlePage"
       />
     </div>
   </base-card>

@@ -1,7 +1,11 @@
 package cn.master.yukio.service;
 
+import cn.master.yukio.dto.request.GlobalUserRoleRelationQueryRequest;
+import cn.master.yukio.dto.request.OrganizationUserRoleMemberEditRequest;
+import cn.master.yukio.dto.user.UserRoleRelationUserDTO;
 import cn.master.yukio.dto.user.response.UserTableResponse;
 import cn.master.yukio.entity.User;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
 import cn.master.yukio.entity.UserRoleRelation;
 import jakarta.validation.Valid;
@@ -42,4 +46,10 @@ public interface IUserRoleRelationService extends IService<UserRoleRelation> {
     List<String> getUserIdByRoleId(String roleId);
 
     List<UserRoleRelation> getUserIdAndSourceIdByUserIds(List<String> userIds);
+
+    Page<UserRoleRelationUserDTO> page(GlobalUserRoleRelationQueryRequest request);
+
+    void delete(String id);
+
+    void removeMember(OrganizationUserRoleMemberEditRequest request);
 }

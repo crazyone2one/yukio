@@ -1,0 +1,56 @@
+import { CommonPage, TableQueryParams } from '../../interface/common'
+import {
+  UserGroupItem,
+  UserTableItem,
+} from '/@/api//interface/setting/usergroup'
+import { alovaInst } from '/@/api/index.ts'
+import * as ugUrl from '/@/api/requrls/setting/usergroup'
+
+/**
+ * 系统-获取用户组列表
+ * @returns
+ */
+export const getUserGroupList = () =>
+  alovaInst.Get<UserGroupItem[]>(`${ugUrl.getUserGroupU}`)
+
+/**
+ * 系统-获取用户组对应的用户列表
+ * @param data
+ * @returns
+ */
+export const postUserByUserGroup = (data: TableQueryParams) =>
+  alovaInst.Post<CommonPage<UserTableItem[]>>(
+    `${ugUrl.postUserByUserGroupUrl}`,
+    data,
+  )
+/**
+ * 组织-获取用户组对应的用户列表
+ * @param data
+ * @returns
+ */
+export const postOrgUserByUserGroup = (data: TableQueryParams) =>
+  alovaInst.Post<CommonPage<UserTableItem[]>>(
+    `${ugUrl.postOrgUserByUserGroupUrl}`,
+    data,
+  )
+/**
+ * 系统-删除用户组对应的用户
+ * @param id
+ * @returns
+ */
+export const deleteUserFromUserGroup = (id: string) =>
+  alovaInst.Get<string>(`${ugUrl.deleteUserFromUserGroupUrl}${id}`)
+/**
+ * 组织-删除用户组对应的用户
+ * @param data
+ * @returns
+ */
+export const deleteOrgUserFromUserGroup = (data: {
+  userRoleId: string
+  userIds: string[]
+  organizationId: string
+}) =>
+  alovaInst.Post<CommonPage<UserTableItem[]>>(
+    `${ugUrl.deleteOrgUserFromUserGroupUrl}`,
+    data,
+  )

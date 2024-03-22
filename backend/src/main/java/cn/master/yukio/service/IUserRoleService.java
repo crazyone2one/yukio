@@ -1,7 +1,10 @@
 package cn.master.yukio.service;
 
 import cn.master.yukio.dto.permission.PermissionDefinitionItem;
+import cn.master.yukio.dto.request.OrganizationUserRoleMemberRequest;
+import cn.master.yukio.entity.User;
 import cn.master.yukio.entity.UserRoleRelation;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
 import cn.master.yukio.entity.UserRole;
 import jakarta.validation.Valid;
@@ -44,4 +47,8 @@ public interface IUserRoleService extends IService<UserRole> {
     List<PermissionDefinitionItem> getPermissionSetting(UserRole userRole);
 
     List<UserRole> globalList();
+
+    void checkSystemUserGroup(UserRole userRole);
+
+    Page<User> listMember(OrganizationUserRoleMemberRequest request);
 }

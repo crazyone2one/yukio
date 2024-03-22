@@ -1,6 +1,7 @@
 package cn.master.yukio.controller;
 
 import cn.master.yukio.dto.permission.PermissionDefinitionItem;
+import cn.master.yukio.entity.UserRole;
 import cn.master.yukio.service.IUserRoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,5 +25,15 @@ public class GlobalUserRoleController {
     @GetMapping("/permission/setting/{id}")
     public List<PermissionDefinitionItem> getPermissionSetting(@PathVariable String id) {
         return userRoleService.getPermissionSetting(id);
+    }
+
+    /**
+     * 系统设置-系统-用户组-获取全局用户组列表
+     *
+     * @return java.util.List<cn.master.yukio.entity.UserRole>
+     */
+    @GetMapping("/list")
+    public List<UserRole> list() {
+        return userRoleService.globalList();
     }
 }

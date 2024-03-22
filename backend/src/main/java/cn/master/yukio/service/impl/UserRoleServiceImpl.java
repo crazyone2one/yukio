@@ -7,6 +7,8 @@ import cn.master.yukio.constants.UserRoleScope;
 import cn.master.yukio.constants.UserRoleType;
 import cn.master.yukio.dto.permission.Permission;
 import cn.master.yukio.dto.permission.PermissionDefinitionItem;
+import cn.master.yukio.dto.request.OrganizationUserRoleMemberRequest;
+import cn.master.yukio.entity.User;
 import cn.master.yukio.entity.UserRole;
 import cn.master.yukio.entity.UserRolePermission;
 import cn.master.yukio.entity.UserRoleRelation;
@@ -19,6 +21,7 @@ import cn.master.yukio.service.IUserRoleService;
 import cn.master.yukio.util.JsonUtils;
 import cn.master.yukio.util.SessionUtils;
 import cn.master.yukio.util.Translator;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -32,10 +35,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.master.yukio.entity.table.UserRolePermissionTableDef.USER_ROLE_PERMISSION;
+import static cn.master.yukio.entity.table.UserRoleRelationTableDef.USER_ROLE_RELATION;
 import static cn.master.yukio.entity.table.UserRoleTableDef.USER_ROLE;
+import static cn.master.yukio.entity.table.UserTableDef.USER;
 import static cn.master.yukio.handler.result.CommonResultCode.INTERNAL_USER_ROLE_PERMISSION;
-import static cn.master.yukio.handler.result.SystemResultCode.NO_GLOBAL_USER_ROLE_PERMISSION;
-import static cn.master.yukio.handler.result.SystemResultCode.NO_ORG_USER_ROLE_PERMISSION;
+import static cn.master.yukio.handler.result.SystemResultCode.*;
 
 /**
  * 用户组 服务层实现。
@@ -203,6 +207,27 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
                 .thenComparingInt(item -> getInternal(item.getInternal()))
                 .thenComparing(UserRole::getCreateTime));
         return userRoles;
+    }
+
+    @Override
+    public void checkSystemUserGroup(UserRole userRole) {
+        if (!StringUtils.equalsIgnoreCase(userRole.getType(), UserRoleType.SYSTEM.name())) {
+            throw new MSException(GLOBAL_USER_ROLE_RELATION_SYSTEM_PERMISSION);
+        }
+    }
+
+    @Override
+    public Page<User> listMember(OrganizationUserRoleMemberRequest request) {
+        return QueryChain.of(UserRoleRelation.class).select(USER.ALL_COLUMNS)
+                .from(USER_ROLE_RELATION)
+                .leftJoin(USER).on(USER_ROLE_RELATION.USER_ID.eq(USER.ID))
+                .where(USER_ROLE_RELATION.SOURCE_ID.eq(request.getOrganizationId())
+                        .and(USER_ROLE_RELATION.ROLE_ID.eq(request.getUserRoleId()))
+                        .and(USER.NAME.like(request.getKeyword())
+                                .or(USER.EMAIL.like(request.getKeyword()))
+                                .or(USER.PHONE.like(request.getKeyword()))))
+                .orderBy(USER_ROLE_RELATION.CREATE_TIME.desc())
+                .pageAs(Page.of(request.getCurrent(), request.getPageSize()), User.class);
     }
 
     private int getInternal(Boolean internal) {

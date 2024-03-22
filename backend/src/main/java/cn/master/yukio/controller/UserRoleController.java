@@ -2,7 +2,11 @@ package cn.master.yukio.controller;
 
 import cn.master.yukio.dto.permission.PermissionDefinitionItem;
 import cn.master.yukio.dto.request.OrganizationUserRoleEditRequest;
+import cn.master.yukio.dto.request.OrganizationUserRoleMemberEditRequest;
+import cn.master.yukio.dto.request.OrganizationUserRoleMemberRequest;
+import cn.master.yukio.entity.User;
 import cn.master.yukio.entity.UserRole;
+import cn.master.yukio.service.IUserRoleRelationService;
 import cn.master.yukio.service.IUserRoleService;
 import cn.master.yukio.util.SessionUtils;
 import cn.master.yukio.validation.groups.Created;
@@ -28,6 +32,7 @@ import java.util.List;
 public class UserRoleController {
 
     private final IUserRoleService iUserRoleService;
+    private final IUserRoleRelationService userRoleRelationService;
 
     /**
      * 添加用户组。
@@ -119,5 +124,21 @@ public class UserRoleController {
     @GetMapping("/global/list")
     public List<UserRole> list() {
         return iUserRoleService.globalList();
+    }
+
+    /**
+     * 系统设置-组织-用户组-获取成员列表
+     *
+     * @param request
+     * @return com.mybatisflex.core.paginate.Page<cn.master.yukio.entity.User>
+     */
+    @PostMapping("/list-member")
+    public Page<User> listMember(@Validated @RequestBody OrganizationUserRoleMemberRequest request) {
+        return iUserRoleService.listMember(request);
+    }
+
+    @PostMapping("/remove-member")
+    public void removeMember(@Validated @RequestBody OrganizationUserRoleMemberEditRequest request) {
+        userRoleRelationService.removeMember(request);
     }
 }

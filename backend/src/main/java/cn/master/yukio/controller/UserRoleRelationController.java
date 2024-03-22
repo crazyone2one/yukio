@@ -1,6 +1,10 @@
 package cn.master.yukio.controller;
 
+import cn.master.yukio.dto.request.GlobalUserRoleRelationQueryRequest;
+import cn.master.yukio.dto.user.UserRoleRelationUserDTO;
 import com.mybatisflex.core.paginate.Page;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,21 +16,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import cn.master.yukio.entity.UserRoleRelation;
 import cn.master.yukio.service.IUserRoleRelationService;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.io.Serializable;
 import java.util.List;
 
 /**
- * 用户组关系 控制层。
+ * 系统设置-系统-用户组-用户关联关系
  *
  * @author 11's papa
  * @since 1.0.0
  */
 @RestController
-@RequestMapping("/userRoleRelation")
+@RequestMapping("/user/role/relation")
+@RequiredArgsConstructor
 public class UserRoleRelationController {
 
-    @Autowired
-    private IUserRoleRelationService iUserRoleRelationService;
+    private final IUserRoleRelationService iUserRoleRelationService;
 
     /**
      * 添加用户组关系。
@@ -40,14 +45,13 @@ public class UserRoleRelationController {
     }
 
     /**
-     * 根据主键删除用户组关系。
+     * 系统设置-系统-用户组-用户关联关系-删除全局用户组和用户的关联关系。
      *
      * @param id 主键
-     * @return {@code true} 删除成功，{@code false} 删除失败
      */
-    @DeleteMapping("remove/{id}")
-    public boolean remove(@PathVariable Serializable id) {
-        return iUserRoleRelationService.removeById(id);
+    @GetMapping("remove/{id}")
+    public void remove(@PathVariable String id) {
+        iUserRoleRelationService.delete(id);
     }
 
     /**
@@ -85,12 +89,12 @@ public class UserRoleRelationController {
     /**
      * 分页查询用户组关系。
      *
-     * @param page 分页对象
+     * @param request 分页对象
      * @return 分页对象
      */
-    @GetMapping("page")
-    public Page<UserRoleRelation> page(Page<UserRoleRelation> page) {
-        return iUserRoleRelationService.page(page);
+    @PostMapping("/global/page")
+    public Page<UserRoleRelationUserDTO> page(@Validated @RequestBody GlobalUserRoleRelationQueryRequest request) {
+        return iUserRoleRelationService.page(request);
     }
 
 }
