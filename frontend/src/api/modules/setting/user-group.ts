@@ -1,5 +1,6 @@
 import { CommonPage, TableQueryParams } from '../../interface/common'
 import {
+  SystemUserGroupParams,
   UserGroupItem,
   UserTableItem,
 } from '/@/api//interface/setting/usergroup'
@@ -52,5 +53,15 @@ export const deleteOrgUserFromUserGroup = (data: {
 }) =>
   alovaInst.Post<CommonPage<UserTableItem[]>>(
     `${ugUrl.deleteOrgUserFromUserGroupUrl}`,
+    data,
+  )
+/**
+ * 系统-创建或修改用户组
+ * @param data
+ * @returns
+ */
+export const updateOrAddUserGroup = (data: SystemUserGroupParams) =>
+  alovaInst.Post<UserGroupItem>(
+    `${data.id ? ugUrl.updateUserGroupU : ugUrl.addUserGroupU}`,
     data,
   )

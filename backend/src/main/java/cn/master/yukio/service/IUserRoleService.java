@@ -51,4 +51,6 @@ public interface IUserRoleService extends IService<UserRole> {
     void checkSystemUserGroup(UserRole userRole);
 
     Page<User> listMember(OrganizationUserRoleMemberRequest request);
+
+    UserRole sysAdd(UserRole userRole);
 }

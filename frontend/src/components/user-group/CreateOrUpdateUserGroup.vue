@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { useRequest } from 'alova'
 import { FormInst, FormItemRule } from 'naive-ui'
 import { inject, reactive, ref, watchEffect } from 'vue'
 import { UserGroupItem } from '/@/api/interface/setting/usergroup'
+import { updateOrAddUserGroup } from '/@/api/modules/setting/user-group'
 import { AuthScopeEnum } from '/@/enums/commonEnum'
 import { useI18n } from '/@/hooks/use-i18n'
 import useAppStore from '/@/store/modules/app'
@@ -61,16 +63,32 @@ const handleCancel = () => {
   // loading.value = false;
   emit('cancel', false)
 }
+const { send: saveSysGroup } = useRequest(
+  (param) => updateOrAddUserGroup(param),
+  {
+    immediate: false,
+  },
+)
 const handleBeforeOk = () => {
   formRef.value?.validate((errors) => {
     if (errors) {
       return false
     }
+
     if (systemType === AuthScopeEnum.SYSTEM) {
-      console.log(
-        `output->system`,
-        `${{ id: props.id, name: form.name, type: props.authScope }}`,
-      )
+      saveSysGroup({
+        id: props.id,
+        name: form.name,
+        type: props.authScope,
+      }).then((r) => {
+        window.$message.success(
+          props.id
+            ? t('system.userGroup.updateUserGroupSuccess')
+            : t('system.userGroup.addUserGroupSuccess'),
+        )
+        emit('submit', r.id)
+        handleCancel()
+      })
     } else if (systemType === AuthScopeEnum.ORGANIZATION) {
       // 组织用户组
       console.log(

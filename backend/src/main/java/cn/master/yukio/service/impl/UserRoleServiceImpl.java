@@ -230,6 +230,27 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
                 .pageAs(Page.of(request.getCurrent(), request.getPageSize()), User.class);
     }
 
+    @Override
+    public UserRole sysAdd(UserRole userRole) {
+        userRole.setInternal(false);
+        userRole.setScopeId(UserRoleScope.GLOBAL);
+        checkExist(userRole);
+        mapper.insert(userRole);
+        return userRole;
+    }
+
+    private void checkExist(UserRole userRole) {
+        if (StringUtils.isBlank(userRole.getName())) {
+            return;
+        }
+        boolean exists = queryChain().where(USER_ROLE.NAME.eq(userRole.getName())
+                .and(USER_ROLE.SCOPE_ID.eq(UserRoleScope.GLOBAL))
+                .and(USER_ROLE.ID.ne(userRole.getId()))).exists();
+        if (exists) {
+            throw new MSException(GLOBAL_USER_ROLE_EXIST);
+        }
+    }
+
     private int getInternal(Boolean internal) {
         return BooleanUtils.isTrue(internal) ? 0 : 1;
     }

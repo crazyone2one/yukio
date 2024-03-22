@@ -1,5 +1,6 @@
 package cn.master.yukio.entity;
 
+import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.Table;
 import java.io.Serializable;
@@ -59,11 +60,13 @@ public class UserRole implements Serializable {
     /**
      * 创建时间
      */
+    @Column(onInsertValue = "now()")
     private LocalDateTime createTime;
 
     /**
      * 更新时间
      */
+    @Column(onInsertValue = "now()",onUpdateValue = "now()")
     private LocalDateTime updateTime;
 
     /**

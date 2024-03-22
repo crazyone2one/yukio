@@ -79,7 +79,7 @@ onMounted(() => {
         <div class="mt-[16px]">
           <user-table
             v-if="currentTable === 'user' && couldShowUser"
-            ref="userTableRef"
+            ref="userTablRef"
             :keyword="currentKeyword"
             :current="currentUserGroupItem"
           />

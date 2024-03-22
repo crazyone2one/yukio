@@ -1,13 +1,15 @@
 package cn.master.yukio.controller;
 
 import cn.master.yukio.dto.permission.PermissionDefinitionItem;
+import cn.master.yukio.dto.system.UserRoleUpdateRequest;
 import cn.master.yukio.entity.UserRole;
 import cn.master.yukio.service.IUserRoleService;
+import cn.master.yukio.util.SessionUtils;
+import cn.master.yukio.validation.groups.Created;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.BeanUtils;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,5 +37,13 @@ public class GlobalUserRoleController {
     @GetMapping("/list")
     public List<UserRole> list() {
         return userRoleService.globalList();
+    }
+
+    @PostMapping("/add")
+    public UserRole add(@Validated({Created.class}) @RequestBody UserRoleUpdateRequest request) {
+        UserRole userRole = new UserRole();
+        userRole.setCreateUser(SessionUtils.getUserId());
+        BeanUtils.copyProperties(request, userRole);
+        return userRoleService.sysAdd(userRole);
     }
 }
