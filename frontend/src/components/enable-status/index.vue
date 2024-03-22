@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { OrganizationListItem } from '/@/api/interface/orgnization'
+import { UserListItem } from '/@/api/interface/setting/user'
 
 defineProps<{
-  record: OrganizationListItem
+  record: OrganizationListItem | UserListItem
 }>()
 </script>
 <template>

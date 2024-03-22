@@ -22,6 +22,7 @@ watch(
       if (action.isDivider) {
         const item = {
           type: 'divider',
+          key: 'd1',
         }
         options.value.push(item)
       }

@@ -34,6 +34,7 @@ import {
   NSpace,
   NSpin,
   NSplit,
+  NSwitch,
   NTabPane,
   NTabs,
   NTag,
@@ -85,5 +86,6 @@ export default create({
     NRadio,
     NDataTable,
     NFormItem,
+    NSwitch,
   ],
 })
