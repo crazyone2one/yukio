@@ -14,18 +14,13 @@
         <n-spin :show="orgListLoading">
           <div class="w-full">
             <n-list hoverable clickable>
-              <n-list-item v-for="item in orgList" :key="item.id">
+              <n-list-item v-for="item in originOrgList" :key="item.id">
                 <div class="flex w-full">
-                  <n-tooltip trigger="hover">
-                    <template #trigger>
-                      <div class="one-line-text max-w-[220px]">
-                        {{ item.name }}
-                      </div>
-                    </template>
+                  <n-text @click="switchOrg(item)">
                     {{ item.name }}
-                  </n-tooltip>
+                  </n-text>
                   <n-tag
-                    v-if="item.id === 1"
+                    v-if="item.id === appStore.currentOrgId"
                     size="small"
                     type="success"
                     class="ml-[4px] px-[4px]"
@@ -46,9 +41,12 @@
 import { useRequest } from 'alova'
 import { NAvatar, NText } from 'naive-ui'
 import { h, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { OrganizationListItem } from '/@/api/interface/setting/user'
 import { logoutApi } from '/@/api/modules/login'
+import { getOrgOptions, switchUserOrg } from '/@/api/modules/system'
 import { useI18n } from '/@/hooks/use-i18n'
-import router from '/@/router'
+import useAppStore from '/@/store/modules/app'
 import useUserStore from '/@/store/modules/user'
 import { renderIcon } from '/@/utils'
 import { clearToken } from '/@/utils/auth'
@@ -56,13 +54,12 @@ import { removeRouteListener } from '/@/utils/route-listener'
 
 const { t } = useI18n()
 const show = ref(false)
-const orgListLoading = ref(false)
+const route = useRoute()
+const router = useRouter()
 const userStore = useUserStore()
+const appStore = useAppStore()
 const orgKeyword = ref('')
-const orgList = ref([
-  { id: 1, name: '测试1' },
-  { id: 2, name: '测试2' },
-])
+const originOrgList = ref<Array<OrganizationListItem>>([])
 const renderCustomHeader = () => {
   return h(
     'div',
@@ -135,11 +132,39 @@ const logout = async (logoutTo?: string) => {
       removeRouteListener()
     })
 }
+const { send: doSwitch } = useRequest(
+  (orgId, userId) => switchUserOrg(orgId, userId),
+  { immediate: false },
+)
+const switchOrg = (record: OrganizationListItem) => {
+  doSwitch(record.id, userStore.id).then(async () => {
+    window.$message.success(t('personal.switchOrgSuccess'))
+    await userStore.isLogin(true)
+    router.replace({
+      path: route.path,
+      query: {
+        ...route.query,
+        orgId: appStore.currentOrgId,
+        pId: appStore.currentProjectId,
+      },
+    })
+  })
+}
+const { send: loadWs, loading: orgListLoading } = useRequest(getOrgOptions(), {
+  immediate: false,
+})
+const getOrgList = () => {
+  loadWs().then((res) => {
+    originOrgList.value = res
+    appStore.setOrdList(originOrgList.value)
+  })
+}
 const handleSelect = async (key: string) => {
   if ('switchOrg' === key) {
     show.value = true
+    getOrgList()
   }
-  window.$message.info(key)
+
   if ('logout' === key) {
     window.$dialog.warning({
       title: '警告',

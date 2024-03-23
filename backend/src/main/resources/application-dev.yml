@@ -32,8 +32,8 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
   data:
     redis:
-      host: 172.16.2.10
-      password: c1$4T&9pW#z2Q@7vL
+      host: localhost
+#      password: c1$4T&9pW#z2Q@7vL
       port: 6379
       database: 3
 jwt:

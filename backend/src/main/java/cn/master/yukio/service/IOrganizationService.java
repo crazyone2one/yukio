@@ -47,4 +47,6 @@ public interface IOrganizationService extends IService<Organization> {
 
 
     List<OptionDTO> listAll();
+
+    void switchOrg(OrganizationSwitchRequest request);
 }

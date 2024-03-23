@@ -1,3 +1,8 @@
+import {
+  OrganizationListItem,
+  ProjectListItem,
+} from '/@/api/interface/setting/user'
+
 export interface AppState {
   menuCollapse: boolean
   footer: boolean
@@ -8,4 +13,6 @@ export interface AppState {
   currentProjectId: string
   device: string
   navbar: boolean
+  projectList: ProjectListItem[]
+  ordList: OrganizationListItem[]
 }

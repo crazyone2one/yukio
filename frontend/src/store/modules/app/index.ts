@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { AppState } from './types'
+import { OrganizationListItem } from '/@/api/interface/setting/user'
 
 const useAppStore = defineStore('app', {
   persist: {
@@ -15,6 +16,8 @@ const useAppStore = defineStore('app', {
     collapsedIconSize: 24,
     device: 'desktop',
     navbar: true,
+    projectList: [],
+    ordList: [],
   }),
   getters: {
     getCurrentOrgId(state: AppState): string {
@@ -43,6 +46,12 @@ const useAppStore = defineStore('app', {
      */
     updateSettings(partial: Partial<AppState>) {
       this.$patch(partial)
+    },
+    /**
+     * 设置当前组织列表
+     */
+    setOrdList(ordList: OrganizationListItem[]) {
+      this.ordList = ordList
     },
   },
 })

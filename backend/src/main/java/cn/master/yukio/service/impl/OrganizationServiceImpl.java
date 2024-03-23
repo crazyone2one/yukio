@@ -18,6 +18,7 @@ import cn.master.yukio.service.IOperationLogService;
 import cn.master.yukio.service.IOrganizationService;
 import cn.master.yukio.service.IUserService;
 import cn.master.yukio.util.JsonUtils;
+import cn.master.yukio.util.SessionUtils;
 import cn.master.yukio.util.Translator;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
@@ -294,6 +295,15 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
     public List<OptionDTO> listAll() {
         List<Organization> organizations = queryChain().list();
         return organizations.stream().map(o -> new OptionDTO(o.getId(), o.getName())).toList();
+    }
+
+    @Override
+    public void switchOrg(OrganizationSwitchRequest request) {
+        User user = userMapper.selectOneById(request.getUserId());
+        user.setLastOrganizationId(request.getOrganizationId());
+        user.setLastProjectId(StringUtils.EMPTY);
+        userMapper.update(user);
+        SessionUtils.refreshSessionUser();
     }
 
     private void buildExtraInfo(List<OrganizationDTO> organizationDTOS) {

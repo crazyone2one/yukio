@@ -2,12 +2,14 @@ package cn.master.yukio.controller;
 
 import cn.master.yukio.dto.LoginRequest;
 import cn.master.yukio.handler.ResultHolder;
+import cn.master.yukio.handler.result.MsHttpResultCode;
 import cn.master.yukio.security.CustomUserDetails;
 import cn.master.yukio.security.CustomUserDetailsService;
 import cn.master.yukio.security.JwtProvider;
 import cn.master.yukio.util.RedisKeyUtils;
 import cn.master.yukio.util.SessionUtils;
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Created by 11's papa on 02/21/2024
@@ -69,7 +72,7 @@ public class AuthController {
                 String newRefreshToken = jwtProvider.createRefreshToken(userDetails);
                 map.put("refresh_token", newRefreshToken);
                 log.info("{}'s refreshToken recreated.", claims.getSubject());
-            }else {
+            } else {
                 map.put("refresh_token", refreshToken);
             }
             String accessToken = jwtProvider.createAccessToken(userDetails);
@@ -93,5 +96,17 @@ public class AuthController {
     @GetMapping("/demo")
     public ResponseEntity<Object> demo() {
         return ResponseEntity.ok("demo");
+    }
+
+    @GetMapping(value = "/is-login")
+    public ResultHolder isLogin(HttpServletResponse response) {
+        //CustomUserDetails currentUser = SessionUtils.getCurrentUser();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails customUserDetails = (CustomUserDetails) auth.getPrincipal();
+        if (Objects.nonNull(customUserDetails)) {
+            return ResultHolder.success(customUserDetails.getUser());
+        }
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        return ResultHolder.error(MsHttpResultCode.UNAUTHORIZED.getCode(), null);
     }
 }

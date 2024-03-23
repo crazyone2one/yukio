@@ -4,6 +4,8 @@ import cn.master.yukio.security.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -20,6 +22,12 @@ public class SessionUtils {
 
     public static CustomUserDetails getCurrentUser() {
         return (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    public static void refreshSessionUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Authentication newAuth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), auth.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
     }
 
     public static String getUserId() {

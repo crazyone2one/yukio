@@ -1,5 +1,5 @@
 import { alovaInst } from '/@/api/index.ts'
-import { LoginRes } from '/@/api/interface/user.ts'
+import { LoginRes, PersonalInfo } from '/@/api/interface/user.ts'
 
 /**
  * 登录接口
@@ -33,3 +33,5 @@ export const logoutApi = () => {
   }
   return method
 }
+export const isLoginApi = () =>
+  alovaInst.Get<PersonalInfo>('/api/auth/is-login')

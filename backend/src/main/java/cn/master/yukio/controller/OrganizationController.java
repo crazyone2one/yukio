@@ -213,4 +213,9 @@ public class OrganizationController {
     public List<OptionDTO> listAll() {
         return iOrganizationService.listAll();
     }
+
+    @PostMapping("/switch")
+    public void switchOrg(@RequestBody OrganizationSwitchRequest request) {
+        iOrganizationService.switchOrg(request);
+    }
 }

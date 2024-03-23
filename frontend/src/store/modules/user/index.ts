@@ -3,6 +3,8 @@ import { UserState } from './types'
 import { LoginRes } from '/@/api/interface/user.ts'
 import useAppStore from '/@/store/modules/app'
 import { setToken } from '/@/utils/auth'
+import { isLoginApi } from '/@/api/modules/login.ts'
+import { getHashParameters } from '/@/utils'
 
 const useUserStore = defineStore('user', {
   persist: true,
@@ -52,7 +54,21 @@ const useUserStore = defineStore('user', {
       setToken(result.token, result.refresh_token)
       appStore.setCurrentOrgId(result.user.lastOrganizationId || '')
       appStore.setCurrentProjectId(result.user.lastProjectId || '')
-      this.setInfo(result)
+      this.setInfo(result.user)
+    },
+    async isLogin(forceSet = false) {
+      const res = await isLoginApi()
+      const appStore = useAppStore()
+      this.setInfo(res)
+      const { orgId, pId } = getHashParameters()
+      // 如果访问页面的时候携带了组织 ID和项目 ID，则不设置
+      if (!orgId || forceSet) {
+        appStore.setCurrentOrgId(res.lastOrganizationId || '')
+      }
+      if (!pId || forceSet) {
+        appStore.setCurrentProjectId(res.lastProjectId || '')
+      }
+      return true
     },
   },
 })

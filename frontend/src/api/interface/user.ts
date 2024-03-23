@@ -1,5 +1,3 @@
-import { UserState } from '/@/store/modules/user/types'
-
 // 登录信息
 export interface LoginData {
   username: string
@@ -8,7 +6,7 @@ export interface LoginData {
 }
 
 // 登录返回
-export interface LoginRes extends UserState {
+export interface LoginRes {
   refresh_token: string
   token: string
   user: PersonalInfo
