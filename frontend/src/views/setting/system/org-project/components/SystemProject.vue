@@ -8,7 +8,10 @@ import {
   CreateOrUpdateSystemProjectParams,
   OrgProjectTableItem,
 } from '/@/api/interface/setting/orgAndProject.ts'
-import { postProjectTable } from '/@/api/modules/setting/org-and-project.ts'
+import {
+  enableOrDisableProject,
+  postProjectTable,
+} from '/@/api/modules/setting/org-and-project.ts'
 import BasePagination from '/@/components/base-pagination/index.vue'
 import TableMoreAction from '/@/components/base-table/TableMoreAction.vue'
 import { ActionsItem } from '/@/components/base-table/types.ts'
@@ -172,7 +175,31 @@ const showAddProjectModal = (record: OrgProjectTableItem) => {
     organizationId,
     moduleIds,
   }
-  console.log(`output->currentUpdateProject.value`, currentUpdateProject.value)
+}
+const handleEnableOrDisableProject = (
+  record: OrgProjectTableItem,
+  isEnable = true,
+) => {
+  const title = isEnable
+    ? t('system.project.enableTitle')
+    : t('system.project.endTitle')
+  const content = isEnable
+    ? t('system.project.enableContent')
+    : t('system.project.endContent')
+  const okText = isEnable ? t('common.confirmStart') : t('common.confirmEnd')
+  window.$dialog.info({
+    title,
+    content,
+    positiveText: okText,
+    negativeText: t('common.cancel'),
+    onPositiveClick: async () => {
+      await enableOrDisableProject(record.id, isEnable)
+      window.$message.success(
+        isEnable ? t('common.enableSuccess') : t('common.closeSuccess'),
+      )
+      fetchData()
+    },
+  })
 }
 const handleAddProjectModalCancel = (shouldSearch: boolean) => {
   if (shouldSearch) {

@@ -12,6 +12,9 @@ import cn.master.yukio.util.SessionUtils;
 import cn.master.yukio.validation.groups.Created;
 import cn.master.yukio.validation.groups.Updated;
 import com.mybatisflex.core.paginate.Page;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -136,5 +139,19 @@ public class ProjectController {
         batchRequest.setProjectIds(List.of(request.getProjectId()));
         batchRequest.setUserIds(request.getUserIds());
         iProjectService.addProjectMember(batchRequest, SessionUtils.getUserId());
+    }
+
+    @GetMapping("/enable/{id}")
+    @Operation(summary = "系统设置-系统-组织与项目-项目-启用")
+    @Parameter(name = "id", description = "项目ID", schema = @Schema(requiredMode = Schema.RequiredMode.REQUIRED))
+    public void enable(@PathVariable String id) {
+        iProjectService.enable(id, SessionUtils.getUserId());
+    }
+
+    @GetMapping("/disable/{id}")
+    @Operation(summary = "系统设置-系统-组织与项目-项目-禁用")
+    @Parameter(name = "id", description = "项目ID", schema = @Schema(requiredMode = Schema.RequiredMode.REQUIRED))
+    public void disable(@PathVariable String id) {
+        iProjectService.disable(id, SessionUtils.getUserId());
     }
 }

@@ -377,6 +377,26 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
         return projectDTO;
     }
 
+    @Override
+    public void enable(String id, String updateUser) {
+        checkProjectNotExist(id);
+        Project project = new Project();
+        project.setId(id);
+        project.setEnable(true);
+        project.setUpdateUser(updateUser);
+        mapper.update(project);
+    }
+
+    @Override
+    public void disable(String id, String updateUser) {
+        checkProjectNotExist(id);
+        Project project = new Project();
+        project.setId(id);
+        project.setEnable(false);
+        project.setUpdateUser(updateUser);
+        mapper.update(project);
+    }
+
     private void checkOrgIsExist(String organizationId) {
         if (Objects.isNull(organizationMapper.selectOneById(organizationId))) {
             throw new MSException(Translator.get("organization_not_exists"));

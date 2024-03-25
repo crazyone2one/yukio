@@ -4,9 +4,9 @@ import cn.master.yukio.dto.project.*;
 import cn.master.yukio.dto.request.ProjectAddMemberBatchRequest;
 import cn.master.yukio.dto.user.UserDTO;
 import cn.master.yukio.dto.user.UserExtendDTO;
+import cn.master.yukio.entity.Project;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
-import cn.master.yukio.entity.Project;
 
 import java.util.List;
 
@@ -40,4 +40,8 @@ public interface IProjectService extends IService<Project> {
     ProjectDTO update(UpdateProjectRequest request, String updateUser);
 
     ProjectDTO update(UpdateProjectRequest updateProjectDto, String updateUser, String path, String module);
+
+    void enable(String id, String updateUser);
+
+    void disable(String id, String updateUser);
 }

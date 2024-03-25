@@ -126,3 +126,14 @@ export const getAdminByProjectByOrg = (
       },
     },
   )
+
+/**
+ * 启用或禁用项目
+ * @param id
+ * @param isEnable
+ * @returns
+ */
+export const enableOrDisableProject = (id: string, isEnable = true) =>
+  alovaInst.Get(
+    `${isEnable ? orgUrl.getEnableProjectUrl : orgUrl.getDisableProjectUrl}${id}`,
+  )
