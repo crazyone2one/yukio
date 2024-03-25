@@ -15,4 +15,6 @@ export interface AppState {
   navbar: boolean
   projectList: ProjectListItem[]
   ordList: OrganizationListItem[]
+  loading: boolean;
+  loadingTip: string;
 }

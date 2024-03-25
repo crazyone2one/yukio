@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { AppState } from './types'
 import { OrganizationListItem } from '/@/api/interface/setting/user'
 import { getProjectList } from '/@/api/modules/project-management/project.ts'
+import { useI18n } from '/@/hooks/use-i18n'
 
 const useAppStore = defineStore('app', {
   persist: {
@@ -19,6 +20,8 @@ const useAppStore = defineStore('app', {
     navbar: true,
     projectList: [],
     ordList: [],
+    loading: false,
+    loadingTip: '',
   }),
   getters: {
     getCurrentOrgId(state: AppState): string {
@@ -58,6 +61,22 @@ const useAppStore = defineStore('app', {
       this.projectList = this.currentOrgId
         ? await getProjectList(this.currentOrgId)
         : []
+    },
+    /**
+     * 显示全局 loading
+     */
+    showLoading(tip = '') {
+      const { t } = useI18n()
+      this.loading = true
+      this.loadingTip = tip || t('message.loadingDefaultTip')
+    },
+    /**
+     * 隐藏全局 loading
+     */
+    hideLoading() {
+      const { t } = useI18n()
+      this.loading = false
+      this.loadingTip = t('message.loadingDefaultTip')
     },
   },
 })
