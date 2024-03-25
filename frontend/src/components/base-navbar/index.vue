@@ -1,12 +1,59 @@
 <script setup lang="ts">
-import { NDivider } from 'naive-ui'
-import { ref } from 'vue'
+import { useRequest } from 'alova'
+import { NDivider, SelectOption } from 'naive-ui'
+import { ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import PersonalMenu from './PersonalMenu.vue'
+import { switchProject } from '/@/api/modules/project-management/project'
 import logo from '/@/assets/logo.svg'
 import { useI18n } from '/@/hooks/use-i18n'
+import useAppStore from '/@/store/modules/app'
+import useUserStore from '/@/store/modules/user'
 
-const value = ref('')
+const projectOptions = ref<Array<SelectOption>>([])
 const { t } = useI18n()
+const appStore = useAppStore()
+const userStore = useUserStore()
+const route = useRoute()
+const router = useRouter()
+const { send: switchPro } = useRequest((param) => switchProject(param), {
+  immediate: false,
+})
+const handleSelectProject = async (value: string) => {
+  await switchPro({
+    projectId: value as string,
+    userId: userStore.id || '',
+  }).then(() => {
+    router.replace({
+      path: route.path,
+      query: {
+        ...route.query,
+        orgId: appStore.currentOrgId,
+        pId: appStore.currentProjectId,
+      },
+    })
+  })
+}
+watch(
+  () => appStore.currentOrgId,
+  async () => {
+    appStore.initProjectList()
+  },
+  { immediate: true },
+)
+watch(
+  () => appStore.projectList,
+  (newValue) => {
+    projectOptions.value = []
+    newValue.map((item) => {
+      projectOptions.value.push({
+        label: item.name,
+        value: item.id,
+        // style: item.id === appStore.currentProjectId ? 'color:#007AFF' : '',
+      })
+    })
+  },
+)
 </script>
 <template>
   <div class="navbar">
@@ -21,9 +68,11 @@ const { t } = useI18n()
     <div class="center-side">
       <n-divider vertical class="ml-0" />
       <n-select
-        v-model:value="value"
-        :options="[]"
-        class="w-[200px] focus-within:!bg-[var(--color-text-n8)] hover:!bg-[var(--color-text-n8)]"
+        v-model:value="appStore.currentProjectId"
+        :options="projectOptions"
+        filterable
+        class="w-[200px]"
+        @update:value="handleSelectProject"
       />
       <n-divider vertical class="mr-0" />
     </div>
@@ -123,6 +172,10 @@ const { t } = useI18n()
   }
   .trigger-btn {
     margin-left: 14px;
+  }
+  .select-option-selected {
+    color: rgb(#8ae600) !important;
+    background-color: rgb(#8ae600) !important;
   }
 }
 </style>

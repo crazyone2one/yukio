@@ -36,7 +36,7 @@ export const postProjectTableUrl = '/system/project/page'
 // 获取项目成员
 export const postProjectMemberUrl = '/system/project/member-list'
 // 添加项目
-export const postAddProjectUrl = '/system/project/add'
+export const postAddProjectUrl = '/system/project/save'
 // 修改项目名称
 export const postModifyProjectNameUrl = '/system/project/rename'
 // 添加项目成员

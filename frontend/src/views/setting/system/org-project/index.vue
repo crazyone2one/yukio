@@ -2,6 +2,7 @@
 import { useRequest } from 'alova'
 import { nextTick, onBeforeMount, ref } from 'vue'
 import AddOrganization from './components/AddOrganization.vue'
+import AddProject from './components/AddProject.vue'
 import SystemOrganization from './components/SystemOrganization.vue'
 import SystemProject from './components/SystemProject.vue'
 import { getOrgAndProjectCount } from '/@/api/modules/setting/org-and-project'
@@ -33,6 +34,12 @@ const tableSearch = () => {
         orgTableRef.value?.fetchData()
       })
     }
+  } else if (projectTableRef.value) {
+    projectTableRef.value.fetchData()
+  } else {
+    nextTick(() => {
+      projectTableRef.value?.fetchData()
+    })
   }
   loadOrgAndProCount().then((res) => {
     organizationCount.value = res.organizationTotal
@@ -48,6 +55,12 @@ const handleAddOrganization = () => {
 }
 const handleAddOrganizationCancel = (shouldSearch: boolean) => {
   organizationVisible.value = false
+  if (shouldSearch) {
+    tableSearch()
+  }
+}
+const handleAddProjectCancel = (shouldSearch: boolean) => {
+  projectVisible.value = false
   if (shouldSearch) {
     tableSearch()
   }
@@ -108,6 +121,7 @@ onBeforeMount(() => {
     :visible="organizationVisible"
     @cancel="handleAddOrganizationCancel"
   />
+  <add-project :visible="projectVisible" @cancel="handleAddProjectCancel" />
 </template>
 
 <style scoped></style>
