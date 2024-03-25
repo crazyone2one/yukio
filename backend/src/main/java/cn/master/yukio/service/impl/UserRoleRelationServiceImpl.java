@@ -4,6 +4,7 @@ import cn.master.yukio.constants.*;
 import cn.master.yukio.dto.LogDTO;
 import cn.master.yukio.dto.request.GlobalUserRoleRelationQueryRequest;
 import cn.master.yukio.dto.request.OrganizationUserRoleMemberEditRequest;
+import cn.master.yukio.dto.user.UserExcludeOptionDTO;
 import cn.master.yukio.dto.user.UserRoleRelationUserDTO;
 import cn.master.yukio.dto.user.response.UserTableResponse;
 import cn.master.yukio.entity.Organization;
@@ -16,6 +17,7 @@ import cn.master.yukio.mapper.UserRoleRelationMapper;
 import cn.master.yukio.service.IOperationLogService;
 import cn.master.yukio.service.IUserRoleRelationService;
 import cn.master.yukio.util.JsonUtils;
+import cn.master.yukio.util.ServiceUtils;
 import cn.master.yukio.util.Translator;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
@@ -29,10 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.master.yukio.constants.InternalUserRole.ADMIN;
@@ -275,8 +274,8 @@ public class UserRoleRelationServiceImpl extends ServiceImpl<UserRoleRelationMap
         if (com.alibaba.excel.util.StringUtils.equals(request.getUserRoleId(), InternalUserRole.ORG_ADMIN.getValue())) {
             List<UserRoleRelation> userRoleRelations = queryChain()
                     .where(USER_ROLE_RELATION.USER_ID.ne(removeUserId)
-                    .and(USER_ROLE_RELATION.ROLE_ID.eq(InternalUserRole.ORG_ADMIN.getValue()))
-                    .and(USER_ROLE_RELATION.SOURCE_ID.eq(request.getOrganizationId()))).list();
+                            .and(USER_ROLE_RELATION.ROLE_ID.eq(InternalUserRole.ORG_ADMIN.getValue()))
+                            .and(USER_ROLE_RELATION.SOURCE_ID.eq(request.getOrganizationId()))).list();
             if (userRoleRelations.isEmpty()) {
                 throw new MSException(Translator.get("keep_at_least_one_administrator"));
             }
@@ -284,8 +283,8 @@ public class UserRoleRelationServiceImpl extends ServiceImpl<UserRoleRelationMap
         // 移除组织-用户组的成员, 若成员只存在该组织下唯一用户组, 则提示不能移除
         QueryChain<UserRoleRelation> queryChain = queryChain()
                 .where(USER_ROLE_RELATION.USER_ID.eq(removeUserId)
-                .and(USER_ROLE_RELATION.ROLE_ID.ne(request.getUserRoleId()))
-                .and(USER_ROLE_RELATION.SOURCE_ID.eq(request.getOrganizationId())));
+                        .and(USER_ROLE_RELATION.ROLE_ID.ne(request.getUserRoleId()))
+                        .and(USER_ROLE_RELATION.SOURCE_ID.eq(request.getOrganizationId())));
         if (queryChain.count() == 0) {
             throw new MSException(Translator.get("org_at_least_one_user_role_require"));
         }
@@ -295,6 +294,27 @@ public class UserRoleRelationServiceImpl extends ServiceImpl<UserRoleRelationMap
                         .and(USER_ROLE_RELATION.ROLE_ID.eq(request.getUserRoleId()))
                         .and(USER_ROLE_RELATION.SOURCE_ID.eq(request.getOrganizationId())));
         mapper.deleteByQuery(delete);
+    }
+
+    @Override
+    public List<UserExcludeOptionDTO> getExcludeSelectOption(String roleId, String keyword) {
+        UserRole userRole = userRoleMapper.selectOneById(roleId);
+        ServiceUtils.checkResourceExist(userRole, "permission.system_user_role.name");
+        // 查询所有用户选项
+        List<UserExcludeOptionDTO> selectOptions = QueryChain.of(User.class).select(USER.ID, USER.EMAIL, USER.NAME)
+                .where(USER.NAME.like(keyword).or(USER.EMAIL.like(keyword)))
+                .limit(100).listAs(UserExcludeOptionDTO.class);
+        // 查询已经关联的用户ID
+        Set<String> excludeUserIds = new HashSet<>(queryChain().select(USER_ROLE_RELATION.USER_ID)
+                .where(USER_ROLE_RELATION.ROLE_ID.eq(roleId))
+                .listAs(String.class));
+        // 标记已经关联的用户
+        selectOptions.forEach((excludeOption) -> {
+            if (excludeUserIds.contains(excludeOption.getId())) {
+                excludeOption.setExclude(true);
+            }
+        });
+        return selectOptions;
     }
 
     private void checkMemberParam(String userId, String roleId) {

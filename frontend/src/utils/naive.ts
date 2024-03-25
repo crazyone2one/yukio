@@ -25,6 +25,7 @@ import {
   NList,
   NListItem,
   NMenu,
+  NModal,
   NP,
   NPopover,
   NRadio,
@@ -87,5 +88,6 @@ export default create({
     NDataTable,
     NFormItem,
     NSwitch,
+    NModal,
   ],
 })

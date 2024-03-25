@@ -1,21 +1,15 @@
 package cn.master.yukio.controller;
 
 import cn.master.yukio.dto.request.GlobalUserRoleRelationQueryRequest;
+import cn.master.yukio.dto.user.UserExcludeOptionDTO;
 import cn.master.yukio.dto.user.UserRoleRelationUserDTO;
-import com.mybatisflex.core.paginate.Page;
-import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
 import cn.master.yukio.entity.UserRoleRelation;
 import cn.master.yukio.service.IUserRoleRelationService;
-import org.springframework.web.bind.annotation.RestController;
+import com.mybatisflex.core.paginate.Page;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
 import java.util.List;
@@ -97,4 +91,11 @@ public class UserRoleRelationController {
         return iUserRoleRelationService.page(request);
     }
 
+    @GetMapping("/global/user/option/{roleId}")
+    public List<UserExcludeOptionDTO> getSelectOption(@Schema(description = "用户组ID", requiredMode = Schema.RequiredMode.REQUIRED)
+                                                      @PathVariable String roleId,
+                                                      @Schema(description = "查询关键字，根据邮箱和用户名查询", requiredMode = Schema.RequiredMode.REQUIRED)
+                                                      @RequestParam(value = "keyword", required = false) String keyword) {
+        return iUserRoleRelationService.getExcludeSelectOption(roleId, keyword);
+    }
 }

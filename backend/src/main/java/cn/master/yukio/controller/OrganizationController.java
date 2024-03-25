@@ -5,13 +5,17 @@ import cn.master.yukio.dto.organization.*;
 import cn.master.yukio.dto.project.OrganizationProjectRequest;
 import cn.master.yukio.dto.project.ProjectDTO;
 import cn.master.yukio.dto.project.ProjectRequest;
+import cn.master.yukio.dto.user.OptionDisabledDTO;
 import cn.master.yukio.dto.user.UserExtendDTO;
 import cn.master.yukio.entity.Organization;
 import cn.master.yukio.service.IOrganizationService;
 import cn.master.yukio.service.IProjectService;
+import cn.master.yukio.service.IUserService;
 import cn.master.yukio.util.SessionUtils;
 import cn.master.yukio.validation.groups.Updated;
 import com.mybatisflex.core.paginate.Page;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.validation.annotation.Validated;
@@ -35,6 +39,7 @@ public class OrganizationController {
 
     private final IOrganizationService iOrganizationService;
     private final IProjectService projectService;
+    private final IUserService iUserService;
 
     @PostMapping("/add")
     public void add(@Validated({Updated.class}) @RequestBody OrganizationEditRequest organizationEditRequest) {
@@ -217,5 +222,26 @@ public class OrganizationController {
     @PostMapping("/switch")
     public void switchOrg(@RequestBody OrganizationSwitchRequest request) {
         iOrganizationService.switchOrg(request);
+    }
+
+    @Operation(summary = "系统设置-系统-组织与项目-获取成员下拉选项")
+    @GetMapping("/get-option/{sourceId}")
+    public List<UserExtendDTO> getMemberOption(@PathVariable String sourceId,
+                                               @Schema(description = "查询关键字，根据邮箱和用户名查询")
+                                               @RequestParam(value = "keyword", required = false) String keyword) {
+        return iUserService.getMemberOption(sourceId, keyword);
+    }
+
+    @GetMapping("/project/list/{organizationId}")
+    @Operation(summary = "系统设置-组织-成员-获取当前组织下的所有项目")
+    public List<OptionDTO> getProjectList(@PathVariable(value = "organizationId") String organizationId, @Schema(description = "查询关键字，根据项目名查询", requiredMode = Schema.RequiredMode.REQUIRED) @RequestParam(value = "keyword", required = false) String keyword) {
+        return iOrganizationService.getProjectList(organizationId, keyword);
+    }
+
+    @GetMapping("/not-exist/user/list/{organizationId}")
+    @Operation(summary = "系统设置-组织-成员-获取不在当前组织的所有用户")
+    public List<OptionDisabledDTO> getUserList(@PathVariable(value = "organizationId") String organizationId, @Schema(description = "查询关键字，根据用户名查询", requiredMode = Schema.RequiredMode.REQUIRED)
+    @RequestParam(value = "keyword", required = false) String keyword) {
+        return iOrganizationService.getUserList(organizationId, keyword);
     }
 }

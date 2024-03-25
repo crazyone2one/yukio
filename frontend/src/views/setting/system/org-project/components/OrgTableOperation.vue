@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { OrganizationListItem } from '/@/api/interface/orgnization'
+import { OrgProjectTableItem } from '/@/api/interface/setting/orgAndProject.ts'
 
 defineProps<{
-  record: OrganizationListItem
+  record: OrganizationListItem | OrgProjectTableItem
 }>()
 const emits = defineEmits([
   'handleEdit',

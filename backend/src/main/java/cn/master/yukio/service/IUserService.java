@@ -3,10 +3,7 @@ package cn.master.yukio.service;
 import cn.master.yukio.dto.BasePageRequest;
 import cn.master.yukio.dto.TableBatchProcessDTO;
 import cn.master.yukio.dto.TableBatchProcessResponse;
-import cn.master.yukio.dto.user.UserBatchCreateRequest;
-import cn.master.yukio.dto.user.UserChangeEnableRequest;
-import cn.master.yukio.dto.user.UserDTO;
-import cn.master.yukio.dto.user.UserEditRequest;
+import cn.master.yukio.dto.user.*;
 import cn.master.yukio.dto.user.response.UserBatchCreateResponse;
 import cn.master.yukio.dto.user.response.UserSelectOption;
 import cn.master.yukio.dto.user.response.UserTableResponse;
@@ -55,4 +52,6 @@ public interface IUserService extends IService<User> {
     TableBatchProcessResponse resetPassword(TableBatchProcessDTO request, String operator);
 
     UserDTO switchWorkspace(String sign, String sourceId);
+
+    List<UserExtendDTO> getMemberOption(String sourceId, String keyword);
 }

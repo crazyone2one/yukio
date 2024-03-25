@@ -2,6 +2,7 @@ package cn.master.yukio.service;
 
 import cn.master.yukio.dto.permission.PermissionDefinitionItem;
 import cn.master.yukio.dto.request.OrganizationUserRoleMemberRequest;
+import cn.master.yukio.dto.user.UserExtendDTO;
 import cn.master.yukio.entity.User;
 import cn.master.yukio.entity.UserRoleRelation;
 import com.mybatisflex.core.paginate.Page;
@@ -53,4 +54,6 @@ public interface IUserRoleService extends IService<UserRole> {
     Page<User> listMember(OrganizationUserRoleMemberRequest request);
 
     UserRole sysAdd(UserRole userRole);
+
+    List<UserExtendDTO> getMember(String organizationId, String roleId, String keyword);
 }

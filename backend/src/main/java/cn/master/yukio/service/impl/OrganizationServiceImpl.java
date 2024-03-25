@@ -4,6 +4,7 @@ import cn.master.yukio.constants.*;
 import cn.master.yukio.dto.LogDTO;
 import cn.master.yukio.dto.OptionDTO;
 import cn.master.yukio.dto.organization.*;
+import cn.master.yukio.dto.user.OptionDisabledDTO;
 import cn.master.yukio.dto.user.UserExtendDTO;
 import cn.master.yukio.entity.Organization;
 import cn.master.yukio.entity.Project;
@@ -304,6 +305,32 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
         user.setLastProjectId(StringUtils.EMPTY);
         userMapper.update(user);
         SessionUtils.refreshSessionUser();
+    }
+
+    @Override
+    public List<OptionDTO> getProjectList(String organizationId, String keyword) {
+        checkOrgExistById(organizationId);
+        return QueryChain.of(Project.class).select(PROJECT.ORGANIZATION_ID, PROJECT.NAME)
+                .where(PROJECT.ORGANIZATION_ID.eq(organizationId)
+                        .and(PROJECT.NAME.like(keyword)))
+                .orderBy(PROJECT.UPDATE_TIME.desc()).limit(100)
+                .listAs(OptionDTO.class);
+    }
+
+    @Override
+    public List<OptionDisabledDTO> getUserList(String organizationId, String keyword) {
+        checkOrgExistById(organizationId);
+        List<OptionDisabledDTO> optionDisabledDTOS = QueryChain.of(User.class).select(USER.ID, USER.NAME, USER.EMAIL)
+                .where(USER.NAME.like(keyword).or(USER.EMAIL.like(keyword).or(USER.PHONE.like(keyword))))
+                .orderBy(USER.UPDATE_TIME.desc()).limit(100).listAs(OptionDisabledDTO.class);
+        List<UserRoleRelation> userRoleRelations = QueryChain.of(UserRoleRelation.class).where(USER_ROLE_RELATION.SOURCE_ID.eq(organizationId)).list();
+        List<String> userIds = userRoleRelations.stream().map(UserRoleRelation::getUserId).distinct().toList();
+        for (OptionDisabledDTO optionDisabledDTO : optionDisabledDTOS) {
+            if (CollectionUtils.isNotEmpty(userIds) && userIds.contains(optionDisabledDTO.getId())) {
+                optionDisabledDTO.setDisabled(true);
+            }
+        }
+        return optionDisabledDTOS;
     }
 
     private void buildExtraInfo(List<OrganizationDTO> organizationDTOS) {

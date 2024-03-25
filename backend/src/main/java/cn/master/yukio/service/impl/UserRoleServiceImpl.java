@@ -8,6 +8,7 @@ import cn.master.yukio.constants.UserRoleType;
 import cn.master.yukio.dto.permission.Permission;
 import cn.master.yukio.dto.permission.PermissionDefinitionItem;
 import cn.master.yukio.dto.request.OrganizationUserRoleMemberRequest;
+import cn.master.yukio.dto.user.UserExtendDTO;
 import cn.master.yukio.entity.User;
 import cn.master.yukio.entity.UserRole;
 import cn.master.yukio.entity.UserRolePermission;
@@ -28,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -237,6 +239,48 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
         checkExist(userRole);
         mapper.insert(userRole);
         return userRole;
+    }
+
+    @Override
+    public List<UserExtendDTO> getMember(String sourceId, String roleId, String keyword) {
+        List<UserExtendDTO> userExtendDTOS = new ArrayList<>();
+        // 查询组织或项目下所有用户关系
+        List<UserRoleRelation> userRoleRelations = QueryChain.of(UserRoleRelation.class)
+                .where(USER_ROLE_RELATION.SOURCE_ID.eq(sourceId)).list();
+        if (CollectionUtils.isNotEmpty(userRoleRelations)) {
+            Map<String, List<String>> userRoleMap = userRoleRelations.stream().collect(Collectors.groupingBy(UserRoleRelation::getUserId,
+                    Collectors.mapping(UserRoleRelation::getRoleId, Collectors.toList())));
+            userRoleMap.forEach((k, v) -> {
+                UserExtendDTO userExtendDTO = new UserExtendDTO();
+                userExtendDTO.setId(k);
+                v.forEach(roleItem -> {
+                    if (StringUtils.equals(roleItem, roleId)) {
+                        // 该用户已存在用户组关系, 设置为选中状态
+                        userExtendDTO.setCheckRoleFlag(true);
+                    }
+                });
+                userExtendDTOS.add(userExtendDTO);
+            });
+            // 设置用户信息, 用户不存在或者已删除, 则不展示
+            List<String> userIds = userExtendDTOS.stream().map(UserExtendDTO::getId).toList();
+            List<User> users = QueryChain.of(User.class).select(USER.ALL_COLUMNS)
+                    .where(USER.ID.in(userIds))
+                    .and(USER.NAME.like(keyword).or(USER.EMAIL.like(keyword))).limit(100).list();
+            if (CollectionUtils.isNotEmpty(users)) {
+                Map<String, User> userMap = users.stream().collect(Collectors.toMap(User::getId, user -> user));
+                userExtendDTOS.removeIf(userExtend -> {
+                    if (userMap.containsKey(userExtend.getId())) {
+                        BeanUtils.copyProperties(userMap.get(userExtend.getId()), userExtend);
+                        return false;
+                    }
+                    return true;
+                });
+            } else {
+                userExtendDTOS.clear();
+            }
+        }
+        userExtendDTOS.sort(Comparator.comparing(UserExtendDTO::getName));
+        return userExtendDTOS;
     }
 
     private void checkExist(UserRole userRole) {

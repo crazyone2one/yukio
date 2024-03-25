@@ -97,7 +97,11 @@ onBeforeMount(() => {
         ref="orgTableRef"
         :keyword="keyword"
       />
-      <system-project v-if="currentTable === 'project'" ref="projectTableRef" />
+      <system-project
+        v-if="currentTable === 'project'"
+        ref="projectTableRef"
+        :keyword="keyword"
+      />
     </div>
   </base-card>
   <add-organization

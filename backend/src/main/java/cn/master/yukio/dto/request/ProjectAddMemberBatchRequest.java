@@ -14,5 +14,5 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class ProjectAddMemberBatchRequest extends ProjectAddMemberRequest {
-    private List<@NotBlank(message = "{project.id.not_blank}", groups = {Created.class, Updated.class}) String> projectIds;
+    private List<String> projectIds;
 }

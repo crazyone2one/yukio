@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { AppState } from './types'
 import { OrganizationListItem } from '/@/api/interface/setting/user'
+import { getProjectList } from '/@/api/modules/project-management/project.ts'
 
 const useAppStore = defineStore('app', {
   persist: {
@@ -52,6 +53,11 @@ const useAppStore = defineStore('app', {
      */
     setOrdList(ordList: OrganizationListItem[]) {
       this.ordList = ordList
+    },
+    async initProjectList() {
+      this.projectList = this.currentOrgId
+        ? await getProjectList(this.currentOrgId)
+        : []
     },
   },
 })

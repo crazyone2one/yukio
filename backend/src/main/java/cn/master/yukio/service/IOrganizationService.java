@@ -2,6 +2,7 @@ package cn.master.yukio.service;
 
 import cn.master.yukio.dto.OptionDTO;
 import cn.master.yukio.dto.organization.*;
+import cn.master.yukio.dto.user.OptionDisabledDTO;
 import cn.master.yukio.dto.user.UserExtendDTO;
 import cn.master.yukio.entity.Organization;
 import com.mybatisflex.core.paginate.Page;
@@ -49,4 +50,8 @@ public interface IOrganizationService extends IService<Organization> {
     List<OptionDTO> listAll();
 
     void switchOrg(OrganizationSwitchRequest request);
+
+    List<OptionDTO> getProjectList(String organizationId, String keyword);
+
+    List<OptionDisabledDTO> getUserList(String organizationId, String keyword);
 }

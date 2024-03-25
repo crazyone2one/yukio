@@ -4,6 +4,7 @@ import cn.master.yukio.dto.permission.PermissionDefinitionItem;
 import cn.master.yukio.dto.request.OrganizationUserRoleEditRequest;
 import cn.master.yukio.dto.request.OrganizationUserRoleMemberEditRequest;
 import cn.master.yukio.dto.request.OrganizationUserRoleMemberRequest;
+import cn.master.yukio.dto.user.UserExtendDTO;
 import cn.master.yukio.entity.User;
 import cn.master.yukio.entity.UserRole;
 import cn.master.yukio.service.IUserRoleRelationService;
@@ -12,6 +13,7 @@ import cn.master.yukio.util.SessionUtils;
 import cn.master.yukio.validation.groups.Created;
 import cn.master.yukio.validation.groups.Updated;
 import com.mybatisflex.core.paginate.Page;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.validation.annotation.Validated;
@@ -140,5 +142,21 @@ public class UserRoleController {
     @PostMapping("/remove-member")
     public void removeMember(@Validated @RequestBody OrganizationUserRoleMemberEditRequest request) {
         userRoleRelationService.removeMember(request);
+    }
+
+    /**
+     * 系统设置-组织-用户组-获取成员下拉选项
+     *
+     * @param organizationId 组织ID
+     * @param roleId 用户组ID
+     * @param keyword 关键字
+     * @return java.util.List<cn.master.yukio.dto.user.UserExtendDTO>
+     */
+    @GetMapping("/get-member/option/{organizationId}/{roleId}")
+    public List<UserExtendDTO> getMember(@PathVariable String organizationId,
+                                         @PathVariable String roleId,
+                                         @Schema(description = "查询关键字，根据邮箱和用户名查询")
+                                         @RequestParam(required = false) String keyword) {
+        return iUserRoleService.getMember(organizationId, roleId, keyword);
     }
 }

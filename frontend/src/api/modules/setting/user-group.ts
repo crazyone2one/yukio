@@ -65,3 +65,34 @@ export const updateOrAddUserGroup = (data: SystemUserGroupParams) =>
     `${data.id ? ugUrl.updateUserGroupU : ugUrl.addUserGroupU}`,
     data,
   )
+/**
+ * 系统-获取需要关联的用户选项
+ * @param id
+ * @param keyword
+ */
+export const getSystemUserGroupOption = (id: string, keyword: string) =>
+  alovaInst.Get<UserTableItem[]>(`${ugUrl.getSystemUserGroupOptionUrl}${id}`, {
+    params: {
+      keyword,
+    },
+  })
+
+/**
+ * 组织-获取需要关联的用户选项
+ * @param organizationId
+ * @param roleId
+ * @param keyword
+ */
+export const getOrgUserGroupOption = (
+  organizationId: string,
+  roleId: string,
+  keyword: string,
+) =>
+  alovaInst.Get<UserTableItem[]>(
+    `${ugUrl.getOrgUserGroupOptionUrl}${organizationId}/${roleId}`,
+    {
+      params: {
+        keyword,
+      },
+    },
+  )

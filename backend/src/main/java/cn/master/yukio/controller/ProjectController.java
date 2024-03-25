@@ -1,9 +1,6 @@
 package cn.master.yukio.controller;
 
-import cn.master.yukio.dto.project.AddProjectRequest;
-import cn.master.yukio.dto.project.ProjectDTO;
-import cn.master.yukio.dto.project.ProjectRequest;
-import cn.master.yukio.dto.project.ProjectSwitchRequest;
+import cn.master.yukio.dto.project.*;
 import cn.master.yukio.dto.request.ProjectAddMemberBatchRequest;
 import cn.master.yukio.dto.request.ProjectAddMemberRequest;
 import cn.master.yukio.dto.user.UserDTO;
@@ -13,6 +10,7 @@ import cn.master.yukio.service.IProjectService;
 import cn.master.yukio.service.IUserService;
 import cn.master.yukio.util.SessionUtils;
 import cn.master.yukio.validation.groups.Created;
+import cn.master.yukio.validation.groups.Updated;
 import com.mybatisflex.core.paginate.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -58,14 +56,14 @@ public class ProjectController {
     }
 
     /**
-     * 根据主键更新项目。
+     * 系统设置-系统-组织与项目-项目-编辑
      *
-     * @param project 项目
+     * @param request 项目
      * @return {@code true} 更新成功，{@code false} 更新失败
      */
-    @PutMapping("update")
-    public boolean update(@RequestBody Project project) {
-        return iProjectService.updateById(project);
+    @PostMapping("update")
+    public ProjectDTO update(@RequestBody @Validated({Updated.class}) UpdateProjectRequest request) {
+        return iProjectService.update(request, SessionUtils.getUserId());
     }
 
     /**

@@ -23,6 +23,7 @@ import cn.master.yukio.util.Translator;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.DistinctQueryColumn;
 import com.mybatisflex.core.query.QueryChain;
+import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.core.util.UpdateEntity;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -266,6 +267,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         BeanUtils.copyProperties(user, newUser);
         mapper.update(newUser);
         return getUserDtoByName(user.getName());
+    }
+
+    @Override
+    public List<UserExtendDTO> getMemberOption(String sourceId, String keyword) {
+        return queryChain().select(QueryMethods.distinct(USER.ALL_COLUMNS))
+                .select("count(urr.id) > 0 as memberFlag")
+                .from(USER).leftJoin(UserRoleRelation.class).as("urr").on(USER.ID.eq(USER_ROLE_RELATION.USER_ID))
+                .and(USER_ROLE_RELATION.SOURCE_ID.eq(sourceId))
+                .and(USER.NAME.like(keyword).or(USER.EMAIL.like(keyword))).limit(100).listAs(UserExtendDTO.class);
     }
 
     private List<Project> getProjectListByWsAndUserId(String userId, String sourceId) {

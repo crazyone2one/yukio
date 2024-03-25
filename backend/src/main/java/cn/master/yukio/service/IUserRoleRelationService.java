@@ -2,6 +2,7 @@ package cn.master.yukio.service;
 
 import cn.master.yukio.dto.request.GlobalUserRoleRelationQueryRequest;
 import cn.master.yukio.dto.request.OrganizationUserRoleMemberEditRequest;
+import cn.master.yukio.dto.user.UserExcludeOptionDTO;
 import cn.master.yukio.dto.user.UserRoleRelationUserDTO;
 import cn.master.yukio.dto.user.response.UserTableResponse;
 import cn.master.yukio.entity.User;
@@ -52,4 +53,6 @@ public interface IUserRoleRelationService extends IService<UserRoleRelation> {
     void delete(String id);
 
     void removeMember(OrganizationUserRoleMemberEditRequest request);
+
+    List<UserExcludeOptionDTO> getExcludeSelectOption(String roleId, String keyword);
 }
