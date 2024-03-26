@@ -54,8 +54,8 @@ public class ProjectController {
      * @return {@code true} 删除成功，{@code false} 删除失败
      */
     @DeleteMapping("remove/{id}")
-    public boolean remove(@PathVariable Serializable id) {
-        return iProjectService.removeById(id);
+    public int remove(@PathVariable String id) {
+        return iProjectService.remove(id, SessionUtils.getUserId());
     }
 
     /**
@@ -153,5 +153,11 @@ public class ProjectController {
     @Parameter(name = "id", description = "项目ID", schema = @Schema(requiredMode = Schema.RequiredMode.REQUIRED))
     public void disable(@PathVariable String id) {
         iProjectService.disable(id, SessionUtils.getUserId());
+    }
+
+    @GetMapping("/revoke/{id}")
+    @Operation(summary = "系统设置-系统-组织与项目-项目-撤销删除")
+    public int revokeProject(@PathVariable String id) {
+        return iProjectService.revoke(id, SessionUtils.getUserId());
     }
 }

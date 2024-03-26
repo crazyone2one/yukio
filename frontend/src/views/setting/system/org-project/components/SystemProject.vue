@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { usePagination } from '@alova/scene-vue'
-import { DataTableColumns, DataTableRowKey } from 'naive-ui'
+import { useRequest } from 'alova'
+import { DataTableColumns, DataTableRowKey, NIcon } from 'naive-ui'
 import { h, onMounted, reactive, ref } from 'vue'
 import { TableQueryParams } from '/@/api/interface/common.ts'
 import { UserItem } from '/@/api/interface/setting/log.ts'
@@ -9,6 +10,7 @@ import {
   OrgProjectTableItem,
 } from '/@/api/interface/setting/orgAndProject.ts'
 import {
+  deleteProject,
   enableOrDisableProject,
   postProjectTable,
 } from '/@/api/modules/setting/org-and-project.ts'
@@ -17,6 +19,7 @@ import TableMoreAction from '/@/components/base-table/TableMoreAction.vue'
 import { ActionsItem } from '/@/components/base-table/types.ts'
 import ShowOrEdit from '/@/components/table-column-show-or-edit/index.vue'
 import { useI18n } from '/@/hooks/use-i18n.ts'
+import { characterLimit } from '/@/utils'
 import AddProject from '/@/views/setting/system/org-project/components/AddProject.vue'
 import TableOperation from '/src/views/setting/system/org-project/components/OrgTableOperation.vue'
 
@@ -29,6 +32,7 @@ const { t } = useI18n()
 const checkedRowKeys = ref<DataTableRowKey[]>([])
 const currentKeyword = ref(props.keyword)
 const currentUpdateProject = ref<CreateOrUpdateSystemProjectParams>()
+const currentDeleteProject = ref<OrgProjectTableItem>()
 const addProjectVisible = ref(false)
 const columns = reactive<DataTableColumns<OrgProjectTableItem>>([
   {
@@ -206,6 +210,45 @@ const handleAddProjectModalCancel = (shouldSearch: boolean) => {
     fetchData()
   }
   addProjectVisible.value = false
+}
+const { send: doDelete } = useRequest((id) => deleteProject(id), {
+  immediate: false,
+})
+
+const handleDelete = (record: OrgProjectTableItem) => {
+  const title = t('system.project.deleteName', {
+    name: characterLimit(record.name),
+  })
+  const content = t('system.project.deleteTip')
+  currentDeleteProject.value = record
+  window.$dialog.warning({
+    title,
+    content,
+    positiveText: t('common.confirmDelete'),
+    negativeText: t('common.cancel'),
+    onPositiveClick: async () => {
+      await doDelete(record.id)
+      window.$message.success(t('common.deleteSuccess'), {
+        // render: renderMessage,
+        duration: 5000,
+        icon: () =>
+          h(
+            NIcon,
+            {},
+            {
+              default: () =>
+                h('div', { class: 'i-carbon:cics-transaction-server-zos' }),
+            },
+          ),
+      })
+      fetchData()
+    },
+  })
+}
+const handleMoreAction = (event: ActionsItem, record: OrgProjectTableItem) => {
+  if (event.eventTag === 'delete') {
+    handleDelete(record)
+  }
 }
 defineExpose({
   fetchData,

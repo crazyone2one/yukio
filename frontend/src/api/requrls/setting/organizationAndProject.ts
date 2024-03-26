@@ -48,7 +48,7 @@ export const getDeleteProjectMemberUrl = '/system/project/remove-member/'
 // 根据ID获取项目信息
 export const getProjectInfoUrl = '/system/project/get/'
 // 删除项目
-export const getDeleteProjectUrl = '/system/project/delete/'
+export const getDeleteProjectUrl = '/system/project/remove/'
 // 系统-组织及项目，获取用户下拉选项
 export const getUserByOrgOrProjectUrl = '/system/organization/get-option/'
 // 系统-组织及项目，获取管理员下拉选项

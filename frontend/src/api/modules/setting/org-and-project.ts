@@ -137,3 +137,17 @@ export const enableOrDisableProject = (id: string, isEnable = true) =>
   alovaInst.Get(
     `${isEnable ? orgUrl.getEnableProjectUrl : orgUrl.getDisableProjectUrl}${id}`,
   )
+/**
+ * 删除项目
+ * @param id
+ * @returns
+ */
+export const deleteProject = (id: string) =>
+  alovaInst.Delete(`${orgUrl.getDeleteProjectUrl}${id}`)
+/**
+ * 撤销删除组织
+ * @param id
+ * @returns
+ */
+export const revokeDeleteProject = (id: string) =>
+  alovaInst.Get(`${orgUrl.getRevokeProjectUrl}${id}`)

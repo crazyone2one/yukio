@@ -19,6 +19,7 @@ import cn.master.yukio.util.JsonUtils;
 import cn.master.yukio.util.ServiceUtils;
 import cn.master.yukio.util.SessionUtils;
 import cn.master.yukio.util.Translator;
+import com.mybatisflex.core.logicdelete.LogicDeleteManager;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.core.query.QueryMethods;
@@ -395,6 +396,28 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
         project.setEnable(false);
         project.setUpdateUser(updateUser);
         mapper.update(project);
+    }
+
+    @Override
+    public int remove(String id, String deleteUserId) {
+        checkProjectNotExist(id);
+        Project project = new Project();
+        project.setId(id);
+        project.setDeleteUser(deleteUserId);
+        project.setDeleteTime(LocalDateTime.now());
+        return mapper.delete(project);
+    }
+
+    @Override
+    public int revoke(String id, String userId) {
+        checkProjectNotExist(id);
+        Project project = new Project();
+        project.setId(id);
+        project.setDeleted(false);
+        project.setDeleteTime(null);
+        project.setDeleteUser(null);
+        project.setUpdateUser(userId);
+        return mapper.update(project);
     }
 
     private void checkOrgIsExist(String organizationId) {

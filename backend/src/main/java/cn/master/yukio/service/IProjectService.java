@@ -44,4 +44,8 @@ public interface IProjectService extends IService<Project> {
     void enable(String id, String updateUser);
 
     void disable(String id, String updateUser);
+
+    int remove(String id, String deleteUserId);
+
+    int revoke(String id, String userId);
 }
