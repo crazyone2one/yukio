@@ -1,6 +1,10 @@
 package cn.master.yukio.controller;
 
+import cn.master.yukio.dto.BasePageRequest;
+import cn.master.yukio.dto.CustomFieldDTO;
 import com.mybatisflex.core.paginate.Page;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,11 +26,11 @@ import java.util.List;
  * @since 1.0.0
  */
 @RestController
-@RequestMapping("/customField")
+@RequestMapping("/organization/custom/field")
+@RequiredArgsConstructor
 public class CustomFieldController {
 
-    @Autowired
-    private ICustomFieldService iCustomFieldService;
+    private final ICustomFieldService iCustomFieldService;
 
     /**
      * 添加自定义字段。
@@ -88,9 +92,9 @@ public class CustomFieldController {
      * @param page 分页对象
      * @return 分页对象
      */
-    @GetMapping("page")
-    public Page<CustomField> page(Page<CustomField> page) {
-        return iCustomFieldService.page(page);
+    @PostMapping("/list/{organizationId}/{scene}")
+    public Page<CustomFieldDTO> page(@PathVariable String organizationId, @PathVariable String scene, @Validated @RequestBody BasePageRequest page) {
+        return iCustomFieldService.page(organizationId,scene,page);
     }
 
 }

@@ -229,7 +229,15 @@ const menuOptions: MenuOption[] = [
             key: SettingRouteEnum.SETTING_ORGANIZATION_USER_GROUP,
           },
           {
-            label: t('menu.settings.organization.project'),
+            // label: t('menu.settings.organization.project'),
+            label: () =>
+              h(
+                RouterLink,
+                { to: { name: SettingRouteEnum.SETTING_ORGANIZATION_PROJECT } },
+                {
+                  default: () => t('menu.settings.organization.project'),
+                },
+              ),
             key: SettingRouteEnum.SETTING_ORGANIZATION_PROJECT,
           },
           {
@@ -238,13 +246,36 @@ const menuOptions: MenuOption[] = [
             disabled: true,
           },
           {
-            label: t('menu.settings.organization.template'),
+            // label: t('menu.settings.organization.template'),
+            label: () =>
+              h(
+                RouterLink,
+                {
+                  to: { name: SettingRouteEnum.SETTING_ORGANIZATION_TEMPLATE },
+                },
+                {
+                  default: () => t('menu.settings.organization.template'),
+                },
+              ),
             key: SettingRouteEnum.SETTING_ORGANIZATION_TEMPLATE,
           },
-          {
-            label: t('menu.settings.organization.templateFieldSetting'),
-            key: SettingRouteEnum.SETTING_ORGANIZATION_TEMPLATE_FILED_SETTING,
-          },
+          // {
+          //   // label: t('menu.settings.organization.templateFieldSetting'),
+          //   label: () =>
+          //     h(
+          //       RouterLink,
+          //       {
+          //         to: {
+          //           name: SettingRouteEnum.SETTING_ORGANIZATION_TEMPLATE_FILED_SETTING,
+          //         },
+          //       },
+          //       {
+          //         default: () =>
+          //           t('menu.settings.organization.templateFieldSetting'),
+          //       },
+          //     ),
+          //   key: SettingRouteEnum.SETTING_ORGANIZATION_TEMPLATE_FILED_SETTING,
+          // },
           {
             label: t('menu.settings.organization.templateManagementList'),
             key: SettingRouteEnum.SETTING_ORGANIZATION_TEMPLATE_MANAGEMENT,

@@ -13,6 +13,7 @@ import {
   NDrawer,
   NDrawerContent,
   NDropdown,
+  NEmpty,
   NForm,
   NFormItem,
   NFormItemRow,
@@ -89,5 +90,6 @@ export default create({
     NFormItem,
     NSwitch,
     NModal,
+    NEmpty,
   ],
 })

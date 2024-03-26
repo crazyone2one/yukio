@@ -24,7 +24,7 @@ function setupPageGuard(router: Router) {
         pId: appStore.currentProjectId,
       }
 
-      next(to)
+      // next(to)
     }
     next()
   })

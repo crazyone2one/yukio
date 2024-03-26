@@ -151,3 +151,14 @@ export const deleteProject = (id: string) =>
  */
 export const revokeDeleteProject = (id: string) =>
   alovaInst.Get(`${orgUrl.getRevokeProjectUrl}${id}`)
+
+/**
+ * 组织-获取项目列表
+ * @param data
+ * @returns
+ */
+export const postProjectTableByOrg = (data: TableQueryParams) =>
+  alovaInst.Post<CommonPage<OrgProjectTableItem>>(
+    orgUrl.postProjectTableByOrgIdUrl,
+    data,
+  )
