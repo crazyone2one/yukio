@@ -6,7 +6,7 @@ import { useRoute, useRouter } from 'vue-router'
 import PersonalMenu from './PersonalMenu.vue'
 import { switchProject } from '/@/api/modules/project-management/project'
 import logo from '/@/assets/logo.svg'
-import { load } from '/@/components/loading/index'
+// import { load } from '/@/components/loading/index'
 import { useI18n } from '/@/hooks/use-i18n'
 import useAppStore from '/@/store/modules/app'
 import useUserStore from '/@/store/modules/user'
@@ -21,12 +21,12 @@ const { send: switchPro } = useRequest((param) => switchProject(param), {
   immediate: false,
 })
 const handleSelectProject = async (value: string) => {
-  load.show()
+  // load.show()
   await switchPro({
     projectId: value as string,
     userId: userStore.id || '',
   }).finally(() => {
-    load.hide()
+    // load.hide()
     router.replace({
       path: route.path,
       query: {
