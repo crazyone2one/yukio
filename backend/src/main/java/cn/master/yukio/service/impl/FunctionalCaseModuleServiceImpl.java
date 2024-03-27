@@ -86,9 +86,13 @@ public class FunctionalCaseModuleServiceImpl extends ServiceImpl<FunctionalCaseM
 
     @Override
     public List<FunctionalCaseModule> getTree(String projectId) {
+        QueryChain<FunctionalCaseModule> qw = queryChain()
+                //.select(FUNCTIONAL_CASE_MODULE.ID,FUNCTIONAL_CASE_MODULE.NAME,FUNCTIONAL_CASE_MODULE.PARENT_ID)
+                .where(FUNCTIONAL_CASE_MODULE.PROJECT_ID.eq(projectId)
+                        .and(FUNCTIONAL_CASE_MODULE.PARENT_ID.eq("NONE")))
+                .orderBy(FUNCTIONAL_CASE_MODULE.POS.desc());
         //设置递归查询深度为 10 层
-        RelationManager.setMaxDepth(10);
-        QueryChain<FunctionalCaseModule> qw = queryChain().where(FUNCTIONAL_CASE_MODULE.PROJECT_ID.eq(projectId)).orderBy(FUNCTIONAL_CASE_MODULE.POS.desc());
+        //RelationManager.setMaxDepth(10);
         List<FunctionalCaseModule> functionalModuleList = mapper.selectListWithRelationsByQuery(qw);
         return buildTreeAndCountResource(functionalModuleList, true, Translator.get("functional_case.module.default.name"));
     }
@@ -116,6 +120,7 @@ public class FunctionalCaseModuleServiceImpl extends ServiceImpl<FunctionalCaseM
                 }
                 FunctionalCaseModule node = new FunctionalCaseModule();
                 BeanUtils.copyProperties(treeNode, node);
+                //fixme 子模块设置path值
                 node.genModulePath(baseTreeNodeMap.get(treeNode.getParentId()));
                 baseTreeNodeMap.put(treeNode.getId(), node);
                 if (StringUtils.equalsIgnoreCase(treeNode.getParentId(), ModuleConstants.ROOT_NODE_PARENT_ID)) {

@@ -15,6 +15,7 @@ const featureCaseStore = useFeatureCaseStore()
 const isExpandAll = ref(false)
 const currentProjectId = computed(() => appStore.currentProjectId)
 const activeFolder = ref<string>('all')
+const rootModulesName = ref<string[]>([]) // 根模块名称列表
 // 选中节点
 const selectedKeys = computed({
   get: () => [activeFolder.value],
@@ -49,6 +50,7 @@ const confirmHandler = () => {
     addSubVisible.value = false
   })
 }
+const setRootModules = (names: string[]) => (rootModulesName.value = names)
 </script>
 <template>
   <div class="rounded-2xl bg-white">
@@ -108,10 +110,12 @@ const confirmHandler = () => {
                   <pop-confirm
                     ref="confirmRef"
                     v-model:visible="addSubVisible"
+                    :title="t('caseManagement.featureCase.addSubModule')"
                     :ok-text="'common.confirm'"
                     :field-config="{
                       placeholder: $t('caseManagement.featureCase.addGroupTip'),
                     }"
+                    :all-names="rootModulesName"
                     @confirm="confirmHandler"
                   >
                     <template #trigger>
@@ -133,6 +137,7 @@ const confirmHandler = () => {
                 :active-folder="activeFolder"
                 :selected-keys="selectedKeys"
                 :modules-count="modulesCount"
+                @init="setRootModules"
               />
               <!-- <div class="b-0 absolute w-[88%]">
                 <n-divider class="!my-0 !mb-2" />

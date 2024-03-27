@@ -6,6 +6,7 @@ import cn.master.yukio.entity.FunctionalCaseModule;
 import cn.master.yukio.service.IFunctionalCaseModuleService;
 import cn.master.yukio.util.SessionUtils;
 import com.mybatisflex.core.paginate.Page;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -53,6 +54,7 @@ public class FunctionalCaseModuleController {
      * @param request 功能用例模块
      */
     @PostMapping("update")
+    @Operation(summary = "用例管理-功能用例-模块-修改模块")
     public void update(@RequestBody @Validated FunctionalCaseModuleUpdateRequest request) {
         iFunctionalCaseModuleService.update(request, SessionUtils.getUserId());
     }

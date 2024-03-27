@@ -1,13 +1,22 @@
 <script setup lang="ts">
 import { useRequest } from 'alova'
-import { NButton, NTree, TreeOption } from 'naive-ui'
+import { NButton, NTree, TreeOption, NIcon } from 'naive-ui'
 import { computed, h, onBeforeMount, ref, watch } from 'vue'
 import { ModuleTreeNode } from '/@/api/interface/common'
-import { getCaseModuleTree } from '/@/api/modules/case-management/feature-case'
+import {
+  createCaseModuleTree,
+  deleteCaseModuleTree,
+  getCaseModuleTree,
+} from '/@/api/modules/case-management/feature-case'
 import { useI18n } from '/@/hooks/use-i18n'
 import useAppStore from '/@/store/modules/app'
 import useFeatureCaseStore from '/@/store/modules/case/feature-case'
 import { mapTree } from '/@/utils'
+import PopConfirm from '/@/components/pop-confirm/index.vue'
+import {
+  CreateOrUpdateModule,
+  UpdateModule,
+} from '/@/api/interface/case-management/feature-case.ts'
 
 const { t } = useI18n()
 const props = defineProps<{
@@ -30,8 +39,13 @@ const emits = defineEmits([
   'init',
   'dragUpdate',
 ])
+const focusNodeKey = ref<string>('')
+const addSubVisible = ref(false)
+const renamePopVisible = ref(false)
+const renameCaseName = ref('')
 const { send, loading } = useRequest((p) => getCaseModuleTree(p), {
   immediate: false,
+  force: true,
 })
 /**
  * 初始化模块树
@@ -53,33 +67,203 @@ const initModules = (isSetDefaultKey = false) => {
     if (isSetDefaultKey) {
       selectedNodeKeys.value = [caseTree.value[0].id]
     }
+    emits(
+      'init',
+      caseTree.value.map((e) => e.name),
+    )
   })
 }
 const handleNodeMoreSelect = (type: string, node: TreeOption) => {
-  console.log(`output->type`, type)
-  console.log(`output->type`, node)
+  focusNodeKey.value = (node.key as string) || ''
+  switch (type) {
+    case 'rename':
+      renameCaseName.value = (node.name as string) || ''
+      renamePopVisible.value = true
+      document
+        .querySelector(`#renameSpan${node.id}`)
+        ?.dispatchEvent(new Event('click'))
+      break
+    case 'delete':
+      deleteHandler(node)
+      resetFocusNodeKey()
+      break
+    case 'add':
+      break
+    default:
+      break
+  }
+}
+const deleteHandler = (node: TreeOption) => {
+  window.$dialog.error({
+    title: t('caseManagement.featureCase.moduleDeleteTipTitle', {
+      name: node.name,
+    }),
+    content() {
+      return t('caseManagement.featureCase.deleteCaseTipContent')
+    },
+    positiveText: t('caseManagement.featureCase.deleteConfirm'),
+    negativeText: t('common.cancel'),
+    maskClosable: false,
+    onPositiveClick(e) {
+      e.preventDefault
+      deleteModule(node.id).then(() => {
+        window.$message.success(t('caseManagement.featureCase.deleteSuccess'))
+        initModules(selectedNodeKeys.value[0] === node.id)
+      })
+    },
+  })
+}
+const { send: create } = useRequest((p) => createCaseModuleTree(p), {
+  immediate: false,
+})
+const { send: deleteModule } = useRequest((p) => deleteCaseModuleTree(p), {
+  immediate: false,
+})
+const addSubModule = (formValue?: { field: string }, cancel?: () => void) => {
+  const params: CreateOrUpdateModule = {
+    projectId: currentProjectId.value,
+    name: formValue?.field as string,
+    parentId: focusNodeKey.value,
+  }
+  create(params).then(() => {
+    window.$message.success(t('common.addSuccess'))
+    if (cancel) {
+      cancel()
+    }
+    initModules()
+  })
+}
+const updateNameModule = (
+  formValue?: { field: string },
+  cancel?: () => void,
+) => {
+  const params: UpdateModule = {
+    id: focusNodeKey.value,
+    name: formValue?.field as string,
+  }
+  console.log(params)
+}
+const resetFocusNodeKey = () => {
+  focusNodeKey.value = ''
+  renamePopVisible.value = false
+  renameCaseName.value = ''
 }
 const renderSuffix = ({ option }: { option: TreeOption }) => {
   return [
     h(
-      NButton,
+      PopConfirm,
       {
-        text: true,
-        type: 'warning',
-        onClick: () => handleNodeMoreSelect('rename', option),
+        visible: addSubVisible.value,
+        title: t('caseManagement.featureCase.addSubModule'),
+        okText: 'common.confirm',
+        isDelete: false,
+        allNames: [],
+        fieldConfig: {
+          placeholder: t('caseManagement.featureCase.addGroupTip'),
+        },
+        onConfirm: addSubModule,
+        onCancel: resetFocusNodeKey,
       },
-      { default: () => `${t('caseManagement.featureCase.rename')}` },
+      {
+        trigger: () => {
+          return h(
+            NButton,
+            {
+              text: true,
+              size: 'tiny',
+              type: 'primary',
+              disabled: option.id === 'root',
+              onClick: () => handleNodeMoreSelect('add', option),
+            },
+            {
+              icon: () => {
+                return h(
+                  NIcon,
+                  {},
+                  {
+                    default: () =>
+                      h('div', { class: 'i-ion:add-circle-outline' }),
+                  },
+                )
+              },
+            },
+          )
+        },
+      },
+    ),
+    h(
+      PopConfirm,
+      {
+        visible: renamePopVisible.value,
+        title: t('caseManagement.featureCase.rename'),
+        okText: 'common.confirm',
+        isDelete: false,
+        allNames: [],
+        fieldConfig: {
+          field: renameCaseName.value,
+        },
+        onConfirm: updateNameModule,
+        onCancel: resetFocusNodeKey,
+      },
+      {
+        default: () => {
+          return h('span', { id: `renameSpan${option.id}`, class: 'relative' })
+        },
+        trigger: () => {
+          return h(
+            NButton,
+            {
+              text: true,
+              size: 'tiny',
+              type: 'warning',
+              disabled: true,
+              class: 'ml-1',
+              onClick: () => handleNodeMoreSelect('rename', option),
+            },
+            {
+              icon: () => {
+                return h(
+                  NIcon,
+                  {},
+                  {
+                    default: () => h('div', { class: 'i-carbon:edit' }),
+                  },
+                )
+              },
+            },
+          )
+        },
+      },
     ),
     h(
       NButton,
       {
         text: true,
+        size: 'tiny',
         type: 'error',
+        disabled: option.id === 'root',
+        class: 'ml-1',
         onClick: () => handleNodeMoreSelect('delete', option),
       },
-      { default: () => `${t('caseManagement.featureCase.delete')}` },
+      {
+        icon: () => {
+          return h(
+            NIcon,
+            {},
+            {
+              default: () => h('div', { class: 'i-carbon:delete' }),
+            },
+          )
+        },
+      },
     ),
   ]
+}
+const renderLabel = ({ option }: { option: TreeOption }) => {
+  if (!props.isModal) {
+    return `${option.label} ` + `(${option.count || 0})`
+  }
+  return `${option.label} `
 }
 watch(
   () => props.selectedKeys,
@@ -114,6 +298,7 @@ defineExpose({
         :default-expand-all="props.isExpandAll"
         :default-selected-keys="props.selectedKeys"
         :render-suffix="renderSuffix"
+        :render-label="renderLabel"
       />
     </n-spin>
   </n-space>

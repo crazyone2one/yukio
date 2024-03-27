@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { FormInst, FormRules } from 'naive-ui'
-import { ref, useAttrs, watch } from 'vue'
+import { FormInst, FormItemRule, FormRules } from 'naive-ui'
+import { computed, ref, useAttrs, watch } from 'vue'
 import { useI18n } from '/@/hooks/use-i18n'
 export type types = 'error' | 'info' | 'success' | 'warning'
 interface FieldConfig {
@@ -13,6 +13,8 @@ interface FieldConfig {
 }
 const props = withDefaults(
   defineProps<{
+    title: string // 文本提示标题
+    subTitleTip?: string // 子内容提示
     type?: types
     isDelete?: boolean // 当前使用是否是移除
     loading?: boolean
@@ -47,9 +49,29 @@ const setValidateResult = (isValidatePass: boolean) => {
 const form = ref({
   field: props.fieldConfig?.field || '',
 })
-const rules = props.fieldConfig?.rules || [
-  { required: true, message: t('popConfirm.nameNotNull') },
-]
+const rules = props.fieldConfig?.rules || {
+  field: [
+    {
+      required: true,
+      message: t('popConfirm.nameNotNull'),
+      trigger: ['input', 'blur'],
+    },
+    {
+      required: true,
+      validator(rule: FormItemRule, value: string) {
+        if ((props.allNames || []).includes(value)) {
+          if (props.fieldConfig && props.fieldConfig.nameExistTipText) {
+            return new Error(t(props.fieldConfig.nameExistTipText))
+          } else {
+            return new Error(t('popConfirm.nameExist'))
+          }
+        }
+        return true
+      },
+      trigger: ['input', 'blur'],
+    },
+  ],
+}
 // 校验表单
 const validateForm = async () => {
   await formRef.value?.validate((errors) => {
@@ -79,6 +101,12 @@ const handleConfirm = async () => {
     emits('confirm', form.value, handleCancel)
   }
 }
+// 获取当前标题的样式
+const titleClass = computed(() => {
+  return props.isDelete
+    ? 'ml-2 font-medium text-[var(--color-text-1)] text-[14px]'
+    : 'mb-[8px] font-medium text-[var(--color-text-1)] text-[14px] leading-[22px]'
+})
 watch(
   () => props.fieldConfig?.field,
   (val) => {
@@ -108,10 +136,27 @@ defineExpose({
 })
 </script>
 <template>
-  <n-popover v-model:show="currentVisible" trigger="click" v-bind="attrs">
+  <n-popover
+    v-model:show="currentVisible"
+    trigger="click"
+    v-bind="attrs"
+    :placement="props.isDelete ? 'right-end' : 'bottom'"
+  >
     <template #trigger>
       <slot name="trigger" />
     </template>
+    <div class="flex flex-row flex-nowrap items-center">
+      <slot name="icon"> </slot>
+      <div :class="[titleClass]">
+        {{ props.title || '' }}
+      </div>
+    </div>
+    <div
+      v-if="props.subTitleTip"
+      class="ml-8 mt-2 text-sm text-[var(--color-text-2)]"
+    >
+      {{ props.subTitleTip }}
+    </div>
     <n-form ref="formRef" :model="form" :rules="rules">
       <n-form-item path="field">
         <n-input
@@ -124,13 +169,16 @@ defineExpose({
           v-else
           v-model:value="form.field"
           :placeholder="props.fieldConfig?.placeholder"
+          :maxlength="255"
+          class="w-[245px]"
+          @press-enter="handleConfirm"
         />
       </n-form-item>
     </n-form>
     <div class="mb-1 mt-4 flex flex-row flex-nowrap justify-end gap-2">
       <n-button
-        type="secondary"
-        size="mini"
+        secondary
+        size="tiny"
         :disabled="props.loading"
         @click="handleCancel"
       >
@@ -138,13 +186,14 @@ defineExpose({
       </n-button>
       <n-button
         type="primary"
-        size="mini"
+        size="tiny"
         :loading="props.loading"
         @click="handleConfirm"
       >
         {{ $t(props.okText) || $t('common.confirm') }}
       </n-button>
     </div>
+    <slot></slot>
   </n-popover>
 </template>
 
