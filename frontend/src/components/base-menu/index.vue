@@ -34,10 +34,16 @@ const menuOptions: MenuOption[] = [
     disabled: true,
   },
   {
-    label: t('menu.caseManagement'),
+    // label: t('menu.caseManagement'),
+    label: () =>
+      h(
+        RouterLink,
+        { to: { name: CaseManagementRouteEnum.CASE_MANAGEMENT } },
+        { default: () => t('menu.caseManagement') },
+      ),
     key: CaseManagementRouteEnum.CASE_MANAGEMENT,
     icon: renderIcon('i-local:functional_testing'),
-    disabled: true,
+    // disabled: true,
   },
   {
     label: t('menu.projectManagement'),

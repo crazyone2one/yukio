@@ -28,6 +28,7 @@ import {
   NMenu,
   NModal,
   NP,
+  NPopconfirm,
   NPopover,
   NRadio,
   NRadioGroup,
@@ -91,5 +92,6 @@ export default create({
     NSwitch,
     NModal,
     NEmpty,
+    NPopconfirm,
   ],
 })

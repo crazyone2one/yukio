@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { TreeOption } from 'naive-ui'
 import { RequestMethods } from '/@/enums/api-enum'
 
 // 请求返回结构
@@ -60,7 +62,7 @@ export interface AddModuleParams {
   parentId: string
 }
 // 模块树节点
-export interface ModuleTreeNode {
+export interface ModuleTreeNode extends TreeOption {
   id: string
   name: string
   type: 'MODULE' | 'API'

@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@iconify-json/carbon": "^1.1.31",
+    "@iconify-json/ion": "^1.1.17",
     "@iconify-json/mdi": "^1.1.64",
     "@types/node": "^20.11.27",
     "@typescript-eslint/eslint-plugin": "^7.2.0",

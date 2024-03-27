@@ -25,6 +25,7 @@ import com.mybatisflex.spring.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -114,6 +115,7 @@ public class FunctionalCaseModuleServiceImpl extends ServiceImpl<FunctionalCaseM
                     continue;
                 }
                 FunctionalCaseModule node = new FunctionalCaseModule();
+                BeanUtils.copyProperties(treeNode, node);
                 node.genModulePath(baseTreeNodeMap.get(treeNode.getParentId()));
                 baseTreeNodeMap.put(treeNode.getId(), node);
                 if (StringUtils.equalsIgnoreCase(treeNode.getParentId(), ModuleConstants.ROOT_NODE_PARENT_ID)) {
