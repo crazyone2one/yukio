@@ -16,6 +16,8 @@ const isExpandAll = ref(false)
 const currentProjectId = computed(() => appStore.currentProjectId)
 const activeFolder = ref<string>('all')
 const rootModulesName = ref<string[]>([]) // 根模块名称列表
+const offspringIds = ref<string[]>([])
+const activeCaseType = ref<'folder' | 'module'>('folder') // 激活用例类型
 // 选中节点
 const selectedKeys = computed({
   get: () => [activeFolder.value],
@@ -51,6 +53,12 @@ const confirmHandler = () => {
   })
 }
 const setRootModules = (names: string[]) => (rootModulesName.value = names)
+const caseNodeSelect = (keys: string[], _offspringIds: string[]) => {
+  ;[activeFolder.value] = keys
+  activeCaseType.value = 'module'
+  offspringIds.value = [..._offspringIds]
+  featureCaseStore.setModuleId(keys)
+}
 </script>
 <template>
   <div class="rounded-2xl bg-white">
@@ -138,6 +146,7 @@ const setRootModules = (names: string[]) => (rootModulesName.value = names)
                 :selected-keys="selectedKeys"
                 :modules-count="modulesCount"
                 @init="setRootModules"
+                @case-node-select="caseNodeSelect"
               />
               <!-- <div class="b-0 absolute w-[88%]">
                 <n-divider class="!my-0 !mb-2" />

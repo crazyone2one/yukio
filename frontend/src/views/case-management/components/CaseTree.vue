@@ -265,6 +265,18 @@ const renderLabel = ({ option }: { option: TreeOption }) => {
   }
   return `${option.label} `
 }
+const nodeProps = ({ option }: { option: TreeOption }) => {
+  return {
+    onClick() {
+      const offspringIds: string[] = []
+      mapTree(option.children || [], (e) => {
+        offspringIds.push(e.key)
+        return e
+      })
+      emits('caseNodeSelect', option.key, offspringIds)
+    },
+  }
+}
 watch(
   () => props.selectedKeys,
   (val) => {
@@ -299,6 +311,7 @@ defineExpose({
         :default-selected-keys="props.selectedKeys"
         :render-suffix="renderSuffix"
         :render-label="renderLabel"
+        :node-props="nodeProps"
       />
     </n-spin>
   </n-space>
